@@ -92,7 +92,7 @@ export default function MenuSection() {
             {selectedSubCategory}
           </h2>
           <p className="font-semibold text-[15px] lg:text-[17px] xl:text-[19px] leading-relaxed px-4 md:px-0 xl:mt-3">
-            all our breakfasts are served till 6 pm
+            all our {selectedSubCategory} are served till 6 pm
           </p>
           <p className="text-[15px] lg:text-[17px]">
             morbi eu blandit urna. nam id luctus purus. praesent euismod felis

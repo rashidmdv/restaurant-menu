@@ -23,10 +23,10 @@ export default function ViewItem({selectedItem,setSelectedItem}) {
                     <p className="text-lg font-semibold text-[#a86a30] mt-7">
                         {selectedItem.name}{" "}
                         <span className="font-normal">
-                            {selectedItem.price} {selectedItem.description}
+                            {selectedItem.price} 
                         </span>
                     </p>
-                    <p className="text-[#a86a30] mt-2 mb-2 text-center">{selectedItem.desc}</p>
+                    <p className="text-[#a86a30] mt-2 mb-2 text-center">{selectedItem.description}</p>
                 </div>
             </div>
         </div>
