@@ -1,0 +1,316 @@
+basePath: /
+definitions:
+  entities.Category:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      slug:
+        type: string
+      sub_categories:
+        description: Relationships
+        items:
+          $ref: '#/definitions/entities.SubCategory'
+        type: array
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  entities.DietaryInfo:
+    additionalProperties: true
+    type: object
+  entities.Item:
+    properties:
+      available:
+        type: boolean
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      dietary_info:
+        $ref: '#/definitions/entities.DietaryInfo'
+      display_order:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        maxLength: 150
+        minLength: 1
+        type: string
+      price:
+        minimum: 0
+        type: number
+      sub_category:
+        allOf:
+        - $ref: '#/definitions/entities.SubCategory'
+        description: Relationships
+      sub_category_id:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - name
+    - price
+    - sub_category_id
+    type: object
+  entities.Pagination:
+    properties:
+      has_next:
+        type: boolean
+      has_prev:
+        type: boolean
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  entities.SubCategory:
+    properties:
+      active:
+        type: boolean
+      category:
+        allOf:
+        - $ref: '#/definitions/entities.Category'
+        description: Relationships
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/entities.Item'
+        type: array
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      slug:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  handlers.CreateCategoryRequest:
+    properties:
+      active:
+        type: boolean
+      description:
+        type: string
+      display_order:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  handlers.HealthResponse:
+    properties:
+      checks:
+        additionalProperties: true
+        type: object
+      status:
+        type: string
+      timestamp:
+        type: string
+      uptime:
+        type: string
+      version:
+        type: string
+    type: object
+  response.APIError:
+    properties:
+      code:
+        type: string
+      details:
+        type: string
+      message:
+        type: string
+    type: object
+  response.APIResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/response.APIError'
+      meta:
+        $ref: '#/definitions/response.Meta'
+      success:
+        type: boolean
+    type: object
+  response.Meta:
+    properties:
+      pagination:
+        $ref: '#/definitions/entities.Pagination'
+      request_id:
+        type: string
+      timestamp:
+        type: string
+      total:
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: support@restaurant-menu-api.com
+    name: API Support
+    url: http://www.restaurant-menu-api.com/support
+  description: A production-ready REST API for restaurant menu management
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Restaurant Menu API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Basic health check endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
+  /v1/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories with optional filtering and pagination
+      parameters:
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Search in name and description
+        in: query
+        name: search
+        type: string
+      - description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Field to order by
+        in: query
+        name: order_by
+        type: string
+      - description: Order direction (ASC/DESC)
+        in: query
+        name: order_dir
+        type: string
+      - description: Include total count
+        in: query
+        name: include_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Category'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      summary: List all categories
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu category
+      parameters:
+      - description: Category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      summary: Create a new category
+      tags:
+      - Categories
+  /v1/menu:
+    get:
+      consumes:
+      - application/json
+      description: Get the complete hierarchical menu with all categories, subcategories,
+        and items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.APIResponse'
+      summary: Get complete menu
+      tags:
+      - Menu
+schemes:
+- http
+- https
+swagger: "2.0"
