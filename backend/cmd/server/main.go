@@ -54,11 +54,17 @@ func main() {
 	}
 	defer db.Close()
 
-	// Run database migrations
-	if err := db.AutoMigrate(); err != nil {
-		appLogger.WithError(err).Fatal("Failed to run database migrations")
+	// Run database migrations (only in development mode)
+	// In production, use proper migrations: make db-migrate
+	if cfg.IsDevelopment() {
+		if err := db.AutoMigrate(); err != nil {
+			appLogger.WithError(err).Fatal("Failed to run database auto-migration")
+		}
+		appLogger.Info("Database auto-migration completed successfully")
+		appLogger.Warn("Auto-migration is enabled in development mode. Use 'make db-migrate' for production")
+	} else {
+		appLogger.Info("Production mode: Use 'make db-migrate' to run database migrations")
 	}
-	appLogger.Info("Database migrations completed successfully")
 
 	// Seed database with initial data (only in development)
 	if cfg.IsDevelopment() {

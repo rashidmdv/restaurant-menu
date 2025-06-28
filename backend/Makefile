@@ -171,7 +171,58 @@ compose-build: ## Build and start services with docker-compose
 .PHONY: db-migrate
 db-migrate: ## Run database migrations
 	@echo "$(GREEN)Running database migrations...$(NC)"
-	go run $(MAIN_PATH) migrate
+	go run ./cmd/migrate -command=up
+
+.PHONY: db-migrate-down
+db-migrate-down: ## Rollback all database migrations
+	@echo "$(YELLOW)Rolling back database migrations...$(NC)"
+	go run ./cmd/migrate -command=down
+
+.PHONY: db-migrate-version
+db-migrate-version: ## Show current migration version
+	@echo "$(GREEN)Checking migration version...$(NC)"
+	go run ./cmd/migrate -command=version
+
+.PHONY: db-migrate-force
+db-migrate-force: ## Force migration to specific version (requires VERSION=n)
+	@echo "$(YELLOW)Forcing migration to version $(VERSION)...$(NC)"
+	@if [ -z "$(VERSION)" ]; then echo "$(RED)VERSION must be specified: make db-migrate-force VERSION=1$(NC)"; exit 1; fi
+	go run ./cmd/migrate -command=force -version=$(VERSION)
+
+.PHONY: db-migrate-goto
+db-migrate-goto: ## Migrate to specific version (requires VERSION=n)
+	@echo "$(GREEN)Migrating to version $(VERSION)...$(NC)"
+	@if [ -z "$(VERSION)" ]; then echo "$(RED)VERSION must be specified: make db-migrate-goto VERSION=1$(NC)"; exit 1; fi
+	go run ./cmd/migrate -command=goto -version=$(VERSION)
+
+.PHONY: db-migrate-steps
+db-migrate-steps: ## Run n migration steps (requires STEPS=n, use negative for rollback)
+	@echo "$(GREEN)Running $(STEPS) migration steps...$(NC)"
+	@if [ -z "$(STEPS)" ]; then echo "$(RED)STEPS must be specified: make db-migrate-steps STEPS=1$(NC)"; exit 1; fi
+	go run ./cmd/migrate -command=steps -steps=$(STEPS)
+
+.PHONY: db-migrate-drop
+db-migrate-drop: ## Drop all database tables (DANGEROUS)
+	@echo "$(RED)Dropping all database tables...$(NC)"
+	go run ./cmd/migrate -command=drop
+
+.PHONY: db-migrate-create
+db-migrate-create: ## Create a new migration file (requires NAME=migration_name)
+	@echo "$(GREEN)Creating new migration: $(NAME)...$(NC)"
+	@if [ -z "$(NAME)" ]; then echo "$(RED)NAME must be specified: make db-migrate-create NAME=add_user_table$(NC)"; exit 1; fi
+	@TIMESTAMP=$$(date +%s); \
+	PADDED_TIMESTAMP=$$(printf "%06d" $$TIMESTAMP); \
+	UP_FILE="migrations/$${PADDED_TIMESTAMP}_$(NAME).up.sql"; \
+	DOWN_FILE="migrations/$${PADDED_TIMESTAMP}_$(NAME).down.sql"; \
+	echo "-- Migration: $(NAME)" > $$UP_FILE; \
+	echo "-- Add your migration SQL here" >> $$UP_FILE; \
+	echo "" >> $$UP_FILE; \
+	echo "-- Rollback: $(NAME)" > $$DOWN_FILE; \
+	echo "-- Add your rollback SQL here" >> $$DOWN_FILE; \
+	echo "" >> $$DOWN_FILE; \
+	echo "$(GREEN)Created migration files:$(NC)"; \
+	echo "  $$UP_FILE"; \
+	echo "  $$DOWN_FILE"
 
 .PHONY: db-seed
 db-seed: ## Seed database with sample data
@@ -179,9 +230,19 @@ db-seed: ## Seed database with sample data
 	go run $(MAIN_PATH) seed
 
 .PHONY: db-reset
-db-reset: ## Reset database (drop and recreate)
+db-reset: ## Reset database (drop and recreate with migrations)
 	@echo "$(YELLOW)Resetting database...$(NC)"
-	go run $(MAIN_PATH) reset
+	@read -p "Are you sure you want to reset the database? This will drop all data! [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		echo "$(GREEN)Dropping all tables...$(NC)"; \
+		go run ./cmd/migrate -command=drop; \
+		echo "$(GREEN)Running migrations...$(NC)"; \
+		go run ./cmd/migrate -command=up; \
+		echo "$(GREEN)Database reset complete$(NC)"; \
+	else \
+		echo "$(RED)Database reset cancelled$(NC)"; \
+	fi
 
 .PHONY: tools
 tools: ## Install development tools

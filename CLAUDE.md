@@ -32,7 +32,17 @@ make test                   # Run tests
 make lint                   # Run linter
 make swagger               # Generate Swagger documentation
 make compose-up            # Start all services with Docker Compose
-make db-migrate            # Run database migrations
+
+# Database Migration Commands
+make db-migrate            # Run all pending migrations
+make db-migrate-down       # Rollback all migrations
+make db-migrate-version    # Show current migration version
+make db-migrate-create NAME=migration_name  # Create new migration files
+make db-migrate-goto VERSION=1             # Migrate to specific version
+make db-migrate-steps STEPS=1              # Run n migration steps
+make db-migrate-force VERSION=1            # Force migration to version
+make db-migrate-drop       # Drop all tables (DANGEROUS)
+make db-reset              # Drop and recreate database with migrations
 make db-seed               # Seed database with sample data
 ```
 
@@ -44,6 +54,13 @@ Hierarchical menu structure: **Restaurant → Category → SubCategory → Item*
 - Categories contain multiple subcategories
 - Subcategories contain multiple items with images, prices, descriptions
 - Clean architecture with domain entities, repositories, and services
+
+### Database Migrations
+- Uses `golang-migrate` for production-ready migrations
+- Migration files located in `migrations/` directory
+- Auto-migration is disabled in production mode
+- Versioned migrations with up/down SQL files
+- Supports rollback, goto specific version, and force operations
 
 ### API Structure
 - Base API URL: `http://127.0.0.1:8000/`

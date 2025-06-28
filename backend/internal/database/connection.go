@@ -53,7 +53,11 @@ func New(cfg *config.Config) (*Database, error) {
 	return &Database{DB: db}, nil
 }
 
+// AutoMigrate is deprecated - use proper migrations instead
+// This method is kept for backwards compatibility but should not be used in production
 func (d *Database) AutoMigrate() error {
+	// In production, migrations should be run separately using the migrate command
+	// This is kept only for development convenience and backwards compatibility
 	return d.DB.AutoMigrate(
 		&entities.Category{},
 		&entities.SubCategory{},
