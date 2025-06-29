@@ -24,28 +24,25 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { CatalogCategory } from '../data/schema'
+import { Category } from '../data/schema'
 import { useCategories } from '../context/categories-context'
-import { CatalogService } from '@/services/category-service'
+import { CategoryService } from '@/services/category-service'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow?: CatalogCategory
+  currentRow?: Category
 }
 
 // Create form schema that matches backend DTO
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  image: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(100, "Name too long"),
   description: z.string().optional(),
-  type: z.string().min(1, "Type is required"),
-  isActive: z.boolean().optional().default(true),
-  // createdAt: z.string().datetime().optional(),
-  // updatedAt: z.string().datetime().optional(),
+  display_order: z.number().optional().default(0),
+  active: z.boolean().optional().default(true),
 })
 
-type CatalogCategoryForm = z.infer<typeof formSchema>
+type CategoryForm = z.infer<typeof formSchema>
 
 
 export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props) {
@@ -55,29 +52,25 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
   const formInitialized = useRef(false)
 
   // Create default values once
-  const getDefaultValues = (): CatalogCategoryForm => {
+  const getDefaultValues = (): CategoryForm => {
     if (currentRow) {
       return {
         name: currentRow.name || '',
-        image: currentRow.image || '',
         description: currentRow.description || '',
-        type: currentRow.type || '',
-        isActive: typeof currentRow.isActive === 'boolean' ? currentRow.isActive : true,
+        display_order: currentRow.display_order || 0,
+        active: currentRow.active ?? true,
       }
     } else {
       return {
         name: '',
-        image: '',
         description: '',
-        type: '',
-        isActive: true,
-        // createdAt: '',
-        // updatedAt: '',
+        display_order: 0,
+        active: true,
       }
     }
   }
 
-  const form = useForm<CatalogCategoryForm>({
+  const form = useForm<CategoryForm>({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   })
@@ -97,21 +90,16 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
     }
   }, [open])
 
-  const handleSubmit = async (data: CatalogCategoryForm) => {
+  const handleSubmit = async (data: CategoryForm) => {
     try {
       setLoading(true)
       
-      // Format data for submission
-      const formattedData = {
-        ...data,
-      }
-      console.log('Payload to API:', formattedData)
-
+      console.log('Payload to API:', data)
       
       if (isUpdate && currentRow) {
-        await updateCategory(currentRow.id, formattedData)
+        await updateCategory(currentRow.id, data)
       } else {
-        await createCategory(formattedData)
+        await createCategory(data)
       }
       
       // Close dialog first
@@ -149,9 +137,9 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
     >
       <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Catalog Category</DialogTitle>
+          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Category</DialogTitle>
           <DialogDescription>
-            Provide details for the catalog category. Click save when done.
+            Provide details for the restaurant category. Click save when done.
           </DialogDescription>
         </DialogHeader>
 
@@ -169,57 +157,23 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
                   <FormItem>
                     <FormLabel>Category Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. Automotive" />
+                      <Input {...field} placeholder="e.g. Appetizers" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-              control={form.control}
-              name="image"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Logo</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0]
-                        if (!file) return
-
-                        try {
-                          const res = await CatalogService.uploadCategoryImage(file)
-                          const uploadedUrl = res.url
-                          form.setValue('image', uploadedUrl, { shouldValidate: true, shouldDirty: true })
-                        } catch (err) {
-                          console.error('File upload error:', err)
-                        }
-                      }}
-                    />
-                    </FormControl>
-                    <FormMessage />
-                    {form.watch('image') && (
-                      <img src={form.watch('image')} alt="Preview" className="mt-2 h-12 rounded" />
-                    )}
-                  </FormItem>
-                )}
-              />
-
 
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field: { value, onChange, ...rest } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea 
-                        {...rest} 
-                        value={value || ''} 
-                        onChange={(e) => onChange(e.target.value || null)}
-                        placeholder="Provide a description of this category" 
+                        {...field} 
+                        placeholder="Brief description of this category" 
                         className="min-h-24"
                       />
                     </FormControl>
@@ -229,22 +183,27 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
               />
 
               <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="e.g. automotive" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                control={form.control}
+                name="display_order"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Order</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        type="number" 
+                        placeholder="0"
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                        
               <FormField
                 control={form.control}
-                name="isActive"
+                name="active"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-3 mt-2">
                     <FormLabel>Active</FormLabel>

@@ -18,18 +18,18 @@ import {
   Badge
 } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { CatalogCategory, VehicleStatus, VehicleType } from '../data/schema'
+import { Category } from '../data/schema'
 import { cn } from '@/lib/utils'
 import { useCategories } from '../context/categories-context'
 import { useQuery } from '@tanstack/react-query'
-import { CatalogService } from '@/services/category-service'
+import { CategoryService } from '@/services/category-service'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useState } from 'react'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: CatalogCategory
+  currentRow: Category
 }
 
 
@@ -43,8 +43,8 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
     data: categoryDetails,
     isLoading,
   } = useQuery({
-    queryKey: ['catalog-categories', currentRow.id],
-    queryFn: () => CatalogService.getCategoryById(currentRow.id),
+    queryKey: ['categories', currentRow.id],
+    queryFn: () => CategoryService.getCategoryById(currentRow.id.toString()),
     enabled: open,
     staleTime: 1000 * 60 * 5, // 5 minutes
   })

@@ -1,8 +1,17 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState, useRef, useEffect, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -13,44 +22,32 @@ import {
 } from '@/components/ui/form'
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
-import { CatalogSubCategory, VehicleType, VehicleStatus } from '../data/schema'
+import { SubCategory } from '../data/schema'
 import { useSubCategories } from '../context/sub-categories-context'
-import { CatalogService } from '@/services/sub-category-service'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow?: CatalogSubCategory
+  currentRow?: SubCategory
 }
 
 // Create form schema that matches backend DTO
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required.'),
-  image: z.string().url('Must be a valid URL.').optional().nullable().or(z.literal('')),
-  description: z.string().optional().nullable(),
-  isActive: z.boolean().default(true),
-  categoryId: z.string().uuid('Must be a valid UUID.'),
-  
+  description: z.string().optional(),
+  category_id: z.number().min(1, 'Category is required.'),
+  display_order: z.number().optional().default(0),
+  active: z.boolean().default(true),
 })
-export type CatalogSubCategoryForm = z.infer<typeof formSchema>
+export type SubCategoryForm = z.infer<typeof formSchema>
 
 export function SubCategoriesMutateDialog({ open, onOpenChange, currentRow }: Props) {
   const [loading, setLoading] = useState(false)
@@ -59,28 +56,27 @@ export function SubCategoriesMutateDialog({ open, onOpenChange, currentRow }: Pr
   const formInitialized = useRef(false)
 
   // Create default values once
-  const getDefaultValues = (): CatalogSubCategoryForm => {
+  const getDefaultValues = (): SubCategoryForm => {
     if (currentRow) {
       return {
         name: currentRow.name || '',
         description: currentRow.description || '',
-        image: currentRow.image || '',
-        isActive: typeof currentRow.isActive === 'boolean' ? currentRow.isActive : true,
-        categoryId: currentRow.category?.id || '',
-               
+        category_id: currentRow.category_id || 0,
+        display_order: currentRow.display_order || 0,
+        active: typeof currentRow.active === 'boolean' ? currentRow.active : true,
       }
     } else {
       return {
         name: '',
         description: '',
-        image: '',
-        isActive: true,
-        categoryId: '',
+        category_id: 0,
+        display_order: 0,
+        active: true,
       }
     }
   }
 
-  const form = useForm<CatalogSubCategoryForm>({
+  const form = useForm<SubCategoryForm>({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   })
@@ -94,23 +90,20 @@ export function SubCategoriesMutateDialog({ open, onOpenChange, currentRow }: Pr
   }, [open, form])
 
   // Reset form initialization flag when dialog closes
-useEffect(() => {
-  if (open) {
-    const defaultValues = getDefaultValues()
-    form.reset(defaultValues)
-  }
-}, [open, currentRow])
+  useEffect(() => {
+    if (open) {
+      const defaultValues = getDefaultValues()
+      form.reset(defaultValues)
+    }
+  }, [open, currentRow])
 
-
-  const handleSubmit = async (data: CatalogSubCategoryForm) => {
+  const handleSubmit = async (data: SubCategoryForm) => {
     try {
       setLoading(true)
       
-      // Format dates for submission
+      // Format data for submission
       const formattedData = {
         ...data,
-        fromDate: data.fromDate ? new Date(data.fromDate).toISOString() : undefined,
-        toDate: data.toDate ? new Date(data.toDate).toISOString() : undefined,
       }
       
       if (isUpdate && currentRow) {
@@ -134,32 +127,26 @@ useEffect(() => {
   }
 
   const handleCancel = () => {
+    form.reset()
     onOpenChange(false)
-    // Reset form after dialog is fully closed
-    setTimeout(() => {
-      form.reset()
-    }, 100)
+    formInitialized.current = false
   }
 
   return (
-    <Dialog 
-      open={open} 
-      onOpenChange={(newOpen) => {
-        if (open && !newOpen) {
-          handleCancel()
-        } else {
-          onOpenChange(newOpen)
-        }
+    <Dialog
+      open={open}
+      onOpenChange={(val) => {
+        if (!val) handleCancel()
+        else onOpenChange(val)
       }}
     >
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Catalog Sub-Category</DialogTitle>
+      <DialogContent className="gap-6 sm:max-w-md">
+        <DialogHeader className="text-left">
+          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Sub-Category</DialogTitle>
           <DialogDescription>
-            Provide details for the catalog sub-category. Click save when done.
+            Fill in the sub-category details below.
           </DialogDescription>
         </DialogHeader>
-
         <Form {...form}>
           <form
             id="sub-category-form"
@@ -174,7 +161,7 @@ useEffect(() => {
                   <FormItem>
                     <FormLabel>Sub-Category Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. Brake" />
+                      <Input {...field} placeholder="e.g. Appetizers" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -182,45 +169,43 @@ useEffect(() => {
               />
 
               <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={categoriesLoading}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Select category"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                control={form.control}
+                name="category_id"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Category</FormLabel>
+                    <Select
+                      value={field.value?.toString() || ''}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      disabled={categoriesLoading}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={categoriesLoading ? "Loading categories..." : "Select category"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map(category => (
+                          <SelectItem key={category.id} value={category.id.toString()}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field: { value, onChange, ...rest } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        {...rest} 
-                        value={value || ''} 
-                        onChange={(e) => onChange(e.target.value || null)}
-                        placeholder="Provide a description of this sub-category" 
-                        className="min-h-24"
+                      <Textarea
+                        {...field}
+                        placeholder="Optional description"
+                        className="min-h-[80px]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -228,71 +213,61 @@ useEffect(() => {
                 )}
               />
 
-            
               <FormField
                 control={form.control}
-                name="image"
-                render={() => (
+                name="display_order"
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image</FormLabel>
+                    <FormLabel>Display Order</FormLabel>
                     <FormControl>
                       <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0]
-                          if (!file) return
-              
-                          try {
-                            const res = await CatalogService.uploadSubCategoryImage(file)
-                            const uploadedUrl = res.url
-                            form.setValue('image', uploadedUrl, { shouldValidate: true, shouldDirty: true })
-                          } catch (err) {
-                            console.error('File upload error:', err)
-                          }
-                        }}
+                        type="number"
+                        {...field}
+                        value={field.value || 0}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        placeholder="0"
                       />
                     </FormControl>
                     <FormMessage />
-                    {form.watch('image') && (
-                      <img src={form.watch('image')} alt="Preview" className="mt-2 h-12 rounded" />
-                    )}
                   </FormItem>
                 )}
               />
 
-              
-
               <FormField
                 control={form.control}
-                name="isActive"
+                name="active"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3 mt-2">
-                    <FormLabel>Active</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel>Active Status</FormLabel>
+                      <div className="text-sm text-muted-foreground">
+                        Whether this sub-category is currently active
+                      </div>
+                    </div>
                     <FormControl>
-                      <Switch 
-                        checked={field.value} 
-                        onCheckedChange={field.onChange} 
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
           </form>
         </Form>
-
-        <DialogFooter className="gap-2 pt-2">
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button 
-            form="sub-category-form" 
-            type="submit" 
+        <DialogFooter className="gap-2">
+          <DialogClose asChild>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            type="submit"
+            form="sub-category-form"
             disabled={loading}
           >
-            {loading ? 'Saving...' : isUpdate ? 'Update Sub-Category' : 'Create Sub-Category'}
+            {loading ? 'Saving...' : isUpdate ? 'Update' : 'Create'}
           </Button>
         </DialogFooter>
       </DialogContent>

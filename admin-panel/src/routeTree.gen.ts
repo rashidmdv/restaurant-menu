@@ -25,18 +25,12 @@ import { Route as authOtpImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedVariantIndexImport } from './routes/_authenticated/variant/index'
-import { Route as AuthenticatedUsersIndexImport } from './routes/_authenticated/users/index'
-import { Route as AuthenticatedTasksIndexImport } from './routes/_authenticated/tasks/index'
 import { Route as AuthenticatedSubCategoryIndexImport } from './routes/_authenticated/sub-category/index'
 import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
-import { Route as AuthenticatedOrdersIndexImport } from './routes/_authenticated/orders/index'
 import { Route as AuthenticatedModelIndexImport } from './routes/_authenticated/model/index'
 import { Route as AuthenticatedMakeIndexImport } from './routes/_authenticated/make/index'
 import { Route as AuthenticatedItemsIndexImport } from './routes/_authenticated/items/index'
-import { Route as AuthenticatedInteractionsIndexImport } from './routes/_authenticated/interactions/index'
 import { Route as AuthenticatedHelpCenterIndexImport } from './routes/_authenticated/help-center/index'
-import { Route as AuthenticatedEnquiriesIndexImport } from './routes/_authenticated/enquiries/index'
-import { Route as AuthenticatedCustomersIndexImport } from './routes/_authenticated/customers/index'
 import { Route as AuthenticatedChatsIndexImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedCategoryIndexImport } from './routes/_authenticated/category/index'
 import { Route as AuthenticatedBrandsIndexImport } from './routes/_authenticated/brands/index'
@@ -133,18 +127,6 @@ const AuthenticatedVariantIndexRoute = AuthenticatedVariantIndexImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
-const AuthenticatedUsersIndexRoute = AuthenticatedUsersIndexImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-
-const AuthenticatedTasksIndexRoute = AuthenticatedTasksIndexImport.update({
-  id: '/tasks/',
-  path: '/tasks/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-
 const AuthenticatedSubCategoryIndexRoute =
   AuthenticatedSubCategoryIndexImport.update({
     id: '/sub-category/',
@@ -159,12 +141,6 @@ const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any,
 )
-
-const AuthenticatedOrdersIndexRoute = AuthenticatedOrdersIndexImport.update({
-  id: '/orders/',
-  path: '/orders/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 
 const AuthenticatedModelIndexRoute = AuthenticatedModelIndexImport.update({
   id: '/model/',
@@ -184,31 +160,10 @@ const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexImport.update({
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
-const AuthenticatedInteractionsIndexRoute =
-  AuthenticatedInteractionsIndexImport.update({
-    id: '/interactions/',
-    path: '/interactions/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-
 const AuthenticatedHelpCenterIndexRoute =
   AuthenticatedHelpCenterIndexImport.update({
     id: '/help-center/',
     path: '/help-center/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-
-const AuthenticatedEnquiriesIndexRoute =
-  AuthenticatedEnquiriesIndexImport.update({
-    id: '/enquiries/',
-    path: '/enquiries/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-
-const AuthenticatedCustomersIndexRoute =
-  AuthenticatedCustomersIndexImport.update({
-    id: '/customers/',
-    path: '/customers/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -417,32 +372,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatsIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/customers/': {
-      id: '/_authenticated/customers/'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof AuthenticatedCustomersIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/enquiries/': {
-      id: '/_authenticated/enquiries/'
-      path: '/enquiries'
-      fullPath: '/enquiries'
-      preLoaderRoute: typeof AuthenticatedEnquiriesIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/help-center/': {
       id: '/_authenticated/help-center/'
       path: '/help-center'
       fullPath: '/help-center'
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/interactions/': {
-      id: '/_authenticated/interactions/'
-      path: '/interactions'
-      fullPath: '/interactions'
-      preLoaderRoute: typeof AuthenticatedInteractionsIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/items/': {
@@ -466,13 +400,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedModelIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
-    '/_authenticated/orders/': {
-      id: '/_authenticated/orders/'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof AuthenticatedOrdersIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -485,20 +412,6 @@ declare module '@tanstack/react-router' {
       path: '/sub-category'
       fullPath: '/sub-category'
       preLoaderRoute: typeof AuthenticatedSubCategoryIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/tasks/': {
-      id: '/_authenticated/tasks/'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof AuthenticatedTasksIndexImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
-    '/_authenticated/users/': {
-      id: '/_authenticated/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/variant/': {
@@ -543,17 +456,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBrandsIndexRoute: typeof AuthenticatedBrandsIndexRoute
   AuthenticatedCategoryIndexRoute: typeof AuthenticatedCategoryIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
-  AuthenticatedCustomersIndexRoute: typeof AuthenticatedCustomersIndexRoute
-  AuthenticatedEnquiriesIndexRoute: typeof AuthenticatedEnquiriesIndexRoute
   AuthenticatedHelpCenterIndexRoute: typeof AuthenticatedHelpCenterIndexRoute
-  AuthenticatedInteractionsIndexRoute: typeof AuthenticatedInteractionsIndexRoute
   AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
   AuthenticatedMakeIndexRoute: typeof AuthenticatedMakeIndexRoute
   AuthenticatedModelIndexRoute: typeof AuthenticatedModelIndexRoute
-  AuthenticatedOrdersIndexRoute: typeof AuthenticatedOrdersIndexRoute
   AuthenticatedSubCategoryIndexRoute: typeof AuthenticatedSubCategoryIndexRoute
-  AuthenticatedTasksIndexRoute: typeof AuthenticatedTasksIndexRoute
-  AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedVariantIndexRoute: typeof AuthenticatedVariantIndexRoute
 }
 
@@ -564,17 +471,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBrandsIndexRoute: AuthenticatedBrandsIndexRoute,
   AuthenticatedCategoryIndexRoute: AuthenticatedCategoryIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
-  AuthenticatedCustomersIndexRoute: AuthenticatedCustomersIndexRoute,
-  AuthenticatedEnquiriesIndexRoute: AuthenticatedEnquiriesIndexRoute,
   AuthenticatedHelpCenterIndexRoute: AuthenticatedHelpCenterIndexRoute,
-  AuthenticatedInteractionsIndexRoute: AuthenticatedInteractionsIndexRoute,
   AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
   AuthenticatedMakeIndexRoute: AuthenticatedMakeIndexRoute,
   AuthenticatedModelIndexRoute: AuthenticatedModelIndexRoute,
-  AuthenticatedOrdersIndexRoute: AuthenticatedOrdersIndexRoute,
   AuthenticatedSubCategoryIndexRoute: AuthenticatedSubCategoryIndexRoute,
-  AuthenticatedTasksIndexRoute: AuthenticatedTasksIndexRoute,
-  AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedVariantIndexRoute: AuthenticatedVariantIndexRoute,
 }
 
@@ -603,18 +504,12 @@ export interface FileRoutesByFullPath {
   '/brands': typeof AuthenticatedBrandsIndexRoute
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
-  '/customers': typeof AuthenticatedCustomersIndexRoute
-  '/enquiries': typeof AuthenticatedEnquiriesIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/interactions': typeof AuthenticatedInteractionsIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
   '/make': typeof AuthenticatedMakeIndexRoute
   '/model': typeof AuthenticatedModelIndexRoute
-  '/orders': typeof AuthenticatedOrdersIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/sub-category': typeof AuthenticatedSubCategoryIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
   '/variant': typeof AuthenticatedVariantIndexRoute
 }
 
@@ -638,18 +533,12 @@ export interface FileRoutesByTo {
   '/brands': typeof AuthenticatedBrandsIndexRoute
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
-  '/customers': typeof AuthenticatedCustomersIndexRoute
-  '/enquiries': typeof AuthenticatedEnquiriesIndexRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexRoute
-  '/interactions': typeof AuthenticatedInteractionsIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
   '/make': typeof AuthenticatedMakeIndexRoute
   '/model': typeof AuthenticatedModelIndexRoute
-  '/orders': typeof AuthenticatedOrdersIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/sub-category': typeof AuthenticatedSubCategoryIndexRoute
-  '/tasks': typeof AuthenticatedTasksIndexRoute
-  '/users': typeof AuthenticatedUsersIndexRoute
   '/variant': typeof AuthenticatedVariantIndexRoute
 }
 
@@ -676,18 +565,12 @@ export interface FileRoutesById {
   '/_authenticated/brands/': typeof AuthenticatedBrandsIndexRoute
   '/_authenticated/category/': typeof AuthenticatedCategoryIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
-  '/_authenticated/customers/': typeof AuthenticatedCustomersIndexRoute
-  '/_authenticated/enquiries/': typeof AuthenticatedEnquiriesIndexRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexRoute
-  '/_authenticated/interactions/': typeof AuthenticatedInteractionsIndexRoute
   '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
   '/_authenticated/make/': typeof AuthenticatedMakeIndexRoute
   '/_authenticated/model/': typeof AuthenticatedModelIndexRoute
-  '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/sub-category/': typeof AuthenticatedSubCategoryIndexRoute
-  '/_authenticated/tasks/': typeof AuthenticatedTasksIndexRoute
-  '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/variant/': typeof AuthenticatedVariantIndexRoute
 }
 
@@ -715,18 +598,12 @@ export interface FileRouteTypes {
     | '/brands'
     | '/category'
     | '/chats'
-    | '/customers'
-    | '/enquiries'
     | '/help-center'
-    | '/interactions'
     | '/items'
     | '/make'
     | '/model'
-    | '/orders'
     | '/settings/'
     | '/sub-category'
-    | '/tasks'
-    | '/users'
     | '/variant'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -749,18 +626,12 @@ export interface FileRouteTypes {
     | '/brands'
     | '/category'
     | '/chats'
-    | '/customers'
-    | '/enquiries'
     | '/help-center'
-    | '/interactions'
     | '/items'
     | '/make'
     | '/model'
-    | '/orders'
     | '/settings'
     | '/sub-category'
-    | '/tasks'
-    | '/users'
     | '/variant'
   id:
     | '__root__'
@@ -785,18 +656,12 @@ export interface FileRouteTypes {
     | '/_authenticated/brands/'
     | '/_authenticated/category/'
     | '/_authenticated/chats/'
-    | '/_authenticated/customers/'
-    | '/_authenticated/enquiries/'
     | '/_authenticated/help-center/'
-    | '/_authenticated/interactions/'
     | '/_authenticated/items/'
     | '/_authenticated/make/'
     | '/_authenticated/model/'
-    | '/_authenticated/orders/'
     | '/_authenticated/settings/'
     | '/_authenticated/sub-category/'
-    | '/_authenticated/tasks/'
-    | '/_authenticated/users/'
     | '/_authenticated/variant/'
   fileRoutesById: FileRoutesById
 }
@@ -861,17 +726,11 @@ export const routeTree = rootRoute
         "/_authenticated/brands/",
         "/_authenticated/category/",
         "/_authenticated/chats/",
-        "/_authenticated/customers/",
-        "/_authenticated/enquiries/",
         "/_authenticated/help-center/",
-        "/_authenticated/interactions/",
         "/_authenticated/items/",
         "/_authenticated/make/",
         "/_authenticated/model/",
-        "/_authenticated/orders/",
         "/_authenticated/sub-category/",
-        "/_authenticated/tasks/",
-        "/_authenticated/users/",
         "/_authenticated/variant/"
       ]
     },
@@ -952,20 +811,8 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/chats/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/customers/": {
-      "filePath": "_authenticated/customers/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/enquiries/": {
-      "filePath": "_authenticated/enquiries/index.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/interactions/": {
-      "filePath": "_authenticated/interactions/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/items/": {
@@ -980,24 +827,12 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/model/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/orders/": {
-      "filePath": "_authenticated/orders/index.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/settings/": {
       "filePath": "_authenticated/settings/index.tsx",
       "parent": "/_authenticated/settings"
     },
     "/_authenticated/sub-category/": {
       "filePath": "_authenticated/sub-category/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/tasks/": {
-      "filePath": "_authenticated/tasks/index.tsx",
-      "parent": "/_authenticated"
-    },
-    "/_authenticated/users/": {
-      "filePath": "_authenticated/users/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/variant/": {

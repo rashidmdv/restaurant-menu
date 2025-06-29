@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { CatalogCategory } from '../data/schema'
+import { Category } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 
-export const columns: ColumnDef<CatalogCategory>[] = [
+export const columns: ColumnDef<Category>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -30,37 +30,16 @@ export const columns: ColumnDef<CatalogCategory>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // No ID column at all - starting with the name directly
   {
     accessorKey: 'name',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Category' />
+      <DataTableColumnHeader column={column} title='Name' />
     ),
     cell: ({ row }) => {
       const name = row.getValue('name') as string
-      return <span>{name || '—'}</span>
+      return <span className="font-medium">{name || '—'}</span>
     },
   },
-
-    {
-    accessorKey: 'image',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Image' />
-    ),
-    cell: ({ row }) => {
-    const image = row.getValue('image') as string
-    return image ? (
-      <img
-        src={image}
-        alt="task"
-        className="h-10 w-10 rounded-md object-cover"
-      />
-    ) : (
-      <span className="text-muted-foreground">—</span>
-    )
-  },
-},
-
   {
     accessorKey: 'description',
     header: ({ column }) => (
@@ -73,79 +52,54 @@ export const columns: ColumnDef<CatalogCategory>[] = [
           title={value}
           className="max-w-[300px] line-clamp-2 overflow-hidden text-ellipsis whitespace-normal text-sm leading-snug"
         >
-          {value}
+          {value || '—'}
         </div>
       )
     },
   },
-
   {
-    accessorKey: 'type',
+    accessorKey: 'display_order',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Type' />
+      <DataTableColumnHeader column={column} title='Order' />
     ),
     cell: ({ row }) => {
-      const type = row.getValue('type') as string
-      return <span>{type || '—'}</span>
+      const order = row.getValue('display_order') as number
+      return <span>{order}</span>
     },
   },
-
-
-
   {
-    accessorKey: 'isActive',
+    accessorKey: 'active',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Active Status' />
+      <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const isActive = row.getValue('isActive') as boolean
+      const active = row.getValue('active') as boolean
       return (
         <div className='flex w-[100px] items-center'>
-          <Badge variant={isActive ? 'default' : 'destructive'}>
-            {isActive ? 'Active' : 'Inactive'}
+          <Badge variant={active ? 'default' : 'destructive'}>
+            {active ? 'Active' : 'Inactive'}
           </Badge>
         </div>
       )
     },
     filterFn: (row, id, value) => {
-      // Convert string representation of boolean to actual boolean for comparison
       const filterValues = value as string[];
       const rowValue = row.getValue(id) as boolean;
       return filterValues.some(val => String(rowValue) === val);
     },
   },
-
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'created_at',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Created At' />
     ),
     cell: ({ row }) => {
-      const dateStr = row.getValue('createdAt') as string | undefined
-      return dateStr ? (
-        <span>{new Date(dateStr).toLocaleString()}</span>
-      ) : (
-        <span className="text-muted-foreground">—</span>
+      const dateStr = row.getValue('created_at') as string
+      return (
+        <span>{new Date(dateStr).toLocaleDateString()}</span>
       )
     },
   },
-  {
-  accessorKey: 'updatedAt',
-  header: ({ column }) => (
-    <DataTableColumnHeader column={column} title='Updated At' />
-  ),
-  cell: ({ row }) => {
-  const rawDate = row.getValue('createdAt')
-  const dateStr = typeof rawDate === 'string' ? rawDate : undefined
-
-  return dateStr ? (
-    <span>{new Date(dateStr).toLocaleString()}</span>
-  ) : (
-    <span className="text-muted-foreground">—</span>
-  )
-},
-
-},
   {
     id: 'actions',
     cell: ({ row }) => <DataTableRowActions row={row} />,

@@ -45,9 +45,9 @@ export default function Category() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Catalog Categories</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Menu Categories</h2>
             <p className='text-muted-foreground'>
-              Manage catalog categories 
+              Manage restaurant menu categories and organize your menu structure
             </p>
           </div>
           <CategoriesPrimaryButtons />

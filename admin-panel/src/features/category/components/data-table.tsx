@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: 'createdAt',
+      id: 'created_at',
       desc: true,
     },
   ])
@@ -85,33 +85,20 @@ export function DataTable<TData, TValue>({
           case 'name':
             apiFilters.name = filter.value as string
             break
-          case 'status':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.status = filter.value.length === 1 ? filter.value[0] : filter.value
-            }
-            break
-          case 'type':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.type = filter.value.length === 1 ? filter.value[0] : filter.value
-            }
-            break
-          case 'isActive':
+          case 'active':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
               if (filter.value.length === 1) {
                 // Single selection - convert string to boolean
-                apiFilters.isActive = filter.value[0] === 'true'
+                apiFilters.active = filter.value[0] === 'true'
               } else {
-                // Multiple selection (both true and false) - don't filter by isActive
-                apiFilters.isActive = undefined
+                // Multiple selection (both true and false) - don't filter by active
+                apiFilters.active = undefined
               }
             }
             break
-          case 'categoryId':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.categoryId = filter.value.length === 1 ? filter.value[0] : filter.value
+          case 'display_order':
+            if (filter.value) {
+              apiFilters.display_order = Number(filter.value)
             }
             break
           // Add other filters as needed

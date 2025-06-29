@@ -65,20 +65,20 @@ export function CategoriesImportDialog({ open, onOpenChange }: Props) {
         formData.append('file', file[0])
 
         // Upload file
-        await API.post('/catalog-categories/import', formData, {
+        await API.post('/v1/categories/import', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }
         })
 
-        toast.success('Catalog categories imported successfully')
+        toast.success('Categories imported successfully')
         refreshCategories()
         onOpenChange(false)
         form.reset()
       }
     } catch (error) {
       console.error('Error uploading file:', error)
-      toast.error('Failed to import catalog categories')
+      toast.error('Failed to import categories')
     } finally {
       setIsUploading(false)
     }
@@ -113,9 +113,9 @@ export function CategoriesImportDialog({ open, onOpenChange }: Props) {
     >
       <DialogContent className='gap-4 sm:max-w-md'>
         <DialogHeader className='text-left'>
-          <DialogTitle>Import Catalog Categories</DialogTitle>
+          <DialogTitle>Import Categories</DialogTitle>
           <DialogDescription>
-            Import catalog categories quickly from a CSV file.
+            Import restaurant categories quickly from a CSV file.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -153,7 +153,7 @@ export function CategoriesImportDialog({ open, onOpenChange }: Props) {
                           <div>
                             <p>Drag & drop a CSV file here, or click to select</p>
                             <p className="text-xs text-muted-foreground mt-2">
-                              Required format: .csv file with columns for category, desc, logo, categoryId, etc.
+                              Required format: .csv file with columns for name, description, display_order, active.
                             </p>
                           </div>
                         )}

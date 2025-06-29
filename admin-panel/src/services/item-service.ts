@@ -1,161 +1,175 @@
 import { API } from '@/lib/api';
-import { CatalogItem } from '@/features/Items/data/schema';
 
-//Types for API request/response
-
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  meta: {
-    totalItems: number;
-    itemCount: number;
-    itemsPerPage: number;
-    totalPages: number;
-    currentPage: number;
+// Types for API request/response based on backend Item entity
+export interface Item {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  price: number;
+  image_url?: string;
+  sub_category_id: number;
+  display_order: number;
+  available: boolean;
+  featured: boolean;
+  allergens?: string;
+  preparation_time?: number;
+  calories?: number;
+  created_at: string;
+  updated_at: string;
+  sub_category?: {
+    id: number;
+    name: string;
+    slug: string;
+    category?: {
+      id: number;
+      name: string;
+      slug: string;
+    };
   };
 }
 
-export interface  CatalogSubCategory {
-  id: string;
+export interface SubCategory {
+  id: number;
   name: string;
-  description?: string;
-  image?: string
-  isActive?: boolean;
-  categoryId?: string;
+  description: string;
+  slug: string;
+  category_id: number;
+  display_order: number;
+  active: boolean;
 }
 
-export interface CatalogBrand {
-  id: string; 
-  name: string;
-  description?: string;
-  image?: string;
-  isActive?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface CatalogItemFilters {
-  itemId?: string;
-  isActive?: boolean;
-  page?: number;
+export interface ItemFilters {
+  sub_category_id?: number;
+  category_id?: number;
+  available?: boolean;
+  featured?: boolean;
+  price_min?: number;
+  price_max?: number;
+  search?: string;
   limit?: number;
-  name?: string;
-  [key: string]: any; // Allow for additional filter properties
+  offset?: number;
+  order_by?: string;
+  order_dir?: string;
+  include_count?: boolean;
+  [key: string]: any;
 }
-
-// Create/Update DTOs
-export type CreateCatalogItemDto = Omit<CatalogItem, 'id' | 'createdAt' | 'updatedAt' | 'model' | 'typeInfo' | 'statusInfo' | 'modelName'>;
-export type UpdateCatalogItemDto = Partial<CreateCatalogItemDto>;
 
 // Clean filters for API request (remove undefined values)
-function cleanFilters(filters?: CatalogItemFilters): Record<string, any> {
+function cleanFilters(filters?: ItemFilters): Record<string, any> {
   if (!filters) return {};
-  
   const cleanedFilters: Record<string, any> = {};
-  
-  // Only include defined values
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       cleanedFilters[key] = value;
     }
   });
-  
   return cleanedFilters;
 }
 
-// Catalog service API
-export const CatalogService = {
-  // Items API
-  getItems: async (filters?: CatalogItemFilters): Promise<PaginatedResponse<CatalogItem>> => {
-    // Clean filters and ensure defaults
+// DTOs
+export interface CreateItemDto {
+  name: string;
+  description?: string;
+  price: number;
+  image_url?: string;
+  sub_category_id: number;
+  display_order?: number;
+  available?: boolean;
+  featured?: boolean;
+  allergens?: string;
+  preparation_time?: number;
+  calories?: number;
+}
+
+export interface UpdateItemDto {
+  name?: string;
+  description?: string;
+  price?: number;
+  image_url?: string;
+  sub_category_id?: number;
+  display_order?: number;
+  available?: boolean;
+  featured?: boolean;
+  allergens?: string;
+  preparation_time?: number;
+  calories?: number;
+}
+
+// Item Service - matching backend API endpoints
+export const ItemService = {
+  getItems: async (filters?: ItemFilters): Promise<Item[]> => {
     const cleanedFilters = cleanFilters(filters);
-    
-    // Ensure pagination defaults
-    if (!cleanedFilters.page) cleanedFilters.page = 1;
-    if (!cleanedFilters.limit) cleanedFilters.limit = 10;
-    
-    const response = await API.get<PaginatedResponse<CatalogItem>>('/catalog-items', { 
-      params: cleanedFilters
+    const response = await API.get<Item[]>('/api/v1/items', {
+      params: cleanedFilters,
     });
     return response.data;
   },
 
-  getItemById: async (id: string): Promise<CatalogItem> => {
-    const response = await API.get<CatalogItem>(`/catalog-items/${id}`);
+  getItemById: async (id: string): Promise<Item> => {
+    const response = await API.get<Item>(`/api/v1/items/${id}`);
     return response.data;
   },
 
-  getRecentItems: async (limit: number = 5): Promise<CatalogItem[]> => {
-    const response = await API.get<CatalogItem[]>('/catalog-items/recent', {
-      params: { limit }
+  getFeaturedItems: async (): Promise<Item[]> => {
+    const response = await API.get<Item[]>('/api/v1/items/featured');
+    return response.data;
+  },
+
+  searchItems: async (query: string, filters?: ItemFilters): Promise<Item[]> => {
+    const cleanedFilters = cleanFilters(filters);
+    const response = await API.get<Item[]>('/api/v1/items/search', {
+      params: { q: query, ...cleanedFilters },
     });
     return response.data;
   },
 
-  createItem: async (Item: CreateCatalogItemDto): Promise<CatalogItem> => {
-    // Format dates properly if they're provided as strings
-    const formattedItem = {
-      ...Item,
-      fromDate: Item.fromDate ? new Date(Item.fromDate).toISOString() : undefined,
-      toDate: Item.toDate ? new Date(Item.toDate).toISOString() : undefined,
-    };
-    
-    const response = await API.post<CatalogItem>('/catalog-items', formattedItem);
-    return response.data;
+  createItem: async (item: CreateItemDto): Promise<Item> => {
+    return (await API.post<Item>('/api/v1/items', item)).data;
   },
 
-  updateItem: async (id: string, Item: UpdateCatalogItemDto): Promise<CatalogItem> => {
-    // Format dates properly if they're provided as strings
-    const formattedItem = {
-      ...Item,
-      fromDate: Item.fromDate ? new Date(Item.fromDate).toISOString() : undefined,
-      toDate: Item.toDate ? new Date(Item.toDate).toISOString() : undefined,
-    };
-    
-    const response = await API.patch<CatalogItem>(`/catalog-items/${id}`, formattedItem);
+  updateItem: async (id: string, item: UpdateItemDto): Promise<Item> => {
+    const response = await API.put<Item>(`/api/v1/items/${id}`, item);
     return response.data;
   },
 
   deleteItem: async (id: string): Promise<void> => {
-    await API.delete(`/catalog-items/${id}`);
+    await API.delete(`/api/v1/items/${id}`);
   },
 
-uploadItemImage: async (file: File): Promise<{ url: string }> => {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const response = await API.post('/uploads/catalog-items', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  return response.data; // should return { url: "https://..." }
-},
-
-
-  // subCategories API
-  getSubCategories: async (): Promise<CatalogSubCategory[]> => {
-    const response = await API.get<CatalogSubCategory[]>('/catalog-sub-categories');
+  toggleItemAvailable: async (id: string): Promise<Item> => {
+    const response = await API.patch<Item>(`/api/v1/items/${id}/toggle`);
     return response.data;
   },
 
-  //brands API
-    getBrands: async (): Promise<CatalogBrand[]> => {
-        const response = await API.get<CatalogBrand[]>('/catalog-brands');
-        return response.data;
-    },
+  updateDisplayOrder: async (id: string, displayOrder: number): Promise<Item> => {
+    const response = await API.patch<Item>(`/api/v1/items/${id}/order`, {
+      display_order: displayOrder
+    });
+    return response.data;
+  },
 
-  
-  // CSV Import
-  importItems: async (file: File): Promise<void> => {
+  updatePrice: async (id: string, price: number): Promise<Item> => {
+    const response = await API.patch<Item>(`/api/v1/items/${id}/price`, {
+      price: price
+    });
+    return response.data;
+  },
+
+  uploadItemImage: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
     formData.append('file', file);
-    
-    await API.post('/catalog-items/import', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+
+    const response = await API.post('/api/v1/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
+
+    return response.data;
+  },
+
+  // Get subcategories for item creation
+  getSubCategories: async (): Promise<SubCategory[]> => {
+    const response = await API.get<SubCategory[]>('/api/v1/subcategories');
+    return response.data;
   },
 };

@@ -1,31 +1,43 @@
 import { API } from '@/lib/api';
-import { CatalogSubCategory, VehicleType, VehicleStatus } from '@/features/category/data/schema';
 
-// Types for API request/response
-export interface PaginatedResponse<T> {
-  items: T[];
-  meta: {
-    totalItems: number;
-    itemCount: number;
-    itemsPerPage: number;
-    totalPages: number;
-    currentPage: number;
-  };
+// Types for API request/response based on backend Category entity
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  display_order: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+  sub_categories?: SubCategory[];
 }
 
-export interface CatalogSubCategoryFilters {
-  categoryId?: string;
-  isActive?: boolean;
-  type?: VehicleType;
-  status?: VehicleStatus;
-  page?: number;
+export interface SubCategory {
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
+  category_id: number;
+  display_order: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CategoryFilters {
+  active?: boolean;
+  search?: string;
   limit?: number;
-  name?: string;
+  offset?: number;
+  order_by?: string;
+  order_dir?: string;
+  include_count?: boolean;
   [key: string]: any;
 }
 
 // Clean filters for API request (remove undefined values)
-function cleanFilters(filters?: CatalogSubCategoryFilters): Record<string, any> {
+function cleanFilters(filters?: CategoryFilters): Record<string, any> {
   if (!filters) return {};
   const cleanedFilters: Record<string, any> = {};
   Object.entries(filters).forEach(([key, value]) => {
@@ -37,65 +49,86 @@ function cleanFilters(filters?: CatalogSubCategoryFilters): Record<string, any> 
 }
 
 // DTOs
-export type CreateCatalogSubCategoryDto = Omit<CatalogSubCategory, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateCatalogSubCategoryDto = Partial<CreateCatalogSubCategoryDto>;
+export interface CreateCategoryDto {
+  name: string;
+  description?: string;
+  display_order?: number;
+  active?: boolean;
+}
 
-// Catalog Sub-Category Service
-export const CatalogService = {
-  getCategories: async (filters?: CatalogSubCategoryFilters): Promise<PaginatedResponse<CatalogSubCategory>> => {
+export interface UpdateCategoryDto {
+  name?: string;
+  description?: string;
+  display_order?: number;
+  active?: boolean;
+}
+
+// Backend response wrapper
+interface BackendResponse<T> {
+  success: boolean;
+  data: T;
+  meta: {
+    request_id: string;
+    timestamp: string;
+  };
+}
+
+// Category Service - matching backend API endpoints
+export const CategoryService = {
+  getCategories: async (filters?: CategoryFilters): Promise<Category[]> => {
     const cleanedFilters = cleanFilters(filters);
-    if (!cleanedFilters.page) cleanedFilters.page = 1;
-    if (!cleanedFilters.limit) cleanedFilters.limit = 10;
-
-    const response = await API.get<PaginatedResponse<CatalogSubCategory>>('/catalog-categories', {
+    const response = await API.get<BackendResponse<Category[]>>('/api/v1/categories', {
       params: cleanedFilters,
     });
-    return response.data;
+    return response.data.data;
   },
 
-  getCategoryById: async (id: string): Promise<CatalogSubCategory> => {
-    const response = await API.get<CatalogSubCategory>(`/catalog-categories/${id}`);
-    return response.data;
+  getCategoryById: async (id: string): Promise<Category> => {
+    const response = await API.get<BackendResponse<Category>>(`/api/v1/categories/${id}`);
+    return response.data.data;
   },
 
-  getRecentCategories: async (limit: number = 5): Promise<CatalogSubCategory[]> => {
-    const response = await API.get<CatalogSubCategory[]>('/catalog-categories/recent', {
-      params: { limit },
+  getCategoryWithSubCategories: async (id: string): Promise<Category> => {
+    const response = await API.get<BackendResponse<Category>>(`/api/v1/categories/${id}`, {
+      params: { include_subcategories: true }
     });
-    return response.data;
+    return response.data.data;
   },
 
-  createCategory: async (category: CreateCatalogSubCategoryDto): Promise<CatalogSubCategory> => {
-  return (await API.post<CatalogSubCategory>('/catalog-categories', category)).data
-},
+  createCategory: async (category: CreateCategoryDto): Promise<Category> => {
+    const response = await API.post<BackendResponse<Category>>('/api/v1/categories', category);
+    return response.data.data;
+  },
 
-  updateCategory: async (id: string, category: UpdateCatalogSubCategoryDto): Promise<CatalogSubCategory> => {
-    const response = await API.patch<CatalogSubCategory>(`/catalog-categories/${id}`, category);
-    return response.data;
+  updateCategory: async (id: string, category: UpdateCategoryDto): Promise<Category> => {
+    const response = await API.put<BackendResponse<Category>>(`/api/v1/categories/${id}`, category);
+    return response.data.data;
   },
 
   deleteCategory: async (id: string): Promise<void> => {
-    await API.delete(`/catalog-categories/${id}`);
+    await API.delete(`/api/v1/categories/${id}`);
+  },
+
+  toggleCategoryActive: async (id: string): Promise<Category> => {
+    const response = await API.patch<BackendResponse<Category>>(`/api/v1/categories/${id}/toggle`);
+    return response.data.data;
+  },
+
+  updateDisplayOrder: async (id: string, displayOrder: number): Promise<Category> => {
+    const response = await API.patch<BackendResponse<Category>>(`/api/v1/categories/${id}/order`, {
+      display_order: displayOrder
+    });
+    return response.data.data;
   },
 
   uploadCategoryImage: async (file: File): Promise<{ url: string }> => {
-  const formData = new FormData()
-  formData.append('file', file)
-
-  const response = await API.post('/uploads/catalog-categories', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-
-  return response.data
-},
-
-  importCategories: async (file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
 
-    await API.post('/catalog-sub-categories/import', formData, {
+    const response = await API.post<BackendResponse<{ url: string }>>('/api/v1/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+
+    return response.data.data;
   },
-  
 };

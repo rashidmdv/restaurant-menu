@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
-import { CatalogSubCategory } from '../data/schema'
-import { CatalogCategory, CatalogService, CatalogSubCategoryFilters } from '@/services/sub-category-service'
+import { SubCategory, CreateSubCategory, UpdateSubCategory } from '../data/schema'
+import { SubCategoryService, SubCategoryFilters, Category } from '@/services/sub-category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type SubCategoryDialogType = 'create' | 'update' | 'delete' | 'import' | 'details'
@@ -17,20 +17,21 @@ interface SubCategoriesPaginationState {
 interface SubCategoriesContextType {
   open: SubCategoryDialogType | null
   setOpen: (str: SubCategoryDialogType | null) => void
-  currentRow: CatalogSubCategory | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<CatalogSubCategory | null>>
-  subcategories: CatalogSubCategory[]
+  currentRow: SubCategory | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<SubCategory | null>>
+  subcategories: SubCategory[]
   isLoading: boolean
   isError: boolean
-  categories: CatalogCategory[]
+  categories: Category[]
   categoriesLoading: boolean
   pagination: SubCategoriesPaginationState
   setPagination: React.Dispatch<React.SetStateAction<SubCategoriesPaginationState>>
-  filters: CatalogSubCategoryFilters
-  setFilters: React.Dispatch<React.SetStateAction<CatalogSubCategoryFilters>>
-  createSubCategory: (subcategory: Omit<CatalogSubCategory, 'id' | 'createdAt'>) => Promise<void>
-  updateSubCategory: (id: string, subcategory: Partial<Omit<CatalogSubCategory, 'id' | 'createdAt'>>) => Promise<void>
-  deleteSubCategory: (id: string) => Promise<void>
+  filters: SubCategoryFilters
+  setFilters: React.Dispatch<React.SetStateAction<SubCategoryFilters>>
+  createSubCategory: (subcategory: CreateSubCategory) => Promise<void>
+  updateSubCategory: (id: number, subcategory: UpdateSubCategory) => Promise<void>
+  deleteSubCategory: (id: number) => Promise<void>
+  toggleSubCategoryActive: (id: number) => Promise<void>
   refreshSubCategories: () => void
 }
 

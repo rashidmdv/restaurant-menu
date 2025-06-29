@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
-import { CatalogCategory } from '../data/schema'
-import { CatalogService, CatalogCategoryFilters } from '@/services/category-service'
+import { Category, CreateCategory, UpdateCategory } from '../data/schema'
+import { CategoryService, CategoryFilters } from '@/services/category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type CategoryDialogType = 'create' | 'update' | 'delete' | 'import' | 'details'
@@ -17,19 +17,20 @@ interface CategoriesPaginationState {
 interface CategoriesContextType {
   open: CategoryDialogType | null
   setOpen: (str: CategoryDialogType | null) => void
-  currentRow: CatalogCategory | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<CatalogCategory | null>>
-  categories: CatalogCategory[]
+  currentRow: Category | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<Category | null>>
+  categories: Category[]
   isLoading: boolean
   isError: boolean
   categoriesLoading: boolean
   pagination: CategoriesPaginationState
   setPagination: React.Dispatch<React.SetStateAction<CategoriesPaginationState>>
-  filters: CatalogCategoryFilters
-  setFilters: React.Dispatch<React.SetStateAction<CatalogCategoryFilters>>
-  createCategory: (category: Omit<CatalogCategory, 'id' | 'createdAt'>) => Promise<void>
-  updateCategory: (id: string, category: Partial<Omit<CatalogCategory, 'id' | 'createdAt'>>) => Promise<void>
-  deleteCategory: (id: string) => Promise<void>
+  filters: CategoryFilters
+  setFilters: React.Dispatch<React.SetStateAction<CategoryFilters>>
+  createCategory: (category: CreateCategory) => Promise<void>
+  updateCategory: (id: number, category: UpdateCategory) => Promise<void>
+  deleteCategory: (id: number) => Promise<void>
+  toggleCategoryActive: (id: number) => Promise<void>
   refreshCategories: () => void
 }
 
@@ -41,99 +42,110 @@ interface Props {
 
 export default function CategoriesProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<CategoryDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<CatalogCategory | null>(null)
+  const [currentRow, setCurrentRow] = useState<Category | null>(null)
   const [pagination, setPagination] = useState<CategoriesPaginationState>({
     page: 1,
     limit: 10,
     total: 0,
   })
 
-  const [filters, setFilters] = useState<CatalogCategoryFilters>({
-    page: 1,
+  const [filters, setFilters] = useState<CategoryFilters>({
     limit: 10,
+    offset: 0,
   })
 
   const queryClient = useQueryClient()
-  const didMountRef = useRef(false)
 
-  // Fetch categories (paginated)
+  // Fetch categories
   const {
     data: categoriesData,
     isLoading,
     isError,
     refetch: refreshCategories,
   } = useQuery({
-    queryKey: ['catalog-categories', filters],
-    queryFn: () => CatalogService.getCategories(filters),
+    queryKey: ['categories', filters],
+    queryFn: () => CategoryService.getCategories(filters),
     keepPreviousData: true,
   })
 
-  // Set pagination from meta
+  // Update pagination when data changes
   useEffect(() => {
-    if (categoriesData?.meta && didMountRef.current) {
-      setPagination({
-        page: categoriesData.meta.currentPage,
-        limit: categoriesData.meta.itemsPerPage,
-        //total: categoriesData.meta.totalItems,
-        total: Array.isArray(categoriesData) ? categoriesData.length : categoriesData?.meta?.totalItems || 0,
-
-      })
-    }
-
-    if (!didMountRef.current) {
-      didMountRef.current = true
+    if (categoriesData) {
+      setPagination(prev => ({
+        ...prev,
+        total: categoriesData.length,
+      }))
     }
   }, [categoriesData])
 
   // Mutations
   const createCategoryMutation = useMutation({
-    mutationFn: CatalogService.createCategory,
+    mutationFn: CategoryService.createCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-categories'] })
-      toast.success('Catalog category created successfully')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category created successfully')
+      setOpen(null)
     },
     onError: handleServerError,
   })
 
   const updateCategoryMutation = useMutation({
-    mutationFn: ({ id, category }: { id: string; category: Partial<Omit<CatalogCategory, 'id' | 'createdAt'>> }) =>
-      CatalogService.updateCategory(id, category),
+    mutationFn: ({ id, category }: { id: number; category: UpdateCategory }) =>
+      CategoryService.updateCategory(id.toString(), category),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-categories'] })
-      toast.success('Catalog category updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category updated successfully')
+      setOpen(null)
     },
     onError: handleServerError,
   })
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: CatalogService.deleteCategory,
+    mutationFn: (id: number) => CategoryService.deleteCategory(id.toString()),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-categories'] })
-      toast.success('Catalog category deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category deleted successfully')
+      setOpen(null)
+    },
+    onError: handleServerError,
+  })
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: (id: number) => CategoryService.toggleCategoryActive(id.toString()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      toast.success('Category status updated successfully')
     },
     onError: handleServerError,
   })
 
   // Handlers
   const createCategory = useCallback(
-    async (category: Omit<CatalogCategory, 'id' | 'createdAt'>) => {
+    async (category: CreateCategory) => {
       await createCategoryMutation.mutateAsync(category)
     },
     [createCategoryMutation]
   )
 
   const updateCategory = useCallback(
-    async (id: string, category: Partial<Omit<CatalogCategory, 'id' | 'createdAt'>>) => {
+    async (id: number, category: UpdateCategory) => {
       await updateCategoryMutation.mutateAsync({ id, category })
     },
     [updateCategoryMutation]
   )
 
   const deleteCategory = useCallback(
-    async (id: string) => {
+    async (id: number) => {
       await deleteCategoryMutation.mutateAsync(id)
     },
     [deleteCategoryMutation]
+  )
+
+  const toggleCategoryActive = useCallback(
+    async (id: number) => {
+      await toggleActiveMutation.mutateAsync(id)
+    },
+    [toggleActiveMutation]
   )
 
   return (
@@ -143,11 +155,10 @@ export default function CategoriesProvider({ children }: Props) {
         setOpen,
         currentRow,
         setCurrentRow,
-        //categories: categoriesData?.items || [],
-        categories: Array.isArray(categoriesData) ? categoriesData : categoriesData?.items || [],
+        categories: categoriesData || [],
         isLoading,
         isError,
-        categoriesLoading: isLoading, // set this explicitly
+        categoriesLoading: isLoading,
         pagination,
         setPagination,
         filters,
@@ -155,6 +166,7 @@ export default function CategoriesProvider({ children }: Props) {
         createCategory,
         updateCategory,
         deleteCategory,
+        toggleCategoryActive,
         refreshCategories,
       }}
     >

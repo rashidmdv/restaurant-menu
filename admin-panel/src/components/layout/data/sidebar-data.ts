@@ -1,12 +1,7 @@
 import {
   IconLayoutDashboard,
-  IconUsers,
-  IconCar,
-  IconClipboardList,
-  IconLayersSubtract,
   IconCategory,
   IconBox,
-  IconBrandWhatsapp,
   IconSettings,
   IconUserCog,
   IconTool,
@@ -14,36 +9,25 @@ import {
   IconNotification,
   IconBrowserCheck,
   IconHelp,
-  IconTruck,
-  IconPackage,
   IconHierarchy,
-  IconBrandToyota,
+  IconChefHat,
+  IconToolsKitchen2,
 } from '@tabler/icons-react'
 import SpareitLogo from '@/components/icons/spareit-logo'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
-    name: 'Kaif',
-    email: 'spareit@spareit.co.in',
+    name: 'Restaurant Admin',
+    email: 'admin@restaurant.com',
     avatar: '/avatars/shadcn.jpg',
   },
   teams: [
     {
-      name: 'Spareit',
+      name: 'Restaurant Menu',
       logo: SpareitLogo,
-      plan: 'Organization',
+      plan: 'Admin Panel',
     },
-    //  {
-    //    name: 'Acme Inc',
-    //    logo: GalleryVerticalEnd,
-    //    plan: 'Enterprise',
-    //  },
-    //  {
-    //    name: 'Acme Corp.',
-    //    logo: AudioWaveform,
-    //    plan: 'Startup',
-    //  },
   ],
   navGroups: [
     {
@@ -54,101 +38,25 @@ export const sidebarData: SidebarData = {
           url: '/',
           icon: IconLayoutDashboard,
         },
-        // {
-        //   title: 'Tasks',
-        //   url: '/tasks',
-        //   icon: IconChecklist,
-        // },
-        // {
-        //   title: 'Apps',
-        //   url: '/apps',
-        //   icon: IconPackages,
-        // },
-        // {
-        //   title: 'Chats',
-        //   url: '/chats',
-        //   badge: '3',
-        //   icon: IconMessages,
-        // },
-        {
-          title: 'Customers',
-          url: '/customers',
-          icon: IconUsers,
-        },
       ],
     },
     {
-      title: 'Whatsapp',
+      title: 'Menu Management',
       items: [
         {
-          title: 'Interactions',
-          icon: IconBrandWhatsapp,
-          //url: '/chats',
-          url: '/interactions',
-          badge: '3',
-        },
-      ],
-    },
-    {
-      title: 'Sales',
-      items: [
-        {
-          title: 'Orders',
-          icon: IconBox,
-          url: '/orders',
-          badge: '22',
-        },
-      ],
-    },
-    {
-      title: 'Catalog',
-      items: [
-        {
-          title: 'Vehicle',
-          icon: IconTruck, // better represents vehicle-related catalog
-          items: [
-            {
-              title: 'Make',
-              icon: IconCar, // already good
-              url: '/make',
-            },
-            {
-              title: 'Model',
-              icon: IconClipboardList, // good as is
-              url: '/model',
-            },
-            {
-              title: 'Variants',
-              icon: IconLayersSubtract, // good for representing combinations
-              url: '/variant',
-            },
-          ],
+          title: 'Categories',
+          icon: IconCategory,
+          url: '/category',
         },
         {
-          title: 'Product',
-          icon: IconPackage, // represents product/items well
-          items: [
-            {
-              title: 'Brands',
-              icon: IconBrandToyota, 
-              url: '/brands',
-            },
-            {
-              title: 'Items',
-              icon: IconBox, // box is better for individual items
-              url: '/items',
-            },
-            {
-              title: 'Category',
-              icon: IconCategory, // perfect as is
-              url: '/category',
-            },
-            {
-              title: 'Sub Category',
-              icon: IconHierarchy, // shows sub-structure, better than subtask
-              url: '/sub-category',
-            },
-          ],
+          title: 'Sub Categories',
+          icon: IconHierarchy,
+          url: '/sub-category',
+        },
+        {
+          title: 'Menu Items',
+          icon: IconChefHat,
+          url: '/items',
         },
       ],
     },
