@@ -136,7 +136,7 @@ func (s *Server) setupRoutes() {
 	}
 
 	// API v1 routes
-	v1 := s.router.Group("/v1")
+	v1 := s.router.Group("/api/v1")
 	{
 		// Status endpoint
 		v1.GET("/status", healthHandler.Status)

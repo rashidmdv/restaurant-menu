@@ -43,36 +43,6 @@ func NewCategoryHandler(service services.CategoryService, logger *logger.Logger)
 	}
 }
 
-// GetCompleteMenu godoc
-// @Summary Get complete menu
-// @Description Get the complete hierarchical menu with all categories, subcategories, and items
-// @Tags Menu
-// @Accept json
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Failure 500 {object} response.APIResponse
-// @Router /v1/menu [get]
-func (h *CategoryHandler) GetCompleteMenu(c *gin.Context) {
-	ctx := c.Request.Context()
-
-	// Get all active categories with subcategories
-	filter := entities.CategoryFilter{
-		Active:   utils.BoolPtr(true),
-		OrderBy:  "display_order",
-		OrderDir: "ASC",
-	}
-
-	categories, _, err := h.service.GetAll(ctx, filter)
-	if err != nil {
-		h.logger.LogError(ctx, err, "Failed to get complete menu", nil)
-		response.Error(c, appErrors.WrapInternalError(err, "Failed to get menu"))
-		return
-	}
-
-	response.Success(c, map[string]interface{}{
-		"categories": categories,
-	})
-}
 
 // GetAllCategories godoc
 // @Summary List all categories

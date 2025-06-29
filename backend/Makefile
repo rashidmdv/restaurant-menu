@@ -55,11 +55,15 @@ run: build-local ## Build and run the application locally
 .PHONY: dev
 dev: ## Run in development mode with hot reload (requires air)
 	@echo "$(GREEN)Starting development server with hot reload...$(NC)"
-	@if ! command -v air > /dev/null; then \
+	@if ! command -v air > /dev/null && ! test -f $(shell go env GOPATH)/bin/air; then \
 		echo "$(YELLOW)Installing air for hot reload...$(NC)"; \
-		go install github.com/cosmtrek/air@latest; \
+		go install github.com/air-verse/air@latest; \
 	fi
-	air
+	@if command -v air > /dev/null; then \
+		air; \
+	else \
+		$(shell go env GOPATH)/bin/air; \
+	fi
 
 .PHONY: test
 test: ## Run tests
@@ -247,7 +251,7 @@ db-reset: ## Reset database (drop and recreate with migrations)
 .PHONY: tools
 tools: ## Install development tools
 	@echo "$(GREEN)Installing development tools...$(NC)"
-	go install github.com/cosmtrek/air@latest
+	go install github.com/air-verse/air@latest
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
 	go install golang.org/x/tools/cmd/goimports@latest
@@ -260,7 +264,7 @@ swagger: ## Generate Swagger documentation
 		echo "$(YELLOW)Installing swag...$(NC)"; \
 		go install github.com/swaggo/swag/cmd/swag@latest; \
 	fi
-	@export PATH="$$PATH:$$(go env GOPATH)/bin" && swag init -g cmd/server/main.go -o ./docs
+	@export PATH="$$PATH:$$(go env GOPATH)/bin" && swag init -g cmd/server/main.go -o ./docs --parseDependency --parseInternal
 	@echo "$(GREEN)Swagger documentation generated in ./docs/$(NC)"
 
 .PHONY: swagger-serve

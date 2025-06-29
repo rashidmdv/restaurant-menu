@@ -24,29 +24,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
-            "get": {
-                "description": "Basic health check endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handlers.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/live": {
             "get": {
                 "description": "Check if the application is alive",
@@ -64,7 +41,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.HealthResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     }
                 }
@@ -87,13 +64,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.HealthResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handlers.HealthResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     }
                 }
@@ -116,7 +93,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.HealthResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     }
                 }
@@ -185,14 +162,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.Category"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -216,7 +193,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateCategoryRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateCategoryRequest"
                         }
                     }
                 ],
@@ -224,25 +201,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -280,25 +257,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -329,7 +306,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateCategoryRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateCategoryRequest"
                         }
                     }
                 ],
@@ -337,25 +314,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -388,19 +365,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -433,7 +410,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateDisplayOrderRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest"
                         }
                     }
                 ],
@@ -441,25 +418,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -491,25 +468,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -578,14 +555,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.ContentSection"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -609,7 +586,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateContentRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateContentRequest"
                         }
                     }
                 ],
@@ -617,25 +594,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.ContentSection"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -667,19 +644,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ContentSection"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -711,19 +688,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ContentSection"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -754,7 +731,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateContentRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateContentRequest"
                         }
                     }
                 ],
@@ -762,31 +739,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.ContentSection"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -819,13 +796,36 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/health": {
+            "get": {
+                "description": "Basic health check endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     }
                 }
@@ -918,14 +918,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.Item"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -949,7 +949,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateItemRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateItemRequest"
                         }
                     }
                 ],
@@ -957,25 +957,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1008,14 +1008,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.Item"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1089,19 +1089,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1133,25 +1133,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1182,7 +1182,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateItemRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateItemRequest"
                         }
                     }
                 ],
@@ -1190,25 +1190,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1241,19 +1241,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1286,7 +1286,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateDisplayOrderRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest"
                         }
                     }
                 ],
@@ -1294,25 +1294,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1345,7 +1345,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdatePriceRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdatePriceRequest"
                         }
                     }
                 ],
@@ -1353,25 +1353,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1403,25 +1403,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.Item"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1451,7 +1451,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1476,14 +1476,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.OperatingHour"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.OperatingHour"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1506,13 +1506,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.RestaurantInfo"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1536,7 +1536,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateRestaurantRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateRestaurantRequest"
                         }
                     }
                 ],
@@ -1544,19 +1544,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.RestaurantInfo"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1580,7 +1580,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateRestaurantRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateRestaurantRequest"
                         }
                     }
                 ],
@@ -1588,19 +1588,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.RestaurantInfo"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1635,13 +1635,13 @@ const docTemplate = `{
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1716,14 +1716,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.SubCategory"
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1747,7 +1747,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateSubCategoryRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateSubCategoryRequest"
                         }
                     }
                 ],
@@ -1755,25 +1755,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1811,25 +1811,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1860,7 +1860,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateSubCategoryRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateSubCategoryRequest"
                         }
                     }
                 ],
@@ -1868,25 +1868,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1919,19 +1919,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -1964,7 +1964,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.UpdateDisplayOrderRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest"
                         }
                     }
                 ],
@@ -1972,25 +1972,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2022,25 +2022,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2078,19 +2078,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handlers.UploadImageResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.UploadImageResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2116,7 +2116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.PresignedURLRequest"
+                            "$ref": "#/definitions/internal_interfaces_handlers.PresignedURLRequest"
                         }
                     }
                 ],
@@ -2124,19 +2124,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handlers.PresignedURLResponse"
+                            "$ref": "#/definitions/internal_interfaces_handlers.PresignedURLResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2171,19 +2171,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2222,19 +2222,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
                     }
                 }
@@ -2242,11 +2242,392 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "entities.Address": {
+        "internal_interfaces_handlers.CreateCategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                }
+            }
+        },
+        "internal_interfaces_handlers.CreateContentRequest": {
+            "type": "object",
+            "required": [
+                "section_name"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "section_name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interfaces_handlers.CreateItemRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "price",
+                "sub_category_id"
+            ],
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dietary_info": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "sub_category_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_interfaces_handlers.CreateRestaurantRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "contact_info": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "settings": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "internal_interfaces_handlers.CreateSubCategoryRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "name"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                }
+            }
+        },
+        "internal_interfaces_handlers.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "checks": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "uptime": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interfaces_handlers.PresignedURLRequest": {
+            "type": "object",
+            "required": [
+                "content_type",
+                "key"
+            ],
+            "properties": {
+                "content_type": {
+                    "type": "string"
+                },
+                "expires_in": {
+                    "description": "minutes, default 15",
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interfaces_handlers.PresignedURLResponse": {
+            "type": "object",
+            "properties": {
+                "expires_in": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateCategoryRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateContentRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "section_name": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 1
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateDisplayOrderRequest": {
+            "type": "object",
+            "required": [
+                "display_order"
+            ],
+            "properties": {
+                "display_order": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateItemRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "price",
+                "sub_category_id"
+            ],
+            "properties": {
+                "available": {
+                    "type": "boolean"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "dietary_info": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 150,
+                    "minLength": 1
+                },
+                "price": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "sub_category_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdatePriceRequest": {
+            "type": "object",
+            "required": [
+                "price"
+            ],
+            "properties": {
+                "price": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateRestaurantRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "address": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "contact_info": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "minLength": 1
+                },
+                "settings": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "internal_interfaces_handlers.UpdateSubCategoryRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "name"
+            ],
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "category_id": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "display_order": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1
+                }
+            }
+        },
+        "internal_interfaces_handlers.UploadImageResponse": {
+            "type": "object",
+            "properties": {
+                "bucket": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "mime_type": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.Address": {
             "type": "object",
             "additionalProperties": true
         },
-        "entities.Category": {
+        "restaurant-menu-api_internal_domain_entities.Category": {
             "type": "object",
             "required": [
                 "name"
@@ -2279,7 +2660,7 @@ const docTemplate = `{
                     "description": "Relationships",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.SubCategory"
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                     }
                 },
                 "updated_at": {
@@ -2287,11 +2668,11 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.ContactInfo": {
+        "restaurant-menu-api_internal_domain_entities.ContactInfo": {
             "type": "object",
             "additionalProperties": true
         },
-        "entities.ContentSection": {
+        "restaurant-menu-api_internal_domain_entities.ContentSection": {
             "type": "object",
             "required": [
                 "section_name"
@@ -2313,7 +2694,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "metadata": {
-                    "$ref": "#/definitions/entities.Metadata"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Metadata"
                 },
                 "section_name": {
                     "type": "string",
@@ -2328,11 +2709,11 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.DietaryInfo": {
+        "restaurant-menu-api_internal_domain_entities.DietaryInfo": {
             "type": "object",
             "additionalProperties": true
         },
-        "entities.Item": {
+        "restaurant-menu-api_internal_domain_entities.Item": {
             "type": "object",
             "required": [
                 "name",
@@ -2353,7 +2734,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "dietary_info": {
-                    "$ref": "#/definitions/entities.DietaryInfo"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo"
                 },
                 "display_order": {
                     "type": "integer"
@@ -2377,7 +2758,7 @@ const docTemplate = `{
                     "description": "Relationships",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/entities.SubCategory"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory"
                         }
                     ]
                 },
@@ -2389,11 +2770,11 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.Metadata": {
+        "restaurant-menu-api_internal_domain_entities.Metadata": {
             "type": "object",
             "additionalProperties": true
         },
-        "entities.OperatingHour": {
+        "restaurant-menu-api_internal_domain_entities.OperatingHour": {
             "type": "object",
             "properties": {
                 "close_time": {
@@ -2424,7 +2805,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.Pagination": {
+        "restaurant-menu-api_internal_domain_entities.Pagination": {
             "type": "object",
             "properties": {
                 "has_next": {
@@ -2447,7 +2828,7 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.RestaurantInfo": {
+        "restaurant-menu-api_internal_domain_entities.RestaurantInfo": {
             "type": "object",
             "required": [
                 "name"
@@ -2457,10 +2838,10 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "address": {
-                    "$ref": "#/definitions/entities.Address"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Address"
                 },
                 "contact_info": {
-                    "$ref": "#/definitions/entities.ContactInfo"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ContactInfo"
                 },
                 "created_at": {
                     "type": "string"
@@ -2480,22 +2861,22 @@ const docTemplate = `{
                     "description": "Relationships",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.OperatingHour"
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.OperatingHour"
                     }
                 },
                 "settings": {
-                    "$ref": "#/definitions/entities.Settings"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Settings"
                 },
                 "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "entities.Settings": {
+        "restaurant-menu-api_internal_domain_entities.Settings": {
             "type": "object",
             "additionalProperties": true
         },
-        "entities.SubCategory": {
+        "restaurant-menu-api_internal_domain_entities.SubCategory": {
             "type": "object",
             "required": [
                 "category_id",
@@ -2509,7 +2890,7 @@ const docTemplate = `{
                     "description": "Relationships",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/entities.Category"
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
                         }
                     ]
                 },
@@ -2531,7 +2912,7 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/entities.Item"
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Item"
                     }
                 },
                 "name": {
@@ -2547,388 +2928,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.CreateCategoryRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "handlers.CreateContentRequest": {
-            "type": "object",
-            "required": [
-                "section_name"
-            ],
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "section_name": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 1
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.CreateItemRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "price",
-                "sub_category_id"
-            ],
-            "properties": {
-                "available": {
-                    "type": "boolean"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "dietary_info": {
-                    "$ref": "#/definitions/entities.DietaryInfo"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 150,
-                    "minLength": 1
-                },
-                "price": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "sub_category_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.CreateRestaurantRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "address": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "contact_info": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200,
-                    "minLength": 1
-                },
-                "settings": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "handlers.CreateSubCategoryRequest": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "name"
-            ],
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "category_id": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "handlers.HealthResponse": {
-            "type": "object",
-            "properties": {
-                "checks": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "status": {
-                    "type": "string"
-                },
-                "timestamp": {
-                    "type": "string"
-                },
-                "uptime": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.PresignedURLRequest": {
-            "type": "object",
-            "required": [
-                "content_type",
-                "key"
-            ],
-            "properties": {
-                "content_type": {
-                    "type": "string"
-                },
-                "expires_in": {
-                    "description": "minutes, default 15",
-                    "type": "integer"
-                },
-                "key": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.PresignedURLResponse": {
-            "type": "object",
-            "properties": {
-                "expires_in": {
-                    "type": "integer"
-                },
-                "key": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.UpdateCategoryRequest": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "handlers.UpdateContentRequest": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "section_name": {
-                    "type": "string",
-                    "maxLength": 50,
-                    "minLength": 1
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "handlers.UpdateDisplayOrderRequest": {
-            "type": "object",
-            "required": [
-                "display_order"
-            ],
-            "properties": {
-                "display_order": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.UpdateItemRequest": {
-            "type": "object",
-            "required": [
-                "name",
-                "price",
-                "sub_category_id"
-            ],
-            "properties": {
-                "available": {
-                    "type": "boolean"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "dietary_info": {
-                    "$ref": "#/definitions/entities.DietaryInfo"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 150,
-                    "minLength": 1
-                },
-                "price": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "sub_category_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handlers.UpdatePriceRequest": {
-            "type": "object",
-            "required": [
-                "price"
-            ],
-            "properties": {
-                "price": {
-                    "type": "number",
-                    "minimum": 0
-                }
-            }
-        },
-        "handlers.UpdateRestaurantRequest": {
-            "type": "object",
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "address": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "contact_info": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 200,
-                    "minLength": 1
-                },
-                "settings": {
-                    "type": "object",
-                    "additionalProperties": true
-                }
-            }
-        },
-        "handlers.UpdateSubCategoryRequest": {
-            "type": "object",
-            "required": [
-                "category_id",
-                "name"
-            ],
-            "properties": {
-                "active": {
-                    "type": "boolean"
-                },
-                "category_id": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "display_order": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 1
-                }
-            }
-        },
-        "handlers.UploadImageResponse": {
-            "type": "object",
-            "properties": {
-                "bucket": {
-                    "type": "string"
-                },
-                "key": {
-                    "type": "string"
-                },
-                "mime_type": {
-                    "type": "string"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.APIError": {
+        "restaurant-menu-api_pkg_response.APIError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -2942,26 +2942,26 @@ const docTemplate = `{
                 }
             }
         },
-        "response.APIResponse": {
+        "restaurant-menu-api_pkg_response.APIResponse": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
-                    "$ref": "#/definitions/response.APIError"
+                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIError"
                 },
                 "meta": {
-                    "$ref": "#/definitions/response.Meta"
+                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.Meta"
                 },
                 "success": {
                     "type": "boolean"
                 }
             }
         },
-        "response.Meta": {
+        "restaurant-menu-api_pkg_response.Meta": {
             "type": "object",
             "properties": {
                 "pagination": {
-                    "$ref": "#/definitions/entities.Pagination"
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Pagination"
                 },
                 "request_id": {
                     "type": "string"
@@ -2981,7 +2981,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8000",
-	BasePath:         "/",
+	BasePath:         "/api",
 	Schemes:          []string{"http", "https"},
 	Title:            "Restaurant Menu API",
 	Description:      "A production-ready REST API for restaurant menu management",
