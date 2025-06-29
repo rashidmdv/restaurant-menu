@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: restaurant-menu-postgres
+    environment:
+      POSTGRES_DB: restaurant_menu
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - restaurant-menu-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Redis (Optional - for caching and rate limiting)
+  redis:
+    image: redis:7-alpine
+    container_name: restaurant-menu-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - restaurant-menu-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+  # Go API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: restaurant-menu-api
+    ports:
+      - "8000:8000"
+    environment:
+      # Server Configuration
+      SERVER_PORT: 8000
+      SERVER_HOST: 0.0.0.0
+      SERVER_ENVIRONMENT: development
+      
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: restaurant_menu
+      DB_SSL_MODE: disable
+      DB_MAX_CONNS: 25
+      DB_MAX_IDLE: 5
+      
+      # AWS Configuration (replace with your values)
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      S3_BUCKET: ${S3_BUCKET:-restaurant-menu-images}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      
+      # Redis Configuration
+      REDIS_URL: redis://redis:6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      
+      # Logging Configuration
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - restaurant-menu-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # pgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: restaurant-menu-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@restaurant.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - restaurant-menu-network
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  restaurant-menu-network:
+    driver: bridge

@@ -1,0 +1,1983 @@
+basePath: /
+definitions:
+  internal_interfaces_handlers.CreateCategoryRequest:
+    properties:
+      active:
+        type: boolean
+      description:
+        type: string
+      display_order:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  internal_interfaces_handlers.CreateContentRequest:
+    properties:
+      content:
+        type: string
+      image_url:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      section_name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      title:
+        type: string
+    required:
+    - section_name
+    type: object
+  internal_interfaces_handlers.CreateItemRequest:
+    properties:
+      available:
+        type: boolean
+      currency:
+        type: string
+      description:
+        type: string
+      dietary_info:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo'
+      display_order:
+        type: integer
+      image_url:
+        type: string
+      name:
+        maxLength: 150
+        minLength: 1
+        type: string
+      price:
+        minimum: 0
+        type: number
+      sub_category_id:
+        type: integer
+    required:
+    - name
+    - price
+    - sub_category_id
+    type: object
+  internal_interfaces_handlers.CreateRestaurantRequest:
+    properties:
+      address:
+        additionalProperties: true
+        type: object
+      contact_info:
+        additionalProperties: true
+        type: object
+      description:
+        type: string
+      name:
+        maxLength: 200
+        minLength: 1
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+    required:
+    - name
+    type: object
+  internal_interfaces_handlers.CreateSubCategoryRequest:
+    properties:
+      active:
+        type: boolean
+      category_id:
+        type: integer
+      description:
+        type: string
+      display_order:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  internal_interfaces_handlers.HealthResponse:
+    properties:
+      checks:
+        additionalProperties: true
+        type: object
+      status:
+        type: string
+      timestamp:
+        type: string
+      uptime:
+        type: string
+      version:
+        type: string
+    type: object
+  internal_interfaces_handlers.PresignedURLRequest:
+    properties:
+      content_type:
+        type: string
+      expires_in:
+        description: minutes, default 15
+        type: integer
+      key:
+        type: string
+    required:
+    - content_type
+    - key
+    type: object
+  internal_interfaces_handlers.PresignedURLResponse:
+    properties:
+      expires_in:
+        type: integer
+      key:
+        type: string
+      url:
+        type: string
+    type: object
+  internal_interfaces_handlers.UpdateCategoryRequest:
+    properties:
+      active:
+        type: boolean
+      description:
+        type: string
+      display_order:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  internal_interfaces_handlers.UpdateContentRequest:
+    properties:
+      active:
+        type: boolean
+      content:
+        type: string
+      image_url:
+        type: string
+      metadata:
+        additionalProperties: true
+        type: object
+      section_name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      title:
+        type: string
+    type: object
+  internal_interfaces_handlers.UpdateDisplayOrderRequest:
+    properties:
+      display_order:
+        type: integer
+    required:
+    - display_order
+    type: object
+  internal_interfaces_handlers.UpdateItemRequest:
+    properties:
+      available:
+        type: boolean
+      currency:
+        type: string
+      description:
+        type: string
+      dietary_info:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo'
+      display_order:
+        type: integer
+      image_url:
+        type: string
+      name:
+        maxLength: 150
+        minLength: 1
+        type: string
+      price:
+        minimum: 0
+        type: number
+      sub_category_id:
+        type: integer
+    required:
+    - name
+    - price
+    - sub_category_id
+    type: object
+  internal_interfaces_handlers.UpdatePriceRequest:
+    properties:
+      price:
+        minimum: 0
+        type: number
+    required:
+    - price
+    type: object
+  internal_interfaces_handlers.UpdateRestaurantRequest:
+    properties:
+      active:
+        type: boolean
+      address:
+        additionalProperties: true
+        type: object
+      contact_info:
+        additionalProperties: true
+        type: object
+      description:
+        type: string
+      name:
+        maxLength: 200
+        minLength: 1
+        type: string
+      settings:
+        additionalProperties: true
+        type: object
+    type: object
+  internal_interfaces_handlers.UpdateSubCategoryRequest:
+    properties:
+      active:
+        type: boolean
+      category_id:
+        type: integer
+      description:
+        type: string
+      display_order:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  internal_interfaces_handlers.UploadImageResponse:
+    properties:
+      bucket:
+        type: string
+      key:
+        type: string
+      mime_type:
+        type: string
+      size:
+        type: integer
+      url:
+        type: string
+    type: object
+  restaurant-menu-api_internal_domain_entities.Address:
+    additionalProperties: true
+    type: object
+  restaurant-menu-api_internal_domain_entities.Category:
+    properties:
+      active:
+        type: boolean
+      created_at:
+        type: string
+      description:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: integer
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      slug:
+        type: string
+      sub_categories:
+        description: Relationships
+        items:
+          $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        type: array
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  restaurant-menu-api_internal_domain_entities.ContactInfo:
+    additionalProperties: true
+    type: object
+  restaurant-menu-api_internal_domain_entities.ContentSection:
+    properties:
+      active:
+        type: boolean
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      metadata:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Metadata'
+      section_name:
+        maxLength: 50
+        minLength: 1
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - section_name
+    type: object
+  restaurant-menu-api_internal_domain_entities.DietaryInfo:
+    additionalProperties: true
+    type: object
+  restaurant-menu-api_internal_domain_entities.Item:
+    properties:
+      available:
+        type: boolean
+      created_at:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      dietary_info:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.DietaryInfo'
+      display_order:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        maxLength: 150
+        minLength: 1
+        type: string
+      price:
+        minimum: 0
+        type: number
+      sub_category:
+        allOf:
+        - $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        description: Relationships
+      sub_category_id:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - name
+    - price
+    - sub_category_id
+    type: object
+  restaurant-menu-api_internal_domain_entities.Metadata:
+    additionalProperties: true
+    type: object
+  restaurant-menu-api_internal_domain_entities.OperatingHour:
+    properties:
+      close_time:
+        type: string
+      created_at:
+        type: string
+      day_of_week:
+        maximum: 6
+        minimum: 0
+        type: integer
+      id:
+        type: integer
+      is_closed:
+        type: boolean
+      open_time:
+        type: string
+      restaurant_info_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  restaurant-menu-api_internal_domain_entities.Pagination:
+    properties:
+      has_next:
+        type: boolean
+      has_prev:
+        type: boolean
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  restaurant-menu-api_internal_domain_entities.RestaurantInfo:
+    properties:
+      active:
+        type: boolean
+      address:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Address'
+      contact_info:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContactInfo'
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        maxLength: 200
+        minLength: 1
+        type: string
+      operating_hours:
+        description: Relationships
+        items:
+          $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.OperatingHour'
+        type: array
+      settings:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Settings'
+      updated_at:
+        type: string
+    required:
+    - name
+    type: object
+  restaurant-menu-api_internal_domain_entities.Settings:
+    additionalProperties: true
+    type: object
+  restaurant-menu-api_internal_domain_entities.SubCategory:
+    properties:
+      active:
+        type: boolean
+      category:
+        allOf:
+        - $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        description: Relationships
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      display_order:
+        type: integer
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        type: array
+      name:
+        maxLength: 100
+        minLength: 1
+        type: string
+      slug:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - category_id
+    - name
+    type: object
+  restaurant-menu-api_pkg_response.APIError:
+    properties:
+      code:
+        type: string
+      details:
+        type: string
+      message:
+        type: string
+    type: object
+  restaurant-menu-api_pkg_response.APIResponse:
+    properties:
+      data: {}
+      error:
+        $ref: '#/definitions/restaurant-menu-api_pkg_response.APIError'
+      meta:
+        $ref: '#/definitions/restaurant-menu-api_pkg_response.Meta'
+      success:
+        type: boolean
+    type: object
+  restaurant-menu-api_pkg_response.Meta:
+    properties:
+      pagination:
+        $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Pagination'
+      request_id:
+        type: string
+      timestamp:
+        type: string
+      total:
+        type: integer
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: support@restaurant-menu-api.com
+    name: API Support
+    url: http://www.restaurant-menu-api.com/support
+  description: A production-ready REST API for restaurant menu management
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: Restaurant Menu API
+  version: "1.0"
+paths:
+  /api/v1/content:
+    get:
+      consumes:
+      - application/json
+      description: Get all content with optional filtering and pagination
+      parameters:
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Filter by content type
+        in: query
+        name: type
+        type: string
+      - description: Search in title and content
+        in: query
+        name: search
+        type: string
+      - description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Field to order by
+        in: query
+        name: order_by
+        type: string
+      - description: Order direction (ASC/DESC)
+        in: query
+        name: order_dir
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: List all content
+      tags:
+      - Content
+    post:
+      consumes:
+      - application/json
+      description: Create new content
+      parameters:
+      - description: Content data
+        in: body
+        name: content
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.CreateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Create new content
+      tags:
+      - Content
+  /api/v1/content/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete content by ID
+      parameters:
+      - description: Content ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete content
+      tags:
+      - Content
+    get:
+      consumes:
+      - application/json
+      description: Get specific content by its ID
+      parameters:
+      - description: Content ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get content by ID
+      tags:
+      - Content
+    put:
+      consumes:
+      - application/json
+      description: Update existing content
+      parameters:
+      - description: Content ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Content data
+        in: body
+        name: content
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateContentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update content
+      tags:
+      - Content
+  /api/v1/content/by-section/{section}:
+    get:
+      consumes:
+      - application/json
+      description: Get specific content by its section name
+      parameters:
+      - description: Section name
+        in: path
+        name: section
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.ContentSection'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get content by section name
+      tags:
+      - Content
+  /api/v1/items:
+    get:
+      consumes:
+      - application/json
+      description: Get all menu items with optional filtering and pagination
+      parameters:
+      - description: Filter by subcategory ID
+        in: query
+        name: sub_category_id
+        type: integer
+      - description: Filter by category ID
+        in: query
+        name: category_id
+        type: integer
+      - description: Filter by availability status
+        in: query
+        name: available
+        type: boolean
+      - description: Minimum price filter
+        in: query
+        name: min_price
+        type: number
+      - description: Maximum price filter
+        in: query
+        name: max_price
+        type: number
+      - description: Search in name and description
+        in: query
+        name: search
+        type: string
+      - description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Field to order by
+        in: query
+        name: order_by
+        type: string
+      - description: Order direction (ASC/DESC)
+        in: query
+        name: order_dir
+        type: string
+      - description: Include total count
+        in: query
+        name: include_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: List all items
+      tags:
+      - Items
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu item
+      parameters:
+      - description: Item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.CreateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Create a new item
+      tags:
+      - Items
+  /api/v1/items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu item by ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete an item
+      tags:
+      - Items
+    get:
+      consumes:
+      - application/json
+      description: Get a specific menu item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get item by ID
+      tags:
+      - Items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Item data
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateItemRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update an item
+      tags:
+      - Items
+  /api/v1/items/{id}/display-order:
+    patch:
+      consumes:
+      - application/json
+      description: Update the display order of an item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Display order data
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update item display order
+      tags:
+      - Items
+  /api/v1/items/{id}/price:
+    patch:
+      consumes:
+      - application/json
+      description: Update the price of an item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Price data
+        in: body
+        name: price
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdatePriceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update item price
+      tags:
+      - Items
+  /api/v1/items/{id}/toggle-available:
+    patch:
+      consumes:
+      - application/json
+      description: Toggle the availability status of an item
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Toggle item availability
+      tags:
+      - Items
+  /api/v1/items/featured:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of featured menu items
+      parameters:
+      - description: Number of items to return (max 50, default 10)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Item'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get featured items
+      tags:
+      - Items
+  /api/v1/items/search:
+    get:
+      consumes:
+      - application/json
+      description: Search menu items by query with optional filters
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Filter by subcategory ID
+        in: query
+        name: sub_category_id
+        type: integer
+      - description: Filter by category ID
+        in: query
+        name: category_id
+        type: integer
+      - description: Filter by availability status
+        in: query
+        name: available
+        type: boolean
+      - description: Minimum price filter
+        in: query
+        name: min_price
+        type: number
+      - description: Maximum price filter
+        in: query
+        name: max_price
+        type: number
+      - description: Number of items to return (max 50)
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Search items
+      tags:
+      - Items
+  /api/v1/menu:
+    get:
+      consumes:
+      - application/json
+      description: Get the complete hierarchical menu with all categories, subcategories,
+        and items
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get complete menu
+      tags:
+      - Menu
+  /api/v1/restaurants/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a restaurant by ID
+      parameters:
+      - description: Restaurant ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete a restaurant
+      tags:
+      - Restaurants
+  /api/v1/restaurants/hours:
+    get:
+      consumes:
+      - application/json
+      description: Get the restaurant's operating hours
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.OperatingHour'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get operating hours
+      tags:
+      - Restaurants
+  /api/v1/restaurants/info:
+    get:
+      consumes:
+      - application/json
+      description: Get the restaurant's basic information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get restaurant information
+      tags:
+      - Restaurants
+    post:
+      consumes:
+      - application/json
+      description: Create the restaurant's basic information
+      parameters:
+      - description: Restaurant data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.CreateRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Create restaurant information
+      tags:
+      - Restaurants
+    put:
+      consumes:
+      - application/json
+      description: Update the restaurant's basic information
+      parameters:
+      - description: Restaurant data
+        in: body
+        name: restaurant
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateRestaurantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.RestaurantInfo'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update restaurant information
+      tags:
+      - Restaurants
+  /api/v1/subcategories:
+    get:
+      consumes:
+      - application/json
+      description: Get all subcategories with optional filtering and pagination
+      parameters:
+      - description: Filter by category ID
+        in: query
+        name: category_id
+        type: integer
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Search in name and description
+        in: query
+        name: search
+        type: string
+      - description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Field to order by
+        in: query
+        name: order_by
+        type: string
+      - description: Order direction (ASC/DESC)
+        in: query
+        name: order_dir
+        type: string
+      - description: Include total count
+        in: query
+        name: include_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: List all subcategories
+      tags:
+      - SubCategories
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu subcategory
+      parameters:
+      - description: SubCategory data
+        in: body
+        name: subcategory
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.CreateSubCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Create a new subcategory
+      tags:
+      - SubCategories
+  /api/v1/subcategories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu subcategory by ID
+      parameters:
+      - description: SubCategory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete a subcategory
+      tags:
+      - SubCategories
+    get:
+      consumes:
+      - application/json
+      description: Get a specific subcategory by its ID with optional items
+      parameters:
+      - description: SubCategory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Include items in response
+        in: query
+        name: include_items
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get subcategory by ID
+      tags:
+      - SubCategories
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu subcategory
+      parameters:
+      - description: SubCategory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: SubCategory data
+        in: body
+        name: subcategory
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateSubCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update a subcategory
+      tags:
+      - SubCategories
+  /api/v1/subcategories/{id}/display-order:
+    patch:
+      consumes:
+      - application/json
+      description: Update the display order of a subcategory
+      parameters:
+      - description: SubCategory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Display order data
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update subcategory display order
+      tags:
+      - SubCategories
+  /api/v1/subcategories/{id}/toggle-active:
+    patch:
+      consumes:
+      - application/json
+      description: Toggle the active status of a subcategory
+      parameters:
+      - description: SubCategory ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.SubCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Toggle subcategory active status
+      tags:
+      - SubCategories
+  /api/v1/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image file to S3 storage
+      parameters:
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: 'Upload folder (default: items)'
+        in: formData
+        name: folder
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.UploadImageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Upload an image
+      tags:
+      - Upload
+  /api/v1/upload/{key}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image file from S3 storage
+      parameters:
+      - description: Image key (S3 object key)
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete an image
+      tags:
+      - Upload
+  /api/v1/upload/{key}/info:
+    get:
+      consumes:
+      - application/json
+      description: Get metadata and information about an uploaded image
+      parameters:
+      - description: Image key (S3 object key)
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get image information
+      tags:
+      - Upload
+  /api/v1/upload/presigned-url:
+    post:
+      consumes:
+      - application/json
+      description: Generate a presigned URL for direct file upload to S3
+      parameters:
+      - description: Presigned URL request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.PresignedURLRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.PresignedURLResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get presigned upload URL
+      tags:
+      - Upload
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Basic health check endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
+  /live:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is alive
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Liveness check
+      tags:
+      - Health
+  /ready:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is ready to serve requests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Readiness check
+      tags:
+      - Health
+  /status:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed application status with health checks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Application status
+      tags:
+      - Health
+  /v1/categories:
+    get:
+      consumes:
+      - application/json
+      description: Get all categories with optional filtering and pagination
+      parameters:
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Search in name and description
+        in: query
+        name: search
+        type: string
+      - description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Number of items to skip
+        in: query
+        name: offset
+        type: integer
+      - description: Field to order by
+        in: query
+        name: order_by
+        type: string
+      - description: Order direction (ASC/DESC)
+        in: query
+        name: order_dir
+        type: string
+      - description: Include total count
+        in: query
+        name: include_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: List all categories
+      tags:
+      - Categories
+    post:
+      consumes:
+      - application/json
+      description: Create a new menu category
+      parameters:
+      - description: Category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.CreateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Create a new category
+      tags:
+      - Categories
+  /v1/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a menu category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Delete a category
+      tags:
+      - Categories
+    get:
+      consumes:
+      - application/json
+      description: Get a specific category by its ID with optional subcategories
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Include subcategories in response
+        in: query
+        name: include_subcategories
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Get category by ID
+      tags:
+      - Categories
+    put:
+      consumes:
+      - application/json
+      description: Update an existing menu category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category data
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update a category
+      tags:
+      - Categories
+  /v1/categories/{id}/display-order:
+    patch:
+      consumes:
+      - application/json
+      description: Update the display order of a category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Display order data
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Update category display order
+      tags:
+      - Categories
+  /v1/categories/{id}/toggle-active:
+    patch:
+      consumes:
+      - application/json
+      description: Toggle the active status of a category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_internal_domain_entities.Category'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/restaurant-menu-api_pkg_response.APIResponse'
+      summary: Toggle category active status
+      tags:
+      - Categories
+schemes:
+- http
+- https
+swagger: "2.0"
