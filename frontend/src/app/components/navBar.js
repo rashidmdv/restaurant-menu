@@ -29,7 +29,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between space-x-5 md:gap-10">
             <Image src="/menu-icon.png" alt="Logo 1" width={18} height={15} />
             <Link href="/">
-              <Image src="/logo1.png" alt="Logo" width={80} height={80} />
+              <Image src="/logo1.png" alt="Logo" width={80} height={80} style={{ height: 'auto' }} />
             </Link>
             {/* Mobile Menu Icon */}
             <div className="md:hidden">
