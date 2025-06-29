@@ -1,11 +1,4 @@
-"use client";
-import { useEffect } from "react";
-
 export default function HeroSection() {
-
-
-
-
     return(
         <section id="" className="max:h-[80vh] lg:h-[80vh] pt-10 2xl:pt-12 background">
         <div className="flex flex-col-reverse md:flex-row h-full">

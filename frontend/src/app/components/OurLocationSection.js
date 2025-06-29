@@ -5,13 +5,11 @@ export default function OurLocationSection() {
       <section className="pt-12 md:py-16 flex flex-col md:flex-row h-full max-w-7xl mx-auto" id="location">
         {/* Map */}
         <div className="w-full md:w-1/2 h-[300px] md:h-auto">
-          <iframe
-            className="w-full h-full"
-            loading="lazy"
-            allowFullScreen
-            referrerPolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115391.71813849845!2d55.270782!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f4338f1dbfd31%3A0x8a4f30d4e2f7598f!2sOud%20Metha%2C%20Dubai!5e0!3m2!1sen!2sae!4v1686838198316!5m2!1sen!2sae"
-          ></iframe>
+          <img
+            src="/map-placeholder.png"
+            alt="Our Location - Oud Metha, Dubai"
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* Location Details */}

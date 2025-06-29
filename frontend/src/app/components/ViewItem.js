@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { URL } from "../constants/constants";
 
 export default function ViewItem({selectedItem,setSelectedItem}) {
     return (
@@ -12,21 +11,21 @@ export default function ViewItem({selectedItem,setSelectedItem}) {
                 >
                     &times;
                 </button>
-                <img
-                    src={`${URL}${selectedItem.image}`}
-                    alt={selectedItem.name}
-                    className="object-cover rounded-full hover:rounded-none transition-all duration-300 cursor-pointer mx-auto mb-4 mt-10"
+                <Image
+                    src={selectedItem.image}
+                    alt={selectedItem.title}
+                    className="w-[250px] h-[250px] object-cover rounded-full hover:rounded-none transition-all duration-300 cursor-pointer mx-auto mb-4 mt-10"
                     width={250}
                     height={250}
                 />
                 <div className="px-10 mb-10">
                     <p className="text-lg font-semibold text-[#a86a30] mt-7">
-                        {selectedItem.name}{" "}
+                        {selectedItem.title}{" "}
                         <span className="font-normal">
-                            {selectedItem.price} 
+                            {selectedItem.price} {selectedItem.dietary}
                         </span>
                     </p>
-                    <p className="text-[#a86a30] mt-2 mb-2 text-center">{selectedItem.description}</p>
+                    <p className="text-[#a86a30] mt-2 mb-2 text-center">{selectedItem.desc}</p>
                 </div>
             </div>
         </div>
