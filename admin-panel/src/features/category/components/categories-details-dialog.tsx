@@ -2,7 +2,6 @@ import { format } from 'date-fns'
 import { 
   IconCategory,  
   IconId,
-  IconAutomaticGearbox,
   IconFileDescription,
 } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
@@ -133,14 +132,6 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
                   </div>
                 </div>
               </div>
-                <div className="space-y-2">
-                <div className="flex items-center">
-                  <IconAutomaticGearbox className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="font-medium">Type:</span>
-                  <span className="ml-2">{category.type || '—'}</span>
-                </div>
-                </div>
-
               <Separator />
 
                 <div className="space-y-2">

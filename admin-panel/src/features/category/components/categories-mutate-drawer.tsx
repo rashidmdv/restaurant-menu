@@ -23,8 +23,6 @@ import {
 } from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
-import { labels} from '../data/data'
 import { CatalogCategory } from '../data/schema'
 import { useState } from 'react'
 
@@ -193,28 +191,6 @@ export function categoriesMutateDrawer({ open, onOpenChange, currentRow }: Props
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <SelectDropdown
-                        defaultValue={field.value}
-                        onValueChange={field.onChange}
-                        placeholder="Select type"
-                        items={labels.map(label => ({
-                          label: label.label,
-                          value: label.value
-                        }))}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-              </div>
 
               <FormField
                 control={form.control}
