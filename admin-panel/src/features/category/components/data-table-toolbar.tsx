@@ -25,46 +25,36 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const { categories, filters, setFilters, refreshCategories } = useCategories()
+  const { filters, setFilters, refreshCategories } = useCategories()
   const [searchValue, setSearchValue] = useState<string>("")
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const [activeStatus, setActiveStatus] = useState<string>(filters.active === true ? "active" : 
                                                           filters.active === false ? "inactive" : "all")
   
-  // Initialize search value from API filters
-  useEffect(() => {
-    if (filters.name && filters.name !== searchValue) {
-      setSearchValue(filters.name)
-    }
-  }, [filters.name, searchValue])
+  // No need to sync search value with filters - let user input control it completely
   
-  // Apply debounced search value to table filters and API
+  // Apply debounced search value to API filters only
   useEffect(() => {
-    // Update table filter with the debounced value
-    table.getColumn('name')?.setFilterValue(debouncedSearchValue)
-    
-    // Update API filter
-    if (debouncedSearchValue !== undefined) {
-      setFilters(prev => ({
-        ...prev,
-        name: debouncedSearchValue || undefined
-      }))
-    }
-  }, [debouncedSearchValue, setFilters, table])
+    // Update API filter only - don't interfere with table column filters
+    setFilters(prev => ({
+      ...prev,
+      search: debouncedSearchValue || undefined
+    }))
+  }, [debouncedSearchValue, setFilters])
   
 
 
   useEffect(() => {
     // Only update if the filter changes externally (e.g. from reset)
     if (
-      (filters.isActive === true && activeStatus !== "active") ||
-      (filters.isActive === false && activeStatus !== "inactive") ||
-      (filters.isActive === undefined && activeStatus !== "all")
+      (filters.active === true && activeStatus !== "active") ||
+      (filters.active === false && activeStatus !== "inactive") ||
+      (filters.active === undefined && activeStatus !== "all")
     ) {
-      setActiveStatus(filters.isActive === true ? "active" : 
-                      filters.isActive === false ? "inactive" : "all")
+      setActiveStatus(filters.active === true ? "active" : 
+                      filters.active === false ? "inactive" : "all")
     }
-  }, [filters.isActive, activeStatus])
+  }, [filters.active, activeStatus])
 
   // Handle active status selection
   const handleActiveStatusChange = (value: string) => {
@@ -93,7 +83,7 @@ export function DataTableToolbar<TData>({
   
   // Check if any filters are active
   const isFiltered = Object.keys(filters).some(key => 
-    !['page', 'limit'].includes(key) && filters[key as keyof typeof filters] !== undefined
+    !['limit', 'offset', 'include_count'].includes(key) && filters[key as keyof typeof filters] !== undefined
   )
   
   // Handle search input change
@@ -117,8 +107,9 @@ export function DataTableToolbar<TData>({
     
     // Reset API filters, keeping only pagination
     setFilters({
-      page: filters.page,
-      limit: filters.limit
+      limit: filters.limit,
+      offset: filters.offset,
+      include_count: true
     })
     
     // Force refresh to ensure UI is in sync

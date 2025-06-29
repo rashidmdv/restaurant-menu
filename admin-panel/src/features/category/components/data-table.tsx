@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
     categories, 
     isLoading, 
     pagination, 
+    setPagination,
     filters, 
     setFilters,
     refreshCategories
@@ -75,16 +76,14 @@ export function DataTable<TData, TValue>({
       // Process column filters to API filters
       const apiFilters: Record<string, any> = {
         // Keep pagination
-        page: filters.page,
-        limit: filters.limit
+        limit: filters.limit,
+        offset: filters.offset,
+        include_count: true
       }
 
-      // Map column filters to API filters
+      // Map column filters to API filters (excluding search - handled by toolbar)
       for (const filter of columnFilters) {
         switch (filter.id) {
-          case 'name':
-            apiFilters.name = filter.value as string
-            break
           case 'active':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
               if (filter.value.length === 1) {
@@ -102,7 +101,13 @@ export function DataTable<TData, TValue>({
             }
             break
           // Add other filters as needed
+          // Note: 'name' search is handled by toolbar component
         }
+      }
+
+      // Preserve existing search filter from toolbar
+      if (filters.search !== undefined) {
+        apiFilters.search = filters.search
       }
 
       // Update API filters and trigger a refresh
@@ -114,20 +119,20 @@ export function DataTable<TData, TValue>({
         clearTimeout(filterTimeoutRef.current)
       }
     }
-  }, [columnFilters, filters.page, filters.limit, setFilters])
+  }, [columnFilters, setFilters])
 
   // Update pagination state
   const onPaginationChange = React.useCallback((page: number, limit: number) => {
-    setFilters(prev => ({
+    setPagination(prev => ({
       ...prev,
       page,
       limit
     }))
-  }, [setFilters])
+  }, [setPagination])
   const table = useReactTable({
     data: categories as TData[],
     columns,
-    pageCount: Math.ceil(pagination.total / pagination.limit) || 1,
+    pageCount: pagination.total_pages || 1,
     state: {
       sorting,
       columnVisibility,

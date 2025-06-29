@@ -95,8 +95,28 @@ export const columns: ColumnDef<Category>[] = [
     ),
     cell: ({ row }) => {
       const dateStr = row.getValue('created_at') as string
+      const date = new Date(dateStr)
       return (
-        <span>{new Date(dateStr).toLocaleDateString()}</span>
+        <div className="text-sm">
+          <div>{date.toLocaleDateString()}</div>
+          <div className="text-xs text-muted-foreground">{date.toLocaleTimeString()}</div>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'updated_at',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Updated At' />
+    ),
+    cell: ({ row }) => {
+      const dateStr = row.getValue('updated_at') as string
+      const date = new Date(dateStr)
+      return (
+        <div className="text-sm">
+          <div>{date.toLocaleDateString()}</div>
+          <div className="text-xs text-muted-foreground">{date.toLocaleTimeString()}</div>
+        </div>
       )
     },
   },

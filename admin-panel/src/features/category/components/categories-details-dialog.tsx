@@ -164,8 +164,9 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
                 </div>
               </div>
 
-              <div className="text-sm text-muted-foreground">
-                Created at {category.createdAt ? format(new Date(category.createdAt), 'PPpp') : '—'}
+              <div className="text-sm text-muted-foreground space-y-1">
+                <div>Created: {category.created_at ? format(new Date(category.created_at), 'PPpp') : '—'}</div>
+                <div>Updated: {category.updated_at ? format(new Date(category.updated_at), 'PPpp') : '—'}</div>
               </div>
             </>
           )}

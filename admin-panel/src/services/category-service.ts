@@ -63,6 +63,16 @@ export interface UpdateCategoryDto {
   active?: boolean;
 }
 
+// Pagination interface matching backend
+export interface Pagination {
+  has_next: boolean;
+  has_prev: boolean;
+  limit: number;
+  page: number;
+  total: number;
+  total_pages: number;
+}
+
 // Backend response wrapper
 interface BackendResponse<T> {
   success: boolean;
@@ -70,7 +80,16 @@ interface BackendResponse<T> {
   meta: {
     request_id: string;
     timestamp: string;
+    pagination?: Pagination;
+    total?: number;
   };
+}
+
+// Paginated response interface
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: Pagination;
+  total: number;
 }
 
 // Category Service - matching backend API endpoints
@@ -81,6 +100,29 @@ export const CategoryService = {
       params: cleanedFilters,
     });
     return response.data.data;
+  },
+
+  getCategoriesPaginated: async (filters?: CategoryFilters): Promise<PaginatedResponse<Category>> => {
+    const cleanedFilters = cleanFilters({
+      ...filters,
+      include_count: true, // Always include count for pagination
+    });
+    const response = await API.get<BackendResponse<Category[]>>('/api/v1/categories', {
+      params: cleanedFilters,
+    });
+    
+    return {
+      data: response.data.data,
+      pagination: response.data.meta.pagination || {
+        has_next: false,
+        has_prev: false,
+        limit: cleanedFilters.limit || 10,
+        page: Math.floor((cleanedFilters.offset || 0) / (cleanedFilters.limit || 10)) + 1,
+        total: response.data.data.length,
+        total_pages: 1
+      },
+      total: response.data.meta.pagination?.total || response.data.data.length
+    };
   },
 
   getCategoryById: async (id: string): Promise<Category> => {

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Category, CreateCategory, UpdateCategory } from '../data/schema'
-import { CategoryService, CategoryFilters } from '@/services/category-service'
+import { CategoryService, CategoryFilters, Pagination } from '@/services/category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type CategoryDialogType = 'create' | 'update' | 'delete' | 'details'
@@ -12,6 +12,9 @@ interface CategoriesPaginationState {
   page: number
   limit: number
   total: number
+  total_pages: number
+  has_next: boolean
+  has_prev: boolean
 }
 
 interface CategoriesContextType {
@@ -47,36 +50,53 @@ export default function CategoriesProvider({ children }: Props) {
     page: 1,
     limit: 10,
     total: 0,
+    total_pages: 0,
+    has_next: false,
+    has_prev: false,
   })
 
   const [filters, setFilters] = useState<CategoryFilters>({
     limit: 10,
     offset: 0,
+    include_count: true,
   })
+
+  // Convert pagination.page to offset for API
+  useEffect(() => {
+    const offset = (pagination.page - 1) * pagination.limit
+    setFilters(prev => ({
+      ...prev,
+      limit: pagination.limit,
+      offset: offset,
+    }))
+  }, [pagination.page, pagination.limit])
 
   const queryClient = useQueryClient()
 
-  // Fetch categories
+  // Fetch categories with pagination
   const {
-    data: categoriesData,
+    data: categoriesResponse,
     isLoading,
     isError,
     refetch: refreshCategories,
   } = useQuery({
     queryKey: ['categories', filters],
-    queryFn: () => CategoryService.getCategories(filters),
-    keepPreviousData: true,
+    queryFn: () => CategoryService.getCategoriesPaginated(filters),
+    placeholderData: (previousData) => previousData,
   })
 
   // Update pagination when data changes
   useEffect(() => {
-    if (categoriesData) {
+    if (categoriesResponse) {
       setPagination(prev => ({
         ...prev,
-        total: categoriesData.length,
+        total: categoriesResponse.total,
+        total_pages: categoriesResponse.pagination.total_pages,
+        has_next: categoriesResponse.pagination.has_next,
+        has_prev: categoriesResponse.pagination.has_prev,
       }))
     }
-  }, [categoriesData])
+  }, [categoriesResponse])
 
   // Mutations
   const createCategoryMutation = useMutation({
@@ -155,7 +175,7 @@ export default function CategoriesProvider({ children }: Props) {
         setOpen,
         currentRow,
         setCurrentRow,
-        categories: categoriesData || [],
+        categories: categoriesResponse?.data || [],
         isLoading,
         isError,
         categoriesLoading: isLoading,

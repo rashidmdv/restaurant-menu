@@ -20,6 +20,9 @@ interface DataTablePaginationProps<TData> {
     page: number
     limit: number
     total: number
+    total_pages: number
+    has_next: boolean
+    has_prev: boolean
   }
   onPaginationChange: (page: number, limit: number) => void
 }
@@ -29,7 +32,7 @@ export function DataTablePagination<TData>({
   pagination,
   onPaginationChange,
 }: DataTablePaginationProps<TData>) {
-  const totalPages = Math.ceil(pagination.total / pagination.limit) || 1
+  const totalPages = pagination.total_pages || 1
 
   return (
     <div
@@ -69,7 +72,7 @@ export function DataTablePagination<TData>({
             variant='outline'
             className='hidden h-8 w-8 p-0 lg:flex'
             onClick={() => onPaginationChange(1, pagination.limit)}
-            disabled={pagination.page <= 1}
+            disabled={!pagination.has_prev}
           >
             <span className='sr-only'>Go to first page</span>
             <DoubleArrowLeftIcon className='h-4 w-4' />
@@ -78,7 +81,7 @@ export function DataTablePagination<TData>({
             variant='outline'
             className='h-8 w-8 p-0'
             onClick={() => onPaginationChange(pagination.page - 1, pagination.limit)}
-            disabled={pagination.page <= 1}
+            disabled={!pagination.has_prev}
           >
             <span className='sr-only'>Go to previous page</span>
             <ChevronLeftIcon className='h-4 w-4' />
@@ -87,7 +90,7 @@ export function DataTablePagination<TData>({
             variant='outline'
             className='h-8 w-8 p-0'
             onClick={() => onPaginationChange(pagination.page + 1, pagination.limit)}
-            disabled={pagination.page >= totalPages}
+            disabled={!pagination.has_next}
           >
             <span className='sr-only'>Go to next page</span>
             <ChevronRightIcon className='h-4 w-4' />
@@ -96,7 +99,7 @@ export function DataTablePagination<TData>({
             variant='outline'
             className='hidden h-8 w-8 p-0 lg:flex'
             onClick={() => onPaginationChange(totalPages, pagination.limit)}
-            disabled={pagination.page >= totalPages}
+            disabled={!pagination.has_next}
           >
             <span className='sr-only'>Go to last page</span>
             <DoubleArrowRightIcon className='h-4 w-4' />
