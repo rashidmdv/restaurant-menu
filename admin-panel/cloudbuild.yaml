@@ -1,0 +1,23 @@
+# cloud build ya for supplier-dev
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/invoice-362011/supplier-web-dev', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/invoice-362011/supplier-web-dev']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'supplier-web-dev' # Cloud Run service name
+      - '--image=gcr.io/invoice-362011/supplier-web-dev'
+      - '--platform=managed'
+      - '--region=asia-south1'
+      - '--port=3005'
+
+images:
+  - 'gcr.io/invoice-362011/supplier-web-dev'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
