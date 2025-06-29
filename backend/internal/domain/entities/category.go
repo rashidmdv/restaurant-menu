@@ -12,7 +12,7 @@ type Category struct {
 	Description  string         `json:"description" gorm:"type:text"`
 	Slug         string         `json:"slug" gorm:"size:100;uniqueIndex"`
 	DisplayOrder int            `json:"display_order" gorm:"default:0;index"`
-	Active       bool           `json:"active" gorm:"default:true;index"`
+	Active       bool           `json:"active" gorm:"index"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    gorm.DeletedAt `json:"-" gorm:"index"`

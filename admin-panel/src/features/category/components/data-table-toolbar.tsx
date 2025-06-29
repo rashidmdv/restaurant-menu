@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 
 import { Input } from "@/components/ui/input"
 import { Table } from "@tanstack/react-table"
-import { VehicleStatus, VehicleType } from "../data/schema"
+// Remove unused vehicle imports
 import { useCategories } from "../context/categories-context"
 import { useDebounce } from "@/hooks/use-debounce"
 import {
@@ -28,15 +28,15 @@ export function DataTableToolbar<TData>({
   const { categories, filters, setFilters, refreshCategories } = useCategories()
   const [searchValue, setSearchValue] = useState<string>("")
   const debouncedSearchValue = useDebounce(searchValue, 300)
-  const [activeStatus, setActiveStatus] = useState<string>(filters.isActive === true ? "active" : 
-                                                          filters.isActive === false ? "inactive" : "all")
+  const [activeStatus, setActiveStatus] = useState<string>(filters.active === true ? "active" : 
+                                                          filters.active === false ? "inactive" : "all")
   
   // Initialize search value from API filters
   useEffect(() => {
     if (filters.name && filters.name !== searchValue) {
       setSearchValue(filters.name)
     }
-  }, [filters.name])
+  }, [filters.name, searchValue])
   
   // Apply debounced search value to table filters and API
   useEffect(() => {
@@ -71,21 +71,21 @@ export function DataTableToolbar<TData>({
     setActiveStatus(value)
     
     // Update API filter
-    let isActiveValue: boolean | undefined = undefined
-    if (value === "active") isActiveValue = true
-    if (value === "inactive") isActiveValue = false
+    let activeValue: boolean | undefined = undefined
+    if (value === "active") activeValue = true
+    if (value === "inactive") activeValue = false
     
     // Update API filters
     setFilters(prev => ({
       ...prev,
-      isActive: isActiveValue
+      active: activeValue
     }))
     
     // Update table filter
     if (value === "all") {
-      table.getColumn('isActive')?.setFilterValue(undefined)
+      table.getColumn('active')?.setFilterValue(undefined)
     } else {
-      table.getColumn('isActive')?.setFilterValue([String(isActiveValue)])
+      table.getColumn('active')?.setFilterValue([String(activeValue)])
     }
   }
   
@@ -102,11 +102,7 @@ export function DataTableToolbar<TData>({
     setSearchValue(value)
   }
   
-  // Generate category options from available categories
-  const categoryOptions = categories.map(category => ({
-    value: category.id,
-    label: category.name,
-  }))
+  // Category options removed - not used in this component
   
   // Reset all filters
   const handleResetFilters = () => {
@@ -141,7 +137,7 @@ export function DataTableToolbar<TData>({
           className='h-8 w-[150px] lg:w-[250px]'
         />
         <div className='flex gap-x-2 flex-wrap'>
-          {table.getColumn('isActive') && (
+          {table.getColumn('active') && (
             <Select value={activeStatus} onValueChange={handleActiveStatusChange}>
               <SelectTrigger className='h-8 w-[130px]'>
                 <SelectValue placeholder="Active Status" />

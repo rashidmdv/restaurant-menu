@@ -1,6 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useCategories } from '../context/categories-context'
-import { CategoriesImportDialog } from './categories-import-dialog'
 import { CategoriesMutateDialog } from './categories-mutate-dialog'
 import { CategoriesDetailsDialog } from './categories-details-dialog'
 import { useState, useCallback } from 'react'
@@ -53,14 +52,6 @@ export function CategoriesDialogs() {
         />
       )}
 
-      {/* Import dialog - only render when open */}
-      {open === 'import' && (
-        <CategoriesImportDialog
-          key='categories-import'
-          open={true}
-          onOpenChange={() => setOpen(null)}
-        />
-      )}
 
       {/* Only render these dialogs if we have a currentRow */}
       {currentRow && (

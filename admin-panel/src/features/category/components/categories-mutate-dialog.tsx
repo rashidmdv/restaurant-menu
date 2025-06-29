@@ -38,8 +38,8 @@ interface Props {
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name too long"),
   description: z.string().optional(),
-  display_order: z.number().optional().default(0),
-  active: z.boolean().optional().default(true),
+  display_order: z.number().default(0),
+  active: z.boolean().default(true),
 })
 
 type CategoryForm = z.infer<typeof formSchema>
@@ -205,15 +205,19 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
                 control={form.control}
                 name="active"
                 render={({ field }) => (
-                  <FormItem className="flex items-center space-x-3 mt-2">
-                    <FormLabel>Active</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel>Active Status</FormLabel>
+                      {/* <div className="text-sm text-muted-foreground">
+                        Whether this category is currently active
+                      </div> */}
+                    </div>
                     <FormControl>
                       <Switch 
-                        checked={field.value} 
-                        onCheckedChange={field.onChange} 
+                        checked={field.value ?? true}
+                        onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

@@ -163,6 +163,11 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 		return
 	}
 
+	// Log category creation request
+	h.logger.LogInfo(ctx, "Create category request received", map[string]interface{}{
+		"name": req.Name,
+	})
+
 	serviceReq := services.CreateCategoryRequest{
 		Name:         req.Name,
 		Description:  req.Description,

@@ -6,7 +6,7 @@ import { Category, CreateCategory, UpdateCategory } from '../data/schema'
 import { CategoryService, CategoryFilters } from '@/services/category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
-type CategoryDialogType = 'create' | 'update' | 'delete' | 'import' | 'details'
+type CategoryDialogType = 'create' | 'update' | 'delete' | 'details'
 
 interface CategoriesPaginationState {
   page: number
