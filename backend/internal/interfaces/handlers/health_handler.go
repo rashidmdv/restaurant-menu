@@ -40,7 +40,7 @@ func NewHealthHandler(db *database.Database, logger *logger.Logger) *HealthHandl
 // @Accept json
 // @Produce json
 // @Success 200 {object} HealthResponse
-// @Router /v1/health [get]
+// @Router /health [get]
 func (h *HealthHandler) Health(c *gin.Context) {
 	response.Success(c, HealthResponse{
 		Status:    "healthy",

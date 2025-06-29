@@ -28,7 +28,7 @@ func NewMenuHandler(service services.MenuService, logger *logger.Logger) *MenuHa
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/menu [get]
+// @Router /api/v1/menu [get]
 func (h *MenuHandler) GetCompleteMenu(c *gin.Context) {
 	ctx := c.Request.Context()
 

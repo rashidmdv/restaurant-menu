@@ -7,10 +7,10 @@ import (
 
 	"restaurant-menu-api/internal/domain/entities"
 	"restaurant-menu-api/internal/domain/services"
+	appErrors "restaurant-menu-api/pkg/errors"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
 	"restaurant-menu-api/pkg/utils"
-	appErrors "restaurant-menu-api/pkg/errors"
 )
 
 type CategoryHandler struct {
@@ -42,7 +42,6 @@ func NewCategoryHandler(service services.CategoryService, logger *logger.Logger)
 		logger:  logger,
 	}
 }
-
 
 // GetAllCategories godoc
 // @Summary List all categories
@@ -407,7 +406,7 @@ func (h *CategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	updatedCategory, err := h.service.UpdateDisplayOrder(ctx, uint(id), req.DisplayOrder)
 	if err != nil {
 		h.logger.LogError(ctx, err, "Failed to update category display order", map[string]interface{}{
-			"category_id":    id,
+			"category_id":   id,
 			"display_order": req.DisplayOrder,
 		})
 		response.Error(c, appErrors.WrapInternalError(err, "Failed to update category display order"))
@@ -415,10 +414,9 @@ func (h *CategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	}
 
 	h.logger.LogInfo(ctx, "Category display order updated successfully", map[string]interface{}{
-		"category_id":    id,
+		"category_id":   id,
 		"display_order": req.DisplayOrder,
 	})
 
 	response.Success(c, updatedCategory)
 }
-

@@ -24,82 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/live": {
-            "get": {
-                "description": "Check if the application is alive",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Liveness check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/ready": {
-            "get": {
-                "description": "Check if the application is ready to serve requests",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Readiness check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/status": {
-            "get": {
-                "description": "Get detailed application status with health checks",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Application status",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/categories": {
+        "/api/v1/categories": {
             "get": {
                 "description": "Get all categories with optional filtering and pagination",
                 "consumes": [
@@ -225,7 +150,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/categories/{id}": {
+        "/api/v1/categories/{id}": {
             "get": {
                 "description": "Get a specific category by its ID with optional subcategories",
                 "consumes": [
@@ -383,7 +308,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/categories/{id}/display-order": {
+        "/api/v1/categories/{id}/display-order": {
             "patch": {
                 "description": "Update the display order of a category",
                 "consumes": [
@@ -442,7 +367,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/categories/{id}/toggle-active": {
+        "/api/v1/categories/{id}/toggle-active": {
             "patch": {
                 "description": "Toggle the active status of a category",
                 "consumes": [
@@ -492,7 +417,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/content": {
+        "/api/v1/content": {
             "get": {
                 "description": "Get all content with optional filtering and pagination",
                 "consumes": [
@@ -618,7 +543,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/content/by-section/{section}": {
+        "/api/v1/content/by-section/{section}": {
             "get": {
                 "description": "Get specific content by its section name",
                 "consumes": [
@@ -662,7 +587,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/content/{id}": {
+        "/api/v1/content/{id}": {
             "get": {
                 "description": "Get specific content by its ID",
                 "consumes": [
@@ -808,30 +733,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/health": {
-            "get": {
-                "description": "Basic health check endpoint",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/items": {
+        "/api/v1/items": {
             "get": {
                 "description": "Get all menu items with optional filtering and pagination",
                 "consumes": [
@@ -981,7 +883,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/featured": {
+        "/api/v1/items/featured": {
             "get": {
                 "description": "Get a list of featured menu items",
                 "consumes": [
@@ -1021,7 +923,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/search": {
+        "/api/v1/items/search": {
             "get": {
                 "description": "Search menu items by query with optional filters",
                 "consumes": [
@@ -1107,7 +1009,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}": {
+        "/api/v1/items/{id}": {
             "get": {
                 "description": "Get a specific menu item by its ID",
                 "consumes": [
@@ -1259,7 +1161,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}/display-order": {
+        "/api/v1/items/{id}/display-order": {
             "patch": {
                 "description": "Update the display order of an item",
                 "consumes": [
@@ -1318,7 +1220,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}/price": {
+        "/api/v1/items/{id}/price": {
             "patch": {
                 "description": "Update the price of an item",
                 "consumes": [
@@ -1377,7 +1279,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/items/{id}/toggle-available": {
+        "/api/v1/items/{id}/toggle-available": {
             "patch": {
                 "description": "Toggle the availability status of an item",
                 "consumes": [
@@ -1427,7 +1329,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/menu": {
+        "/api/v1/menu": {
             "get": {
                 "description": "Get the complete hierarchical menu with all categories, subcategories, and items",
                 "consumes": [
@@ -1457,7 +1359,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/restaurants/hours": {
+        "/api/v1/restaurants/hours": {
             "get": {
                 "description": "Get the restaurant's operating hours",
                 "consumes": [
@@ -1489,7 +1391,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/restaurants/info": {
+        "/api/v1/restaurants/info": {
             "get": {
                 "description": "Get the restaurant's basic information",
                 "consumes": [
@@ -1606,7 +1508,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/restaurants/{id}": {
+        "/api/v1/restaurants/{id}": {
             "delete": {
                 "description": "Delete a restaurant by ID",
                 "consumes": [
@@ -1647,7 +1549,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/subcategories": {
+        "/api/v1/subcategories": {
             "get": {
                 "description": "Get all subcategories with optional filtering and pagination",
                 "consumes": [
@@ -1779,7 +1681,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/subcategories/{id}": {
+        "/api/v1/subcategories/{id}": {
             "get": {
                 "description": "Get a specific subcategory by its ID with optional items",
                 "consumes": [
@@ -1937,7 +1839,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/subcategories/{id}/display-order": {
+        "/api/v1/subcategories/{id}/display-order": {
             "patch": {
                 "description": "Update the display order of a subcategory",
                 "consumes": [
@@ -1996,7 +1898,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/subcategories/{id}/toggle-active": {
+        "/api/v1/subcategories/{id}/toggle-active": {
             "patch": {
                 "description": "Toggle the active status of a subcategory",
                 "consumes": [
@@ -2046,7 +1948,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/upload": {
+        "/api/v1/upload": {
             "post": {
                 "description": "Upload an image file to S3 storage",
                 "consumes": [
@@ -2096,7 +1998,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/upload/presigned-url": {
+        "/api/v1/upload/presigned-url": {
             "post": {
                 "description": "Generate a presigned URL for direct file upload to S3",
                 "consumes": [
@@ -2142,7 +2044,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/upload/{key}": {
+        "/api/v1/upload/{key}": {
             "delete": {
                 "description": "Delete an image file from S3 storage",
                 "consumes": [
@@ -2189,7 +2091,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/upload/{key}/info": {
+        "/api/v1/upload/{key}/info": {
             "get": {
                 "description": "Get metadata and information about an uploaded image",
                 "consumes": [
@@ -2235,6 +2137,104 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Basic health check endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/live": {
+            "get": {
+                "description": "Check if the application is alive",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Liveness check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ready": {
+            "get": {
+                "description": "Check if the application is ready to serve requests",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Readiness check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/status": {
+            "get": {
+                "description": "Get detailed application status with health checks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Application status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.HealthResponse"
                         }
                     }
                 }
@@ -2981,7 +2981,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8000",
-	BasePath:         "/api",
+	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
 	Title:            "Restaurant Menu API",
 	Description:      "A production-ready REST API for restaurant menu management",

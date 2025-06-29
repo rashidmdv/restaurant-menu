@@ -56,7 +56,7 @@ func NewUploadHandler(s3Client *aws.S3Client, logger *logger.Logger) *UploadHand
 // @Success 201 {object} UploadImageResponse
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/upload [post]
+// @Router /api/v1/upload [post]
 func (h *UploadHandler) UploadImage(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -116,7 +116,7 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/upload/{key} [delete]
+// @Router /api/v1/upload/{key} [delete]
 func (h *UploadHandler) DeleteImage(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -170,7 +170,7 @@ func (h *UploadHandler) DeleteImage(c *gin.Context) {
 // @Success 200 {object} PresignedURLResponse
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/upload/presigned-url [post]
+// @Router /api/v1/upload/presigned-url [post]
 func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -229,7 +229,7 @@ func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/upload/{key}/info [get]
+// @Router /api/v1/upload/{key}/info [get]
 func (h *UploadHandler) GetImageInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 

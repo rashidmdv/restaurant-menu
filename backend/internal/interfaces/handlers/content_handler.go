@@ -57,7 +57,7 @@ func NewContentHandler(service services.ContentService, logger *logger.Logger) *
 // @Param order_dir query string false "Order direction (ASC/DESC)"
 // @Success 200 {array} entities.ContentSection
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content [get]
+// @Router /api/v1/content [get]
 func (h *ContentHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -92,7 +92,7 @@ func (h *ContentHandler) GetAll(c *gin.Context) {
 // @Success 200 {object} entities.ContentSection
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content/{id} [get]
+// @Router /api/v1/content/{id} [get]
 func (h *ContentHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -124,7 +124,7 @@ func (h *ContentHandler) GetByID(c *gin.Context) {
 // @Success 200 {object} entities.ContentSection
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content/by-section/{section} [get]
+// @Router /api/v1/content/by-section/{section} [get]
 func (h *ContentHandler) GetByKey(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -157,7 +157,7 @@ func (h *ContentHandler) GetByKey(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 409 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content [post]
+// @Router /api/v1/content [post]
 func (h *ContentHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -206,7 +206,7 @@ func (h *ContentHandler) Create(c *gin.Context) {
 // @Failure 404 {object} response.APIResponse
 // @Failure 409 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content/{id} [put]
+// @Router /api/v1/content/{id} [put]
 func (h *ContentHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -287,7 +287,7 @@ func (h *ContentHandler) Update(c *gin.Context) {
 // @Success 204
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/content/{id} [delete]
+// @Router /api/v1/content/{id} [delete]
 func (h *ContentHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 

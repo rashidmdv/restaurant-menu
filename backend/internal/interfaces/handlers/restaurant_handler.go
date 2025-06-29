@@ -49,7 +49,7 @@ func NewRestaurantHandler(service services.RestaurantService, logger *logger.Log
 // @Produce json
 // @Success 200 {object} entities.RestaurantInfo
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/restaurants/info [get]
+// @Router /api/v1/restaurants/info [get]
 func (h *RestaurantHandler) GetInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -71,7 +71,7 @@ func (h *RestaurantHandler) GetInfo(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} entities.OperatingHour
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/restaurants/hours [get]
+// @Router /api/v1/restaurants/hours [get]
 func (h *RestaurantHandler) GetOperatingHours(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -95,7 +95,7 @@ func (h *RestaurantHandler) GetOperatingHours(c *gin.Context) {
 // @Success 201 {object} entities.RestaurantInfo
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/restaurants/info [post]
+// @Router /api/v1/restaurants/info [post]
 func (h *RestaurantHandler) CreateInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -139,7 +139,7 @@ func (h *RestaurantHandler) CreateInfo(c *gin.Context) {
 // @Success 200 {object} entities.RestaurantInfo
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/restaurants/info [put]
+// @Router /api/v1/restaurants/info [put]
 func (h *RestaurantHandler) UpdateInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -197,7 +197,7 @@ func (h *RestaurantHandler) UpdateInfo(c *gin.Context) {
 // @Success 204
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/restaurants/{id} [delete]
+// @Router /api/v1/restaurants/{id} [delete]
 func (h *RestaurantHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 

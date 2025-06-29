@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"restaurant-menu-api/internal/config"
 	"restaurant-menu-api/internal/database"
@@ -17,7 +17,7 @@ import (
 	"restaurant-menu-api/internal/interfaces/handlers"
 	"restaurant-menu-api/internal/interfaces/middleware"
 	"restaurant-menu-api/pkg/logger"
-	
+
 	_ "restaurant-menu-api/docs" // Import generated docs
 )
 
@@ -86,7 +86,7 @@ func (s *Server) setupMiddleware() {
 	s.router.Use(middleware.RequestLogger(s.logger))
 	s.router.Use(middleware.RequestID())
 	s.router.Use(middleware.TimestampMiddleware())
-	
+
 	// Rate limiting - use Redis-based if available, fallback to simple limiter
 	if s.redisClient != nil {
 		advancedRateLimiter := middleware.NewAdvancedRateLimiter(s.redisClient, s.logger)
@@ -95,7 +95,7 @@ func (s *Server) setupMiddleware() {
 		simpleRateLimiter := middleware.NewSimpleRateLimiter(100, time.Minute)
 		s.router.Use(simpleRateLimiter.Middleware())
 	}
-	
+
 	s.router.Use(middleware.Timeout(30 * time.Second))
 }
 
@@ -125,10 +125,11 @@ func (s *Server) setupRoutes() {
 	menuHandler := handlers.NewMenuHandler(menuService, s.logger)
 	uploadHandler := handlers.NewUploadHandler(s.s3Client, s.logger)
 
-	// Health check routes
+	// Health check routes (ROOT level - industry standard)
 	s.router.GET("/health", healthHandler.Health)
-	s.router.GET("/health/ready", healthHandler.Ready)
-	s.router.GET("/health/live", healthHandler.Live)
+	s.router.GET("/ready", healthHandler.Ready)
+	s.router.GET("/live", healthHandler.Live)
+	s.router.GET("/status", healthHandler.Status)
 
 	// Swagger documentation route
 	if s.config.IsDevelopment() || s.config.Server.Environment == "staging" {

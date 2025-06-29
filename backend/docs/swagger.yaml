@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   internal_interfaces_handlers.CreateCategoryRequest:
     properties:
@@ -512,56 +512,7 @@ info:
   title: Restaurant Menu API
   version: "1.0"
 paths:
-  /live:
-    get:
-      consumes:
-      - application/json
-      description: Check if the application is alive
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
-      summary: Liveness check
-      tags:
-      - Health
-  /ready:
-    get:
-      consumes:
-      - application/json
-      description: Check if the application is ready to serve requests
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
-      summary: Readiness check
-      tags:
-      - Health
-  /status:
-    get:
-      consumes:
-      - application/json
-      description: Get detailed application status with health checks
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
-      summary: Application status
-      tags:
-      - Health
-  /v1/categories:
+  /api/v1/categories:
     get:
       consumes:
       - application/json
@@ -644,7 +595,7 @@ paths:
       summary: Create a new category
       tags:
       - Categories
-  /v1/categories/{id}:
+  /api/v1/categories/{id}:
     delete:
       consumes:
       - application/json
@@ -749,7 +700,7 @@ paths:
       summary: Update a category
       tags:
       - Categories
-  /v1/categories/{id}/display-order:
+  /api/v1/categories/{id}/display-order:
     patch:
       consumes:
       - application/json
@@ -788,7 +739,7 @@ paths:
       summary: Update category display order
       tags:
       - Categories
-  /v1/categories/{id}/toggle-active:
+  /api/v1/categories/{id}/toggle-active:
     patch:
       consumes:
       - application/json
@@ -821,7 +772,7 @@ paths:
       summary: Toggle category active status
       tags:
       - Categories
-  /v1/content:
+  /api/v1/content:
     get:
       consumes:
       - application/json
@@ -904,7 +855,7 @@ paths:
       summary: Create new content
       tags:
       - Content
-  /v1/content/{id}:
+  /api/v1/content/{id}:
     delete:
       consumes:
       - application/json
@@ -1001,7 +952,7 @@ paths:
       summary: Update content
       tags:
       - Content
-  /v1/content/by-section/{section}:
+  /api/v1/content/by-section/{section}:
     get:
       consumes:
       - application/json
@@ -1030,22 +981,7 @@ paths:
       summary: Get content by section name
       tags:
       - Content
-  /v1/health:
-    get:
-      consumes:
-      - application/json
-      description: Basic health check endpoint
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
-      summary: Health check
-      tags:
-      - Health
-  /v1/items:
+  /api/v1/items:
     get:
       consumes:
       - application/json
@@ -1144,7 +1080,7 @@ paths:
       summary: Create a new item
       tags:
       - Items
-  /v1/items/{id}:
+  /api/v1/items/{id}:
     delete:
       consumes:
       - application/json
@@ -1245,7 +1181,7 @@ paths:
       summary: Update an item
       tags:
       - Items
-  /v1/items/{id}/display-order:
+  /api/v1/items/{id}/display-order:
     patch:
       consumes:
       - application/json
@@ -1284,7 +1220,7 @@ paths:
       summary: Update item display order
       tags:
       - Items
-  /v1/items/{id}/price:
+  /api/v1/items/{id}/price:
     patch:
       consumes:
       - application/json
@@ -1323,7 +1259,7 @@ paths:
       summary: Update item price
       tags:
       - Items
-  /v1/items/{id}/toggle-available:
+  /api/v1/items/{id}/toggle-available:
     patch:
       consumes:
       - application/json
@@ -1356,7 +1292,7 @@ paths:
       summary: Toggle item availability
       tags:
       - Items
-  /v1/items/featured:
+  /api/v1/items/featured:
     get:
       consumes:
       - application/json
@@ -1382,7 +1318,7 @@ paths:
       summary: Get featured items
       tags:
       - Items
-  /v1/items/search:
+  /api/v1/items/search:
     get:
       consumes:
       - application/json
@@ -1439,7 +1375,7 @@ paths:
       summary: Search items
       tags:
       - Items
-  /v1/menu:
+  /api/v1/menu:
     get:
       consumes:
       - application/json
@@ -1460,7 +1396,7 @@ paths:
       summary: Get complete menu
       tags:
       - Menu
-  /v1/restaurants/{id}:
+  /api/v1/restaurants/{id}:
     delete:
       consumes:
       - application/json
@@ -1487,7 +1423,7 @@ paths:
       summary: Delete a restaurant
       tags:
       - Restaurants
-  /v1/restaurants/hours:
+  /api/v1/restaurants/hours:
     get:
       consumes:
       - application/json
@@ -1508,7 +1444,7 @@ paths:
       summary: Get operating hours
       tags:
       - Restaurants
-  /v1/restaurants/info:
+  /api/v1/restaurants/info:
     get:
       consumes:
       - application/json
@@ -1585,7 +1521,7 @@ paths:
       summary: Update restaurant information
       tags:
       - Restaurants
-  /v1/subcategories:
+  /api/v1/subcategories:
     get:
       consumes:
       - application/json
@@ -1672,7 +1608,7 @@ paths:
       summary: Create a new subcategory
       tags:
       - SubCategories
-  /v1/subcategories/{id}:
+  /api/v1/subcategories/{id}:
     delete:
       consumes:
       - application/json
@@ -1777,7 +1713,7 @@ paths:
       summary: Update a subcategory
       tags:
       - SubCategories
-  /v1/subcategories/{id}/display-order:
+  /api/v1/subcategories/{id}/display-order:
     patch:
       consumes:
       - application/json
@@ -1816,7 +1752,7 @@ paths:
       summary: Update subcategory display order
       tags:
       - SubCategories
-  /v1/subcategories/{id}/toggle-active:
+  /api/v1/subcategories/{id}/toggle-active:
     patch:
       consumes:
       - application/json
@@ -1849,7 +1785,7 @@ paths:
       summary: Toggle subcategory active status
       tags:
       - SubCategories
-  /v1/upload:
+  /api/v1/upload:
     post:
       consumes:
       - multipart/form-data
@@ -1882,7 +1818,7 @@ paths:
       summary: Upload an image
       tags:
       - Upload
-  /v1/upload/{key}:
+  /api/v1/upload/{key}:
     delete:
       consumes:
       - application/json
@@ -1913,7 +1849,7 @@ paths:
       summary: Delete an image
       tags:
       - Upload
-  /v1/upload/{key}/info:
+  /api/v1/upload/{key}/info:
     get:
       consumes:
       - application/json
@@ -1947,7 +1883,7 @@ paths:
       summary: Get image information
       tags:
       - Upload
-  /v1/upload/presigned-url:
+  /api/v1/upload/presigned-url:
     post:
       consumes:
       - application/json
@@ -1977,6 +1913,70 @@ paths:
       summary: Get presigned upload URL
       tags:
       - Upload
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Basic health check endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
+  /live:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is alive
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Liveness check
+      tags:
+      - Health
+  /ready:
+    get:
+      consumes:
+      - application/json
+      description: Check if the application is ready to serve requests
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Readiness check
+      tags:
+      - Health
+  /status:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed application status with health checks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_interfaces_handlers.HealthResponse'
+      summary: Application status
+      tags:
+      - Health
 schemes:
 - http
 - https

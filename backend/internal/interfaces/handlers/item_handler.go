@@ -75,7 +75,7 @@ func NewItemHandler(service services.ItemService, subCategoryService services.Su
 // @Param include_count query boolean false "Include total count"
 // @Success 200 {array} entities.Item
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items [get]
+// @Router /api/v1/items [get]
 func (h *ItemHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -146,7 +146,7 @@ func (h *ItemHandler) GetAll(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id} [get]
+// @Router /api/v1/items/{id} [get]
 func (h *ItemHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -184,7 +184,7 @@ func (h *ItemHandler) GetByID(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 409 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items [post]
+// @Router /api/v1/items [post]
 func (h *ItemHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -260,7 +260,7 @@ func (h *ItemHandler) Create(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id} [put]
+// @Router /api/v1/items/{id} [put]
 func (h *ItemHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -353,7 +353,7 @@ func (h *ItemHandler) Update(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id} [delete]
+// @Router /api/v1/items/{id} [delete]
 func (h *ItemHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -405,7 +405,7 @@ func (h *ItemHandler) Delete(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id}/toggle-available [patch]
+// @Router /api/v1/items/{id}/toggle-available [patch]
 func (h *ItemHandler) ToggleAvailable(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -468,7 +468,7 @@ func (h *ItemHandler) ToggleAvailable(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id}/display-order [patch]
+// @Router /api/v1/items/{id}/display-order [patch]
 func (h *ItemHandler) UpdateDisplayOrder(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -538,7 +538,7 @@ func (h *ItemHandler) UpdateDisplayOrder(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/{id}/price [patch]
+// @Router /api/v1/items/{id}/price [patch]
 func (h *ItemHandler) UpdatePrice(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -613,7 +613,7 @@ func (h *ItemHandler) UpdatePrice(c *gin.Context) {
 // @Success 200 {object} response.APIResponse
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/search [get]
+// @Router /api/v1/items/search [get]
 func (h *ItemHandler) Search(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -683,7 +683,7 @@ func (h *ItemHandler) Search(c *gin.Context) {
 // @Param limit query int false "Number of items to return (max 50, default 10)"
 // @Success 200 {array} entities.Item
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/items/featured [get]
+// @Router /api/v1/items/featured [get]
 func (h *ItemHandler) GetFeatured(c *gin.Context) {
 	ctx := c.Request.Context()
 

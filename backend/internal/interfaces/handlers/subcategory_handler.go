@@ -60,7 +60,7 @@ func NewSubCategoryHandler(service services.SubCategoryService, categoryService 
 // @Param include_count query boolean false "Include total count"
 // @Success 200 {array} entities.SubCategory
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories [get]
+// @Router /api/v1/subcategories [get]
 func (h *SubCategoryHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -114,7 +114,7 @@ func (h *SubCategoryHandler) GetAll(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories/{id} [get]
+// @Router /api/v1/subcategories/{id} [get]
 func (h *SubCategoryHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -161,7 +161,7 @@ func (h *SubCategoryHandler) GetByID(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 409 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories [post]
+// @Router /api/v1/subcategories [post]
 func (h *SubCategoryHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -228,7 +228,7 @@ func (h *SubCategoryHandler) Create(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories/{id} [put]
+// @Router /api/v1/subcategories/{id} [put]
 func (h *SubCategoryHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -312,7 +312,7 @@ func (h *SubCategoryHandler) Update(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories/{id} [delete]
+// @Router /api/v1/subcategories/{id} [delete]
 func (h *SubCategoryHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -364,7 +364,7 @@ func (h *SubCategoryHandler) Delete(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories/{id}/toggle-active [patch]
+// @Router /api/v1/subcategories/{id}/toggle-active [patch]
 func (h *SubCategoryHandler) ToggleActive(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -427,7 +427,7 @@ func (h *SubCategoryHandler) ToggleActive(c *gin.Context) {
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /v1/subcategories/{id}/display-order [patch]
+// @Router /api/v1/subcategories/{id}/display-order [patch]
 func (h *SubCategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	ctx := c.Request.Context()
 
