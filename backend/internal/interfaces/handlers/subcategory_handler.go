@@ -9,6 +9,7 @@ import (
 	"restaurant-menu-api/internal/domain/services"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
+	"restaurant-menu-api/pkg/utils"
 	appErrors "restaurant-menu-api/pkg/errors"
 )
 
@@ -34,6 +35,7 @@ type UpdateSubCategoryRequest struct {
 	Active       *bool  `json:"active"`
 }
 
+
 func NewSubCategoryHandler(service services.SubCategoryService, categoryService services.CategoryService, logger *logger.Logger) *SubCategoryHandler {
 	return &SubCategoryHandler{
 		service:        service,
@@ -42,13 +44,30 @@ func NewSubCategoryHandler(service services.SubCategoryService, categoryService 
 	}
 }
 
+// GetAllSubCategories godoc
+// @Summary List all subcategories
+// @Description Get all subcategories with optional filtering and pagination
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param category_id query int false "Filter by category ID"
+// @Param active query boolean false "Filter by active status"
+// @Param search query string false "Search in name and description"
+// @Param limit query int false "Number of items to return"
+// @Param offset query int false "Number of items to skip"
+// @Param order_by query string false "Field to order by"
+// @Param order_dir query string false "Order direction (ASC/DESC)"
+// @Param include_count query boolean false "Include total count"
+// @Success 200 {array} entities.SubCategory
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories [get]
 func (h *SubCategoryHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	// Parse query parameters
 	filter := entities.SubCategoryFilter{
-		Limit:        parseInt(c.Query("limit"), 10),
-		Offset:       parseInt(c.Query("offset"), 0),
+		Limit:        utils.ParseInt(c.Query("limit"), 10),
+		Offset:       utils.ParseInt(c.Query("offset"), 0),
 		OrderBy:      c.DefaultQuery("order_by", "display_order"),
 		OrderDir:     c.DefaultQuery("order_dir", "ASC"),
 		Search:       c.Query("search"),
@@ -57,15 +76,15 @@ func (h *SubCategoryHandler) GetAll(c *gin.Context) {
 
 	if categoryID := c.Query("category_id"); categoryID != "" {
 		if id, err := strconv.ParseUint(categoryID, 10, 32); err == nil {
-			filter.CategoryID = uintPtr(uint(id))
+			filter.CategoryID = utils.UintPtr(uint(id))
 		}
 	}
 
 	if active := c.Query("active"); active != "" {
 		if active == "true" {
-			filter.Active = boolPtr(true)
+			filter.Active = utils.BoolPtr(true)
 		} else if active == "false" {
-			filter.Active = boolPtr(false)
+			filter.Active = utils.BoolPtr(false)
 		}
 	}
 
@@ -83,6 +102,19 @@ func (h *SubCategoryHandler) GetAll(c *gin.Context) {
 	}
 }
 
+// GetSubCategoryByID godoc
+// @Summary Get subcategory by ID
+// @Description Get a specific subcategory by its ID with optional items
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param id path int true "SubCategory ID"
+// @Param include_items query boolean false "Include items in response"
+// @Success 200 {object} entities.SubCategory
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories/{id} [get]
 func (h *SubCategoryHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -118,6 +150,18 @@ func (h *SubCategoryHandler) GetByID(c *gin.Context) {
 	response.Success(c, subcategory)
 }
 
+// CreateSubCategory godoc
+// @Summary Create a new subcategory
+// @Description Create a new menu subcategory
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param subcategory body CreateSubCategoryRequest true "SubCategory data"
+// @Success 201 {object} entities.SubCategory
+// @Failure 400 {object} response.APIResponse
+// @Failure 409 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories [post]
 func (h *SubCategoryHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -172,6 +216,19 @@ func (h *SubCategoryHandler) Create(c *gin.Context) {
 	response.Created(c, subcategory)
 }
 
+// UpdateSubCategory godoc
+// @Summary Update a subcategory
+// @Description Update an existing menu subcategory
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param id path int true "SubCategory ID"
+// @Param subcategory body UpdateSubCategoryRequest true "SubCategory data"
+// @Success 200 {object} entities.SubCategory
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories/{id} [put]
 func (h *SubCategoryHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -244,6 +301,18 @@ func (h *SubCategoryHandler) Update(c *gin.Context) {
 	response.Success(c, subcategory)
 }
 
+// DeleteSubCategory godoc
+// @Summary Delete a subcategory
+// @Description Delete a menu subcategory by ID
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param id path int true "SubCategory ID"
+// @Success 204
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories/{id} [delete]
 func (h *SubCategoryHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -284,6 +353,18 @@ func (h *SubCategoryHandler) Delete(c *gin.Context) {
 	response.NoContent(c)
 }
 
+// ToggleSubCategoryActive godoc
+// @Summary Toggle subcategory active status
+// @Description Toggle the active status of a subcategory
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param id path int true "SubCategory ID"
+// @Success 200 {object} entities.SubCategory
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories/{id}/toggle-active [patch]
 func (h *SubCategoryHandler) ToggleActive(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -334,6 +415,19 @@ func (h *SubCategoryHandler) ToggleActive(c *gin.Context) {
 	response.Success(c, updatedSubCategory)
 }
 
+// UpdateSubCategoryDisplayOrder godoc
+// @Summary Update subcategory display order
+// @Description Update the display order of a subcategory
+// @Tags SubCategories
+// @Accept json
+// @Produce json
+// @Param id path int true "SubCategory ID"
+// @Param order body UpdateDisplayOrderRequest true "Display order data"
+// @Success 200 {object} entities.SubCategory
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/subcategories/{id}/display-order [patch]
 func (h *SubCategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -391,7 +485,3 @@ func (h *SubCategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	response.Success(c, updatedSubCategory)
 }
 
-// Helper functions
-func uintPtr(u uint) *uint {
-	return &u
-}

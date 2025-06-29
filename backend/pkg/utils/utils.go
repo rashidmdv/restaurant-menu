@@ -39,6 +39,11 @@ func IntPtr(i int) *int {
 	return &i
 }
 
+// UintPtr returns a pointer to a uint value
+func UintPtr(u uint) *uint {
+	return &u
+}
+
 // ParseBool parses a string to bool with default value
 func ParseBool(s string, defaultValue bool) bool {
 	if s == "" {

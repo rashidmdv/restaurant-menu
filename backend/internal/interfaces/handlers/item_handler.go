@@ -9,6 +9,7 @@ import (
 	"restaurant-menu-api/internal/domain/services"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
+	"restaurant-menu-api/pkg/utils"
 	appErrors "restaurant-menu-api/pkg/errors"
 )
 
@@ -46,6 +47,7 @@ type UpdatePriceRequest struct {
 	Price float64 `json:"price" binding:"required,min=0"`
 }
 
+
 func NewItemHandler(service services.ItemService, subCategoryService services.SubCategoryService, logger *logger.Logger) *ItemHandler {
 	return &ItemHandler{
 		service:           service,
@@ -54,13 +56,33 @@ func NewItemHandler(service services.ItemService, subCategoryService services.Su
 	}
 }
 
+// GetAllItems godoc
+// @Summary List all items
+// @Description Get all menu items with optional filtering and pagination
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param sub_category_id query int false "Filter by subcategory ID"
+// @Param category_id query int false "Filter by category ID"
+// @Param available query boolean false "Filter by availability status"
+// @Param min_price query number false "Minimum price filter"
+// @Param max_price query number false "Maximum price filter"
+// @Param search query string false "Search in name and description"
+// @Param limit query int false "Number of items to return"
+// @Param offset query int false "Number of items to skip"
+// @Param order_by query string false "Field to order by"
+// @Param order_dir query string false "Order direction (ASC/DESC)"
+// @Param include_count query boolean false "Include total count"
+// @Success 200 {array} entities.Item
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items [get]
 func (h *ItemHandler) GetAll(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	// Parse query parameters
 	filter := entities.ItemFilter{
-		Limit:        parseInt(c.Query("limit"), 10),
-		Offset:       parseInt(c.Query("offset"), 0),
+		Limit:        utils.ParseInt(c.Query("limit"), 10),
+		Offset:       utils.ParseInt(c.Query("offset"), 0),
 		OrderBy:      c.DefaultQuery("order_by", "display_order"),
 		OrderDir:     c.DefaultQuery("order_dir", "ASC"),
 		Search:       c.Query("search"),
@@ -69,21 +91,21 @@ func (h *ItemHandler) GetAll(c *gin.Context) {
 
 	if subCategoryID := c.Query("sub_category_id"); subCategoryID != "" {
 		if id, err := strconv.ParseUint(subCategoryID, 10, 32); err == nil {
-			filter.SubCategoryID = uintPtr(uint(id))
+			filter.SubCategoryID = utils.UintPtr(uint(id))
 		}
 	}
 
 	if categoryID := c.Query("category_id"); categoryID != "" {
 		if id, err := strconv.ParseUint(categoryID, 10, 32); err == nil {
-			filter.CategoryID = uintPtr(uint(id))
+			filter.CategoryID = utils.UintPtr(uint(id))
 		}
 	}
 
 	if available := c.Query("available"); available != "" {
 		if available == "true" {
-			filter.Available = boolPtr(true)
+			filter.Available = utils.BoolPtr(true)
 		} else if available == "false" {
-			filter.Available = boolPtr(false)
+			filter.Available = utils.BoolPtr(false)
 		}
 	}
 
@@ -113,6 +135,18 @@ func (h *ItemHandler) GetAll(c *gin.Context) {
 	}
 }
 
+// GetItemByID godoc
+// @Summary Get item by ID
+// @Description Get a specific menu item by its ID
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Success 200 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id} [get]
 func (h *ItemHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -139,6 +173,18 @@ func (h *ItemHandler) GetByID(c *gin.Context) {
 	response.Success(c, item)
 }
 
+// CreateItem godoc
+// @Summary Create a new item
+// @Description Create a new menu item
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param item body CreateItemRequest true "Item data"
+// @Success 201 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 409 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items [post]
 func (h *ItemHandler) Create(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -202,6 +248,19 @@ func (h *ItemHandler) Create(c *gin.Context) {
 	response.Created(c, item)
 }
 
+// UpdateItem godoc
+// @Summary Update an item
+// @Description Update an existing menu item
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Param item body UpdateItemRequest true "Item data"
+// @Success 200 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id} [put]
 func (h *ItemHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -283,6 +342,18 @@ func (h *ItemHandler) Update(c *gin.Context) {
 	response.Success(c, item)
 }
 
+// DeleteItem godoc
+// @Summary Delete an item
+// @Description Delete a menu item by ID
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Success 204
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id} [delete]
 func (h *ItemHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -323,6 +394,18 @@ func (h *ItemHandler) Delete(c *gin.Context) {
 	response.NoContent(c)
 }
 
+// ToggleItemAvailable godoc
+// @Summary Toggle item availability
+// @Description Toggle the availability status of an item
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Success 200 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id}/toggle-available [patch]
 func (h *ItemHandler) ToggleAvailable(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -373,6 +456,19 @@ func (h *ItemHandler) ToggleAvailable(c *gin.Context) {
 	response.Success(c, updatedItem)
 }
 
+// UpdateItemDisplayOrder godoc
+// @Summary Update item display order
+// @Description Update the display order of an item
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Param order body UpdateDisplayOrderRequest true "Display order data"
+// @Success 200 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id}/display-order [patch]
 func (h *ItemHandler) UpdateDisplayOrder(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -430,6 +526,19 @@ func (h *ItemHandler) UpdateDisplayOrder(c *gin.Context) {
 	response.Success(c, updatedItem)
 }
 
+// UpdateItemPrice godoc
+// @Summary Update item price
+// @Description Update the price of an item
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param id path int true "Item ID"
+// @Param price body UpdatePriceRequest true "Price data"
+// @Success 200 {object} entities.Item
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/{id}/price [patch]
 func (h *ItemHandler) UpdatePrice(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -487,6 +596,24 @@ func (h *ItemHandler) UpdatePrice(c *gin.Context) {
 	response.Success(c, updatedItem)
 }
 
+// SearchItems godoc
+// @Summary Search items
+// @Description Search menu items by query with optional filters
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param q query string true "Search query"
+// @Param sub_category_id query int false "Filter by subcategory ID"
+// @Param category_id query int false "Filter by category ID"
+// @Param available query boolean false "Filter by availability status"
+// @Param min_price query number false "Minimum price filter"
+// @Param max_price query number false "Maximum price filter"
+// @Param limit query int false "Number of items to return (max 50)"
+// @Param offset query int false "Number of items to skip"
+// @Success 200 {object} response.APIResponse
+// @Failure 400 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/search [get]
 func (h *ItemHandler) Search(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -498,28 +625,28 @@ func (h *ItemHandler) Search(c *gin.Context) {
 
 	// Parse query parameters for filters
 	filter := entities.ItemFilter{
-		Limit:        parseInt(c.Query("limit"), 20),
-		Offset:       parseInt(c.Query("offset"), 0),
+		Limit:        utils.ParseInt(c.Query("limit"), 20),
+		Offset:       utils.ParseInt(c.Query("offset"), 0),
 		IncludeCount: true,
 	}
 
 	if subCategoryID := c.Query("sub_category_id"); subCategoryID != "" {
 		if id, err := strconv.ParseUint(subCategoryID, 10, 32); err == nil {
-			filter.SubCategoryID = uintPtr(uint(id))
+			filter.SubCategoryID = utils.UintPtr(uint(id))
 		}
 	}
 
 	if categoryID := c.Query("category_id"); categoryID != "" {
 		if id, err := strconv.ParseUint(categoryID, 10, 32); err == nil {
-			filter.CategoryID = uintPtr(uint(id))
+			filter.CategoryID = utils.UintPtr(uint(id))
 		}
 	}
 
 	if available := c.Query("available"); available != "" {
 		if available == "true" {
-			filter.Available = boolPtr(true)
+			filter.Available = utils.BoolPtr(true)
 		} else if available == "false" {
-			filter.Available = boolPtr(false)
+			filter.Available = utils.BoolPtr(false)
 		}
 	}
 
@@ -547,10 +674,20 @@ func (h *ItemHandler) Search(c *gin.Context) {
 	response.SuccessWithPagination(c, items, pagination)
 }
 
+// GetFeaturedItems godoc
+// @Summary Get featured items
+// @Description Get a list of featured menu items
+// @Tags Items
+// @Accept json
+// @Produce json
+// @Param limit query int false "Number of items to return (max 50, default 10)"
+// @Success 200 {array} entities.Item
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/items/featured [get]
 func (h *ItemHandler) GetFeatured(c *gin.Context) {
 	ctx := c.Request.Context()
 
-	limit := parseInt(c.Query("limit"), 10)
+	limit := utils.ParseInt(c.Query("limit"), 10)
 	if limit <= 0 || limit > 50 {
 		limit = 10
 	}

@@ -9,6 +9,7 @@ import (
 	"restaurant-menu-api/internal/domain/services"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
+	"restaurant-menu-api/pkg/utils"
 	appErrors "restaurant-menu-api/pkg/errors"
 )
 
@@ -56,7 +57,7 @@ func (h *CategoryHandler) GetCompleteMenu(c *gin.Context) {
 
 	// Get all active categories with subcategories
 	filter := entities.CategoryFilter{
-		Active:   boolPtr(true),
+		Active:   utils.BoolPtr(true),
 		OrderBy:  "display_order",
 		OrderDir: "ASC",
 	}
@@ -94,8 +95,8 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 
 	// Parse query parameters
 	filter := entities.CategoryFilter{
-		Limit:        parseInt(c.Query("limit"), 10),
-		Offset:       parseInt(c.Query("offset"), 0),
+		Limit:        utils.ParseInt(c.Query("limit"), 10),
+		Offset:       utils.ParseInt(c.Query("offset"), 0),
 		OrderBy:      c.DefaultQuery("order_by", "display_order"),
 		OrderDir:     c.DefaultQuery("order_dir", "ASC"),
 		Search:       c.Query("search"),
@@ -104,9 +105,9 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 
 	if active := c.Query("active"); active != "" {
 		if active == "true" {
-			filter.Active = boolPtr(true)
+			filter.Active = utils.BoolPtr(true)
 		} else if active == "false" {
-			filter.Active = boolPtr(false)
+			filter.Active = utils.BoolPtr(false)
 		}
 	}
 
@@ -124,6 +125,19 @@ func (h *CategoryHandler) GetAll(c *gin.Context) {
 	}
 }
 
+// GetCategoryByID godoc
+// @Summary Get category by ID
+// @Description Get a specific category by its ID with optional subcategories
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Param include_subcategories query boolean false "Include subcategories in response"
+// @Success 200 {object} entities.Category
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/categories/{id} [get]
 func (h *CategoryHandler) GetByID(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -204,6 +218,19 @@ func (h *CategoryHandler) Create(c *gin.Context) {
 	response.Created(c, category)
 }
 
+// UpdateCategory godoc
+// @Summary Update a category
+// @Description Update an existing menu category
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Param category body UpdateCategoryRequest true "Category data"
+// @Success 200 {object} entities.Category
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/categories/{id} [put]
 func (h *CategoryHandler) Update(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -259,6 +286,18 @@ func (h *CategoryHandler) Update(c *gin.Context) {
 	response.Success(c, category)
 }
 
+// DeleteCategory godoc
+// @Summary Delete a category
+// @Description Delete a menu category by ID
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Success 204
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/categories/{id} [delete]
 func (h *CategoryHandler) Delete(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -299,6 +338,18 @@ func (h *CategoryHandler) Delete(c *gin.Context) {
 	response.NoContent(c)
 }
 
+// ToggleCategoryActive godoc
+// @Summary Toggle category active status
+// @Description Toggle the active status of a category
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Success 200 {object} entities.Category
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/categories/{id}/toggle-active [patch]
 func (h *CategoryHandler) ToggleActive(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -340,6 +391,19 @@ func (h *CategoryHandler) ToggleActive(c *gin.Context) {
 	response.Success(c, updatedCategory)
 }
 
+// UpdateCategoryDisplayOrder godoc
+// @Summary Update category display order
+// @Description Update the display order of a category
+// @Tags Categories
+// @Accept json
+// @Produce json
+// @Param id path int true "Category ID"
+// @Param order body UpdateDisplayOrderRequest true "Display order data"
+// @Success 200 {object} entities.Category
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/categories/{id}/display-order [patch]
 func (h *CategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -388,17 +452,3 @@ func (h *CategoryHandler) UpdateDisplayOrder(c *gin.Context) {
 	response.Success(c, updatedCategory)
 }
 
-// Helper functions
-func boolPtr(b bool) *bool {
-	return &b
-}
-
-func parseInt(s string, defaultValue int) int {
-	if s == "" {
-		return defaultValue
-	}
-	if val, err := strconv.Atoi(s); err == nil {
-		return val
-	}
-	return defaultValue
-}

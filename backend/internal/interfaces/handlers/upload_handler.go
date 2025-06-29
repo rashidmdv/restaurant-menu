@@ -45,6 +45,18 @@ func NewUploadHandler(s3Client *aws.S3Client, logger *logger.Logger) *UploadHand
 	}
 }
 
+// UploadImage godoc
+// @Summary Upload an image
+// @Description Upload an image file to S3 storage
+// @Tags Upload
+// @Accept multipart/form-data
+// @Produce json
+// @Param image formData file true "Image file"
+// @Param folder formData string false "Upload folder (default: items)"
+// @Success 201 {object} UploadImageResponse
+// @Failure 400 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/upload [post]
 func (h *UploadHandler) UploadImage(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -93,6 +105,18 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 	})
 }
 
+// DeleteImage godoc
+// @Summary Delete an image
+// @Description Delete an image file from S3 storage
+// @Tags Upload
+// @Accept json
+// @Produce json
+// @Param key path string true "Image key (S3 object key)"
+// @Success 204
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/upload/{key} [delete]
 func (h *UploadHandler) DeleteImage(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -136,6 +160,17 @@ func (h *UploadHandler) DeleteImage(c *gin.Context) {
 	response.NoContent(c)
 }
 
+// GetPresignedURL godoc
+// @Summary Get presigned upload URL
+// @Description Generate a presigned URL for direct file upload to S3
+// @Tags Upload
+// @Accept json
+// @Produce json
+// @Param request body PresignedURLRequest true "Presigned URL request"
+// @Success 200 {object} PresignedURLResponse
+// @Failure 400 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/upload/presigned-url [post]
 func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 	ctx := c.Request.Context()
 
@@ -183,6 +218,18 @@ func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 	})
 }
 
+// GetImageInfo godoc
+// @Summary Get image information
+// @Description Get metadata and information about an uploaded image
+// @Tags Upload
+// @Accept json
+// @Produce json
+// @Param key path string true "Image key (S3 object key)"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} response.APIResponse
+// @Failure 404 {object} response.APIResponse
+// @Failure 500 {object} response.APIResponse
+// @Router /v1/upload/{key}/info [get]
 func (h *UploadHandler) GetImageInfo(c *gin.Context) {
 	ctx := c.Request.Context()
 

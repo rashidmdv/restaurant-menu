@@ -50,6 +50,15 @@ func (h *HealthHandler) Health(c *gin.Context) {
 	})
 }
 
+// Ready godoc
+// @Summary Readiness check
+// @Description Check if the application is ready to serve requests
+// @Tags Health
+// @Accept json
+// @Produce json
+// @Success 200 {object} HealthResponse
+// @Failure 500 {object} HealthResponse
+// @Router /ready [get]
 func (h *HealthHandler) Ready(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
@@ -91,6 +100,14 @@ func (h *HealthHandler) Ready(c *gin.Context) {
 	}
 }
 
+// Live godoc
+// @Summary Liveness check
+// @Description Check if the application is alive
+// @Tags Health
+// @Accept json
+// @Produce json
+// @Success 200 {object} HealthResponse
+// @Router /live [get]
 func (h *HealthHandler) Live(c *gin.Context) {
 	response.Success(c, HealthResponse{
 		Status:    "alive",
@@ -100,6 +117,14 @@ func (h *HealthHandler) Live(c *gin.Context) {
 	})
 }
 
+// Status godoc
+// @Summary Application status
+// @Description Get detailed application status with health checks
+// @Tags Health
+// @Accept json
+// @Produce json
+// @Success 200 {object} HealthResponse
+// @Router /status [get]
 func (h *HealthHandler) Status(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
