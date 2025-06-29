@@ -6,7 +6,7 @@ import { SubCategory, CreateSubCategory, UpdateSubCategory } from '../data/schem
 import { SubCategoryService, SubCategoryFilters, Category } from '@/services/sub-category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
-type SubCategoryDialogType = 'create' | 'update' | 'delete' | 'import' | 'details'
+type SubCategoryDialogType = 'create' | 'update' | 'delete' | 'details'
 
 interface SubCategoriesPaginationState {
   page: number
@@ -43,16 +43,16 @@ interface Props {
 
 export default function SubCategoriesProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<SubCategoryDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<CatalogSubCategory | null>(null)
+  const [currentRow, setCurrentRow] = useState<SubCategory | null>(null)
   const [pagination, setPagination] = useState<SubCategoriesPaginationState>({
     page: 1,
     limit: 10,
     total: 0,
   })
 
-  const [filters, setFilters] = useState<CatalogSubCategoryFilters>({
-    page: 1,
+  const [filters, setFilters] = useState<SubCategoryFilters>({
     limit: 10,
+    offset: 0,
   })
 
   const queryClient = useQueryClient()
@@ -65,29 +65,27 @@ export default function SubCategoriesProvider({ children }: Props) {
     isError,
     refetch: refreshSubCategories,
   } = useQuery({
-    queryKey: ['catalog-sub-categories', filters],
-    queryFn: () => CatalogService.getSubCategories(filters),
+    queryKey: ['sub-categories', filters],
+    queryFn: () => SubCategoryService.getSubCategoriesPaginated(filters),
     keepPreviousData: true,
   })
 
-    // Fetch makes for dropdown
-    const {
-      data: categoriesData,
-      isLoading: categoriesLoading
-    } = useQuery({
-      queryKey: ['catalog-categories'],
-      queryFn: () => CatalogService.getCategories(),
-    })
+  // Fetch categories for dropdown
+  const {
+    data: categoriesData,
+    isLoading: categoriesLoading
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => SubCategoryService.getCategories(),
+  })
 
-  // Set pagination from meta
+  // Set pagination from response
   useEffect(() => {
-    if (subcategoriesData?.meta && didMountRef.current) {
+    if (subcategoriesData?.pagination && didMountRef.current) {
       setPagination({
-        page: subcategoriesData.meta.currentPage,
-        limit: subcategoriesData.meta.itemsPerPage,
-        //total: categoriesData.meta.totalItems,
-        total: Array.isArray(subcategoriesData) ? subcategoriesData.length : subcategoriesData?.meta?.totalItems || 0,
-
+        page: subcategoriesData.pagination.page,
+        limit: subcategoriesData.pagination.limit,
+        total: subcategoriesData.pagination.total,
       })
     }
 
@@ -98,53 +96,69 @@ export default function SubCategoriesProvider({ children }: Props) {
 
   // Mutations
   const createSubCategoryMutation = useMutation({
-    mutationFn: CatalogService.createSubCategory,
+    mutationFn: SubCategoryService.createSubCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-sub-categories'] })
-      toast.success('Catalog sub-category created successfully')
+      queryClient.invalidateQueries({ queryKey: ['sub-categories'] })
+      toast.success('Sub-category created successfully')
     },
     onError: handleServerError,
   })
 
   const updateSubCategoryMutation = useMutation({
-    mutationFn: ({ id, subcategory }: { id: string; subcategory: Partial<Omit<CatalogSubCategory, 'id' | 'createdAt'>> }) =>
-      CatalogService.updateSubCategory(id, subcategory),
+    mutationFn: ({ id, subcategory }: { id: string; subcategory: UpdateSubCategory }) =>
+      SubCategoryService.updateSubCategory(id, subcategory),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-sub-categories'] })
-      toast.success('Catalog sub-category updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['sub-categories'] })
+      toast.success('Sub-category updated successfully')
     },
     onError: handleServerError,
   })
 
   const deleteSubCategoryMutation = useMutation({
-    mutationFn: CatalogService.deleteSubCategory,
+    mutationFn: SubCategoryService.deleteSubCategory,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-sub-categories'] })
-      toast.success('Catalog sub-category deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['sub-categories'] })
+      toast.success('Sub-category deleted successfully')
+    },
+    onError: handleServerError,
+  })
+
+  const toggleActiveSubCategoryMutation = useMutation({
+    mutationFn: SubCategoryService.toggleSubCategoryActive,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sub-categories'] })
+      toast.success('Sub-category status updated successfully')
     },
     onError: handleServerError,
   })
 
   // Handlers
   const createSubCategory = useCallback(
-    async (subcategory: Omit<CatalogSubCategory, 'id' | 'createdAt'>) => {
+    async (subcategory: CreateSubCategory) => {
       await createSubCategoryMutation.mutateAsync(subcategory)
     },
     [createSubCategoryMutation]
   )
 
   const updateSubCategory = useCallback(
-    async (id: string, subcategory: Partial<Omit<CatalogSubCategory, 'id' | 'createdAt'>>) => {
-      await updateSubCategoryMutation.mutateAsync({ id, subcategory })
+    async (id: number, subcategory: UpdateSubCategory) => {
+      await updateSubCategoryMutation.mutateAsync({ id: id.toString(), subcategory })
     },
     [updateSubCategoryMutation]
   )
 
   const deleteSubCategory = useCallback(
-    async (id: string) => {
-      await deleteSubCategoryMutation.mutateAsync(id)
+    async (id: number) => {
+      await deleteSubCategoryMutation.mutateAsync(id.toString())
     },
     [deleteSubCategoryMutation]
+  )
+
+  const toggleSubCategoryActive = useCallback(
+    async (id: number) => {
+      await toggleActiveSubCategoryMutation.mutateAsync(id.toString())
+    },
+    [toggleActiveSubCategoryMutation]
   )
 
   return (
@@ -154,8 +168,7 @@ export default function SubCategoriesProvider({ children }: Props) {
         setOpen,
         currentRow,
         setCurrentRow,
-        //categories: categoriesData?.items || [],
-        subcategories: Array.isArray(subcategoriesData) ? subcategoriesData : subcategoriesData?.items || [],
+        subcategories: subcategoriesData?.data || [],
         isLoading,
         isError,
         categories: categoriesData || [],
@@ -167,6 +180,7 @@ export default function SubCategoriesProvider({ children }: Props) {
         createSubCategory,
         updateSubCategory,
         deleteSubCategory,
+        toggleSubCategoryActive,
         refreshSubCategories,
       }}
     >

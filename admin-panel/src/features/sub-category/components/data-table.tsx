@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: 'createdAt',
+      id: 'created_at',
       desc: true,
     },
   ])
@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
       for (const filter of columnFilters) {
         switch (filter.id) {
           case 'name':
-            apiFilters.name = filter.value as string
+            apiFilters.search = filter.value as string
             break
           case 'status':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
@@ -97,14 +97,14 @@ export function DataTable<TData, TValue>({
               apiFilters.type = filter.value.length === 1 ? filter.value[0] : filter.value
             }
             break
-          case 'isActive':
+          case 'active':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
               if (filter.value.length === 1) {
                 // Single selection - convert string to boolean
-                apiFilters.isActive = filter.value[0] === 'true'
+                apiFilters.active = filter.value[0] === 'true'
               } else {
-                // Multiple selection (both true and false) - don't filter by isActive
-                apiFilters.isActive = undefined
+                // Multiple selection (both true and false) - don't filter by active
+                apiFilters.active = undefined
               }
             }
             break

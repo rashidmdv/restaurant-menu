@@ -65,20 +65,20 @@ export function SubCategoriesImportDialog({ open, onOpenChange }: Props) {
         formData.append('file', file[0])
 
         // Upload file
-        await API.post('/catalog-sub-categories/import', formData, {
+        await API.post('/api/v1/subcategories/import', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }
         })
 
-        toast.success('Catalog sub-categories imported successfully')
+        toast.success('Sub-categories imported successfully')
         refreshSubCategories()
         onOpenChange(false)
         form.reset()
       }
     } catch (error) {
       console.error('Error uploading file:', error)
-      toast.error('Failed to import catalog sub-categories')
+      toast.error('Failed to import sub-categories')
     } finally {
       setIsUploading(false)
     }
@@ -113,9 +113,9 @@ export function SubCategoriesImportDialog({ open, onOpenChange }: Props) {
     >
       <DialogContent className='gap-4 sm:max-w-md'>
         <DialogHeader className='text-left'>
-          <DialogTitle>Import Catalog SubCategories</DialogTitle>
+          <DialogTitle>Import Sub-Categories</DialogTitle>
           <DialogDescription>
-            Import catalog sub-categories quickly from a CSV file.
+            Import sub-categories quickly from a CSV file.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

@@ -21,18 +21,18 @@ import {
   Badge
 } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { CatalogSubCategory } from '../data/schema'
+import { SubCategory } from '../data/schema'
 import { cn } from '@/lib/utils'
 import { useSubCategories } from '../context/sub-categories-context'
 import { useQuery } from '@tanstack/react-query'
-import { CatalogService } from '@/services/sub-category-service'
+import { SubCategoryService } from '@/services/sub-category-service'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useState } from 'react'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: CatalogSubCategory
+  currentRow: SubCategory
 }
 
 
@@ -46,8 +46,8 @@ export function SubCategoriesDetailsDialog({ open, onOpenChange, currentRow }: P
     data: subcategoryDetails,
     isLoading,
   } = useQuery({
-    queryKey: ['catalog-sub-categories', currentRow.id],
-    queryFn: () => CatalogService.getSubCategoryById(currentRow.id),
+    queryKey: ['sub-categories', currentRow.id],
+    queryFn: () => SubCategoryService.getSubCategoryById(currentRow.id.toString()),
     enabled: open,
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
@@ -56,7 +56,7 @@ export function SubCategoriesDetailsDialog({ open, onOpenChange, currentRow }: P
   const subcategory = subcategoryDetails || currentRow
   
   // Find the category
-  const category = subcategory.category || categories.find((m) => m.id === subcategory.categoryId)
+  const category = subcategory.category || categories.find((m) => m.id === subcategory.category_id)
   return (
     <>
       <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
@@ -106,20 +106,6 @@ export function SubCategoriesDetailsDialog({ open, onOpenChange, currentRow }: P
             </div>
           ) : (
             <>
-              {subcategory.image && (
-                <div className="rounded-md overflow-hidden h-48 bg-muted flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() => setPreviewImage(subcategory.image)}  
-                >
-                  <img 
-                    src={subcategory.image} 
-                    alt={subcategory.name} 
-                    className="max-h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=No+Image";
-                    }}
-                  />
-                </div>
-              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -140,7 +126,7 @@ export function SubCategoriesDetailsDialog({ open, onOpenChange, currentRow }: P
                     <IconCategory className="h-4 w-4 mr-2 text-muted-foreground" />
                     <span className="font-medium">Category:</span>
                     <span className="ml-2">
-                      {subcategory.categoryName || category?.name || subcategory.categoryId || '—'}
+                      {category?.name || subcategory.category_id || '—'}
                       </span>
                   </div>
                 </div>
@@ -162,14 +148,15 @@ export function SubCategoriesDetailsDialog({ open, onOpenChange, currentRow }: P
               <div className="flex flex-wrap gap-2">
                 <div className="flex items-center">
                   <span className="font-medium mr-2">Active Status:</span>
-                  <Badge variant={subcategory.isActive ? 'default' : 'destructive'}>
-                    {subcategory.isActive ? 'Active' : 'Inactive'}
+                  <Badge variant={subcategory.active ? 'default' : 'destructive'}>
+                    {subcategory.active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </div>
 
-              <div className="text-sm text-muted-foreground">
-                Created at {subcategory.createdAt ? format(new Date(subcategory.createdAt), 'PPpp') : '—'}
+              <div className="text-sm text-muted-foreground space-y-1">
+                <div>Created: {subcategory.created_at ? format(new Date(subcategory.created_at), 'PPpp') : '—'}</div>
+                <div>Updated: {subcategory.updated_at ? format(new Date(subcategory.updated_at), 'PPpp') : '—'}</div>
               </div>
             </>
           )}

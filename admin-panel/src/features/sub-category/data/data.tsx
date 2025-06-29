@@ -9,28 +9,8 @@ import {
   IconStopwatch,
 } from '@tabler/icons-react'
 
-export const labels = [
-  {
-    value: 'sedan',
-    label: 'Sedan',
-  },
-  {
-    value: 'suv',
-    label: 'SUV',
-  },
-  {
-    value: 'hatchback',
-    label: 'Hatchback',
-  },
-  {
-    value: 'truck',
-    label: 'Truck',
-  },
-  {
-    value: 'coupe',
-    label: 'Coupe',
-  },
-]
+// Categories will be loaded dynamically from the API
+export const labels = []
 
 export const statuses = [
   {

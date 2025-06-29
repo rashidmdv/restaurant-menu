@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useSubCategories } from '../context/sub-categories-context'
-import { CatalogSubCategory } from '../data/schema'
+import { SubCategory } from '../data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -21,7 +21,7 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   // Parse the original data with safer approach
-  const original = row.original as unknown as CatalogSubCategory
+  const original = row.original as unknown as SubCategory
   const { setOpen, setCurrentRow } = useSubCategories()
 
   return (

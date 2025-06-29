@@ -28,15 +28,15 @@ export function DataTableToolbar<TData>({
   const { subcategories, filters, setFilters, refreshSubCategories } = useSubCategories()
   const [searchValue, setSearchValue] = useState<string>("")
   const debouncedSearchValue = useDebounce(searchValue, 300)
-  const [activeStatus, setActiveStatus] = useState<string>(filters.isActive === true ? "active" : 
-                                                          filters.isActive === false ? "inactive" : "all")
+  const [activeStatus, setActiveStatus] = useState<string>(filters.active === true ? "active" : 
+                                                          filters.active === false ? "inactive" : "all")
   
   // Initialize search value from API filters
   useEffect(() => {
-    if (filters.name && filters.name !== searchValue) {
-      setSearchValue(filters.name)
+    if (filters.search && filters.search !== searchValue) {
+      setSearchValue(filters.search)
     }
-  }, [filters.name])
+  }, [filters.search])
   
   // Apply debounced search value to table filters and API
   useEffect(() => {
@@ -47,7 +47,7 @@ export function DataTableToolbar<TData>({
     if (debouncedSearchValue !== undefined) {
       setFilters(prev => ({
         ...prev,
-        name: debouncedSearchValue || undefined
+        search: debouncedSearchValue || undefined
       }))
     }
   }, [debouncedSearchValue, setFilters, table])
@@ -57,35 +57,35 @@ export function DataTableToolbar<TData>({
   useEffect(() => {
     // Only update if the filter changes externally (e.g. from reset)
     if (
-      (filters.isActive === true && activeStatus !== "active") ||
-      (filters.isActive === false && activeStatus !== "inactive") ||
-      (filters.isActive === undefined && activeStatus !== "all")
+      (filters.active === true && activeStatus !== "active") ||
+      (filters.active === false && activeStatus !== "inactive") ||
+      (filters.active === undefined && activeStatus !== "all")
     ) {
-      setActiveStatus(filters.isActive === true ? "active" : 
-                      filters.isActive === false ? "inactive" : "all")
+      setActiveStatus(filters.active === true ? "active" : 
+                      filters.active === false ? "inactive" : "all")
     }
-  }, [filters.isActive, activeStatus])
+  }, [filters.active, activeStatus])
 
   // Handle active status selection
   const handleActiveStatusChange = (value: string) => {
     setActiveStatus(value)
     
     // Update API filter
-    let isActiveValue: boolean | undefined = undefined
-    if (value === "active") isActiveValue = true
-    if (value === "inactive") isActiveValue = false
+    let activeValue: boolean | undefined = undefined
+    if (value === "active") activeValue = true
+    if (value === "inactive") activeValue = false
     
     // Update API filters
     setFilters(prev => ({
       ...prev,
-      isActive: isActiveValue
+      active: activeValue
     }))
     
     // Update table filter
     if (value === "all") {
-      table.getColumn('isActive')?.setFilterValue(undefined)
+      table.getColumn('active')?.setFilterValue(undefined)
     } else {
-      table.getColumn('isActive')?.setFilterValue([String(isActiveValue)])
+      table.getColumn('active')?.setFilterValue([String(activeValue)])
     }
   }
   
@@ -141,7 +141,7 @@ export function DataTableToolbar<TData>({
           className='h-8 w-[150px] lg:w-[250px]'
         />
         <div className='flex gap-x-2 flex-wrap'>
-          {table.getColumn('isActive') && (
+          {table.getColumn('active') && (
             <Select value={activeStatus} onValueChange={handleActiveStatusChange}>
               <SelectTrigger className='h-8 w-[130px]'>
                 <SelectValue placeholder="Active Status" />

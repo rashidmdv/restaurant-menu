@@ -1,6 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useSubCategories } from '../context/sub-categories-context'
-import { SubCategoriesImportDialog } from './sub-categories-import-dialog'
 import { SubCategoriesMutateDialog } from './sub-categories-mutate-dialog'
 import { SubCategoriesDetailsDialog } from './sub-categories-details-dialog'
 import { useState, useCallback } from 'react'
@@ -53,15 +52,6 @@ export function SubCategoriesDialogs() {
         />
       )}
 
-      {/* Import dialog - only render when open */}
-      {open === 'import' && (
-        <SubCategoriesImportDialog
-          key='subcategory-import'
-          open={true}
-          onOpenChange={() => setOpen(null)}
-        />
-      )}
-
       {/* Only render these dialogs if we have a currentRow */}
       {currentRow && (
         <>
@@ -102,7 +92,7 @@ export function SubCategoriesDialogs() {
               title={`Delete Sub-Category: ${currentRow.name}?`}
               desc={
                 <>
-                  You are about to delete the catalog sub-category <strong>{currentRow.name}</strong>. <br />
+                  You are about to delete the sub-category <strong>{currentRow.name}</strong>. <br />
                   This action cannot be undone.
                 </>
               }

@@ -1,11 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { CatalogSubCategory } from '../data/schema'
+import { SubCategory } from '../data/schema'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { DataTableRowActions } from './data-table-row-actions'
 
-export const columns: ColumnDef<CatalogSubCategory>[] = [
+export const columns: ColumnDef<SubCategory>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -38,15 +38,13 @@ export const columns: ColumnDef<CatalogSubCategory>[] = [
         <DataTableColumnHeader column={column} title='Category' />
       ),
       cell: ({ row }) => {
-        // Get category name from different possible sources
         const category = row.original.category
-        const categoryName = row.original.categoryName || (category ? category.name : null)
-        const categoryId = row.original.categoryId
+        const categoryName = category ? category.name : '—'
         
-        return <span>{categoryName || categoryId || '—'}</span>
+        return <span>{categoryName}</span>
       },
       filterFn: (row, id, value) => {
-        return value.includes(row.original.categoryId)
+        return value.includes(row.original.category_id.toString())
       },
     },
 
@@ -61,24 +59,16 @@ export const columns: ColumnDef<CatalogSubCategory>[] = [
     },
   },
 
-    {
-    accessorKey: 'image',
+  {
+    accessorKey: 'display_order',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Image' />
+      <DataTableColumnHeader column={column} title='Order' />
     ),
     cell: ({ row }) => {
-    const image = row.getValue('image') as string
-    return image ? (
-      <img
-        src={image}
-        alt="task"
-        className="h-10 w-10 rounded-md object-cover"
-      />
-    ) : (
-      <span className="text-muted-foreground">—</span>
-    )
+      const order = row.getValue('display_order') as number
+      return <span>{order}</span>
+    },
   },
-},
 
   {
     accessorKey: 'description',
@@ -100,12 +90,12 @@ export const columns: ColumnDef<CatalogSubCategory>[] = [
 
 
   {
-    accessorKey: 'isActive',
+    accessorKey: 'active',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Active Status' />
+      <DataTableColumnHeader column={column} title='Status' />
     ),
     cell: ({ row }) => {
-      const isActive = row.getValue('isActive') as boolean
+      const isActive = row.getValue('active') as boolean
       return (
         <div className='flex w-[100px] items-center'>
           <Badge variant={isActive ? 'default' : 'destructive'}>
@@ -115,14 +105,46 @@ export const columns: ColumnDef<CatalogSubCategory>[] = [
       )
     },
     filterFn: (row, id, value) => {
-      // Convert string representation of boolean to actual boolean for comparison
       const filterValues = value as string[];
       const rowValue = row.getValue(id) as boolean;
       return filterValues.some(val => String(rowValue) === val);
     },
   },
 
- 
+  {
+    accessorKey: 'created_at',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Created At' />
+    ),
+    cell: ({ row }) => {
+      const dateStr = row.getValue('created_at') as string
+      const date = new Date(dateStr)
+      return (
+        <div className="text-sm">
+          <div>{date.toLocaleDateString()}</div>
+          <div className="text-xs text-muted-foreground">{date.toLocaleTimeString()}</div>
+        </div>
+      )
+    },
+  },
+
+  {
+    accessorKey: 'updated_at',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Updated At' />
+    ),
+    cell: ({ row }) => {
+      const dateStr = row.getValue('updated_at') as string
+      const date = new Date(dateStr)
+      return (
+        <div className="text-sm">
+          <div>{date.toLocaleDateString()}</div>
+          <div className="text-xs text-muted-foreground">{date.toLocaleTimeString()}</div>
+        </div>
+      )
+    },
+  },
+
   {
     id: 'actions',
     cell: ({ row }) => <DataTableRowActions row={row} />,
