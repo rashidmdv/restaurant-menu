@@ -1,16 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select"
-
 import {
   Form,
   FormControl,
@@ -22,214 +13,160 @@ import {
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
-import { CatalogItem, VehicleType } from '../data/schema'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Item } from '../data/schema'
 import { useItems } from '../context/items-context'
-import { de, sk } from '@faker-js/faker'
-import { CatalogService } from '@/services/item-service'
+import { useState, useEffect } from 'react'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow?: CatalogItem
+  currentRow?: Item
 }
 
-// Create form schema that matches backend DTO
 const formSchema = z.object({
-  //id: z.string().uuid("Item ID must be a valid UUID"),
-  name: z.string().min(1, "Item name is required"),
-  sku: z.string().min(1, "SKU is required"),
-  description: z.string().min(1, 'Description is required'),
-  stockQuantity: z.union([z.string(), z.number()])
-  .transform((val) => Number(val))
-  .refine((val) => !isNaN(val) && val >= 0, "Stock must be a valid number"),
-
-  price: z.union([z.string(), z.number()])
-    .transform((val) => Number(val))
-    .refine((val) => !isNaN(val) && val >= 0, "Price must be a valid number"),
-
-  specifications: z.object({
-    material: z.string().min(1, "Material is required"),
-    position: z.string().min(1, "Position is required"),
-    warranty: z.string().min(1, "Warranty is required"),
-  }),
-  images: z.array(z.string().url("Image URL must be valid")).optional(),
-  isActive: z.boolean().default(true),
-  subCategoryId: z.string().uuid("Subcategory ID must be a valid UUID"),
-  brandId: z.string().uuid("Brand ID must be a valid UUID"),
-  createdAt: z.string().datetime().optional(),
-  updatedAt: z.string().datetime().optional()
+  name: z.string().min(1, "Name is required").max(150, "Name too long"),
+  description: z.string().optional(),
+  price: z.number().min(0, "Price must be positive"),
+  currency: z.string().optional().default("AED"),
+  dietary_info: z.record(z.any()).optional().default({}),
+  image_url: z.string().optional(),
+  sub_category_id: z.number({ required_error: "Sub-category is required" }),
+  available: z.boolean().optional().default(true),
+  display_order: z.number().optional().default(0),
 })
 
-type CatalogItemForm = z.infer<typeof formSchema>
-
-// Status options
-// const statusOptions = [
-//   { label: 'Active', value: VehicleStatus.ACTIVE },
-//   { label: 'Discontinued', value: VehicleStatus.DISCONTINUED },
-//   { label: 'Upcoming', value: VehicleStatus.UPCOMING },
-//   { label: 'Limited', value: VehicleStatus.LIMITED },
-//   { label: 'In Production', value: VehicleStatus.PRODUCTION },
-// ]
-
-// Type options
-const typeOptions = [
-  { label: 'Sedan', value: VehicleType.SEDAN },
-  { label: 'SUV', value: VehicleType.SUV },
-  { label: 'Hatchback', value: VehicleType.HATCHBACK },
-  { label: 'Truck', value: VehicleType.TRUCK },
-  { label: 'Coupe', value: VehicleType.COUPE },
-]
+type ItemForm = z.infer<typeof formSchema>
 
 export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
   const [loading, setLoading] = useState(false)
+  const { createItem, updateItem, subcategories, subcategoriesLoading } = useItems()
   const isUpdate = !!currentRow
-  const { createItem, updateItem, subcategories, brands, subcategoriesLoading, brandsLoading } = useItems()
-  const formInitialized = useRef(false)
 
-  // Create default values once
-  const getDefaultValues = (): CatalogItemForm => {
-       if (currentRow) {
-        return {
-        //id: z.string().uuid("Item ID must be a valid UUID"),
-        name: currentRow.name || '',
-        sku: currentRow.sku || '',
-        description: currentRow.description || '',
-        price: currentRow.price || '',
-        stockQuantity: currentRow.stockQuantity || '',
-        specifications: {
-          material: currentRow.specifications?.material || '',
-          position: currentRow.specifications?.position || '',
-          warranty: currentRow.specifications?.warranty || '',
-        },
-        images: currentRow.images || [],
-        isActive: typeof currentRow.isActive === 'boolean' ? currentRow.isActive : true,
-        subCategoryId: currentRow.subCategoryId || currentRow.subCategory?.id || '',
-        brandId: currentRow.brandId || currentRow.brand?.id || '',
-        fromDate: currentRow.fromDate ? new Date(currentRow.fromDate).toISOString().split('T')[0] : '',
-        toDate: currentRow.toDate ? new Date(currentRow.toDate).toISOString().split('T')[0] : '',
-      }
-    } else {
-      return {
-        name: '',
-        sku: '',
-        description: '',
-        price: '',
-        stockQuantity: '',
-        specifications: {
-          material: '',
-          position: '',
-          warranty: '',
-        },
-        images: [],
-        isActive: true,
-        subCategoryId: '',
-        brandId: '',
-        fromDate: '',
-        toDate: '',
-      }
-    }
+  const defaultValues = currentRow ? {
+    name: currentRow.name,
+    description: currentRow.description || '',
+    price: currentRow.price,
+    currency: currentRow.currency || 'AED',
+    dietary_info: currentRow.dietary_info || {},
+    image_url: currentRow.image_url || '',
+    sub_category_id: currentRow.sub_category_id,
+    available: currentRow.available,
+    display_order: currentRow.display_order,
+  } : {
+    name: '',
+    description: '',
+    price: 0,
+    currency: 'AED',
+    dietary_info: {},
+    image_url: '',
+    sub_category_id: 0,
+    available: true,
+    display_order: 0,
   }
 
-  const form = useForm<CatalogItemForm>({
+  const form = useForm<ItemForm>({
     resolver: zodResolver(formSchema),
-    defaultValues: getDefaultValues(),
-
+    defaultValues,
   })
 
-  // Only reset the form when the dialog opens or currentRow changes
-useEffect(() => {
-  if (
-    open &&
-    currentRow && 
-    !formInitialized.current &&
-    !brandsLoading && brands.length > 0 &&
-    !subcategoriesLoading && subcategories.length > 0
-  ) {
-    form.reset(getDefaultValues());
-    formInitialized.current = true;
-  }
-}, [open, currentRow, brandsLoading, brands, subcategoriesLoading, subcategories]);
-
-
-  // Reset form initialization flag when dialog closes
+  // Reset form when currentRow changes
   useEffect(() => {
-    if (!open) {
-      formInitialized.current = false
+    if (currentRow) {
+      form.reset({
+        name: currentRow.name,
+        description: currentRow.description || '',
+        price: currentRow.price,
+        currency: currentRow.currency || 'AED',
+        dietary_info: currentRow.dietary_info || {},
+        image_url: currentRow.image_url || '',
+        sub_category_id: currentRow.sub_category_id,
+        available: currentRow.available,
+        display_order: currentRow.display_order,
+      })
+    } else {
+      form.reset({
+        name: '',
+        description: '',
+        price: 0,
+        currency: 'AED',
+        dietary_info: {},
+        image_url: '',
+        sub_category_id: 0,
+        available: true,
+        display_order: 0,
+      })
     }
-  }, [open])
+  }, [currentRow, form])
 
-  const handleSubmit = async (data: CatalogItemForm) => {
+  const onSubmit = async (data: ItemForm) => {
     try {
       setLoading(true)
       
-      // Format dates for submission
-      const formattedData = {
-        ...data,
-        fromDate: data.fromDate ? new Date(data.fromDate).toISOString() : undefined,
-        toDate: data.toDate ? new Date(data.toDate).toISOString() : undefined,
-      }
-      
       if (isUpdate && currentRow) {
-        await updateItem(currentRow.id, formattedData)
+        await updateItem(currentRow.id, {
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          currency: data.currency,
+          dietary_info: data.dietary_info,
+          image_url: data.image_url,
+          sub_category_id: data.sub_category_id,
+          available: data.available,
+          display_order: data.display_order,
+        })
       } else {
-        await createItem(formattedData)
+        await createItem({
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          currency: data.currency,
+          dietary_info: data.dietary_info,
+          image_url: data.image_url,
+          sub_category_id: data.sub_category_id,
+          available: data.available,
+          display_order: data.display_order,
+        })
       }
       
-      // Close dialog first
       onOpenChange(false)
-      
-      // Reset form after a small delay
-      setTimeout(() => {
-        form.reset()
-      }, 100)
+      form.reset()
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Error:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCancel = () => {
-    onOpenChange(false)
-    // Reset form after dialog is fully closed
-    setTimeout(() => {
-      form.reset()
-    }, 100)
-  }
-
   return (
-    <Dialog 
-      open={open} 
-      onOpenChange={(newOpen) => {
-        if (open && !newOpen) {
-          handleCancel()
-        } else {
-          onOpenChange(newOpen)
-        }
-      }}
-    >
-      <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Catalog Item</DialogTitle>
+    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) form.reset() }}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[750px]">
+        <DialogHeader className="text-left">
+          <DialogTitle>{isUpdate ? 'Update' : 'Create'} Item</DialogTitle>
           <DialogDescription>
-            Provide details for the catalog item. Click save when done.
+            Provide details for the menu item. Click save when done.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form
             id="item-form"
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 py-4"
           >
             <div className="grid gap-4">
@@ -240,221 +177,8 @@ useEffect(() => {
                   <FormItem>
                     <FormLabel>Item Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="e.g. Bosch Brake Pad Set" />
+                      <Input {...field} placeholder="e.g. Spaghetti Carbonara" />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>SKU</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. BP1234" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="stockQuantity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Stock</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="number" placeholder="e.g. 100" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Price</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="number" placeholder="e.g. 29.99" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />    
-              <FormField
-                control={form.control}
-                name="specifications.material"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Material</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Ceramic" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />    
-              <FormField
-                control={form.control}
-                name="specifications.position"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Position</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. Front, Rear" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="specifications.warranty"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Warranty</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g. 2 years" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="images"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>Images (Max 2)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={async (e) => {
-                          const files = Array.from(e.target.files ?? []);
-                          if (files.length === 0) return;
-
-                          const currentImages = form.getValues('images') || [];
-
-                          const maxImages = 2;
-                          const allowedUploads = maxImages - currentImages.length;
-                          const filesToUpload = files.slice(0, allowedUploads);
-
-                          if (filesToUpload.length < files.length) {
-                            alert(`You can only upload ${allowedUploads} more image(s).`);
-                          }
-
-
-                          try {
-                            const uploadedUrls: string[] = [];
-
-                            for (const file of filesToUpload) {
-                              const res = await CatalogService.uploadItemImage(file);
-                              uploadedUrls.push(res.url);
-                            }
-
-
-                            const updatedImages = [...currentImages, ...uploadedUrls];
-
-                            form.setValue('images', updatedImages, {
-                              shouldValidate: true,
-                              shouldDirty: true,
-                            });
-                          } catch (err) {
-                            console.error('File upload error:', err);
-                          }
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    {form.watch('images')?.length > 0 && (
-                      <div className="mt-2 flex gap-2">
-                        {form.watch('images').map((url: string, index: number) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={url}
-                              alt={`Preview ${index + 1}`}
-                              className="h-12 w-12 rounded object-cover"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updatedImages = form.watch('images')?.filter((_, i) => i !== index) || [];
-                                form.setValue('images', updatedImages, {
-                                  shouldValidate: true,
-                                  shouldDirty: true,
-                                });
-                              }}
-                              className="absolute top-[-8px] right-[-8px] bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                  </FormItem>
-                )}
-              />
-
-
-              <FormField
-                control={form.control}
-                name="subCategoryId"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Sub-Category</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={subcategoriesLoading}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={subcategoriesLoading ? "Loading subcategories..." : "Select subcategory"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subcategories.map(subcategory => (
-                          <SelectItem key={subcategory.id} value={subcategory.id}>
-                            {subcategory.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="brandId"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Brand</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      disabled={brandsLoading}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder={brandsLoading ? "Loading brands..." : "Select brand"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brands.map(brand => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -463,15 +187,13 @@ useEffect(() => {
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field: { value, onChange, ...rest } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       <Textarea 
-                        {...rest} 
-                        value={value || ''} 
-                        onChange={(e) => onChange(e.target.value || null)}
-                        placeholder="Provide a description of this item" 
+                        {...field} 
+                        placeholder="Describe the menu item" 
                         className="min-h-24"
                       />
                     </FormControl>
@@ -480,13 +202,125 @@ useEffect(() => {
                 )}
               />
 
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          value={field.value || 0}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          placeholder="0.00"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="currency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Currency</FormLabel>
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select currency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="AED">AED</SelectItem>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
-                name="isActive"
+                name="sub_category_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sub-Category</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value?.toString() || ''}
+                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        disabled={subcategoriesLoading}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={subcategoriesLoading ? "Loading..." : "Select sub-category"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {subcategories.map(subcategory => (
+                            <SelectItem key={subcategory.id} value={subcategory.id.toString()}>
+                              {subcategory.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="image_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Image URL</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="https://example.com/image.jpg"
+                        type="url"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="display_order"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Order</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        value={field.value || 0}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        placeholder="0"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="available"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-3 mt-2">
-                    <FormLabel>Active</FormLabel>
+                    <FormLabel>Available</FormLabel>
                     <FormControl>
                       <Switch 
                         checked={field.value} 
@@ -502,9 +336,9 @@ useEffect(() => {
         </Form>
 
         <DialogFooter className="gap-2 pt-2">
-          <Button variant="outline" onClick={handleCancel}>
-            Cancel
-          </Button>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
           <Button 
             form="item-form" 
             type="submit" 

@@ -9,7 +9,7 @@ import {
   IconId,
   IconFileDescription,
 } from '@tabler/icons-react'
-import { CatalogService } from '@/services/item-service'
+import { ItemService } from '@/services/item-service'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -24,22 +24,22 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useItems } from '../context/items-context'
-import { CatalogItem, VehicleType } from '../data/schema'
+import { Item } from '../data/schema'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow: CatalogItem
+  currentRow: Item
 }
 
 export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
-  const { setOpen, subcategories, brands } = useItems()
+  const { setOpen, subcategories } = useItems()
   const [previewImage, setPreviewImage] = useState<string | null>(null)
 
   // Fetch item details directly from API to get latest data
   const { data: itemDetails, isLoading } = useQuery({
-    queryKey: ['catalog-items', currentRow.id],
-    queryFn: () => CatalogService.getItemById(currentRow.id),
+    queryKey: ['items', currentRow.id],
+    queryFn: () => ItemService.getItemById(currentRow.id.toString()),
     enabled: open,
     staleTime: 1000 * 60 * 5, // 5 minutes
   })
@@ -47,16 +47,8 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
   // Get data for display
   const item = itemDetails || currentRow
 
-  // Get type and status labels
-
-  let statusLabel = ''
-  let statusColor = ''
-
-  // Find the subcategory and brand
-
-  const subcategory =
-    item.subCategory || subcategories.find((s) => s.id === item.subCategoryId)
-  const brand = item.brand || brands.find((b) => b.id === item.brandId)
+  // Find the subcategory
+  const subcategory = item.sub_category || subcategories.find((s) => s.id === item.sub_category_id)
 
   return (
     <>
@@ -78,17 +70,15 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
                 <Skeleton className='h-6 w-[240px]' />
               ) : (
                 <>
-                  <span>{item.name} </span>
-                  {statusLabel && (
-                    <Badge
-                      className={cn(
-                        'ml-2',
-                        statusColor || 'bg-gray-100 text-gray-800'
-                      )}
-                    >
-                      {statusLabel}
-                    </Badge>
-                  )}
+                  <span>{item.name}</span>
+                  <Badge
+                    className={cn(
+                      'ml-2',
+                      item.available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    )}
+                  >
+                    {item.available ? 'Available' : 'Unavailable'}
+                  </Badge>
                 </>
               )}
             </DialogTitle>
@@ -114,37 +104,14 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
               </div>
             ) : (
               <>
-                {item.images &&
-                Array.isArray(item.images) &&
-                item.images.length > 0 ? (
-                  <div className='rounded-lg border bg-gray-50 p-4'>
-                    <div className='flex gap-3 overflow-x-auto pb-1'>
-                      {item.images.map((img: string, idx: number) => (
-                        <div
-                          key={img}
-                          onClick={() => setPreviewImage(img)}
-                          className='h-28 min-w-[120px] flex-shrink-0 cursor-pointer overflow-hidden rounded-md border bg-white shadow-sm transition-transform hover:scale-105'
-                        >
-                          <img
-                            src={img}
-                            alt={`${item.name} image ${idx + 1}`}
-                            className='h-full w-full object-cover'
-                            onError={(e) => {
-                              ;(e.target as HTMLImageElement).src =
-                                'https://via.placeholder.com/120x112?text=No+Image'
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : item.images && typeof item.images === 'string' ? (
+                {item.image_url && (
                   <div className='rounded-lg border bg-gray-50 p-4'>
                     <div className='flex h-48 w-full items-center justify-center overflow-hidden rounded-md border'>
                       <img
-                        src={item.images}
+                        src={item.image_url}
                         alt={item.name}
-                        className='h-full object-contain'
+                        className='h-full object-contain cursor-pointer'
+                        onClick={() => setPreviewImage(item.image_url!)}
                         onError={(e) => {
                           ;(e.target as HTMLImageElement).src =
                             'https://via.placeholder.com/300x200?text=No+Image'
@@ -152,7 +119,7 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
                       />
                     </div>
                   </div>
-                ) : null}
+                )}
 
                 {/* === BASIC INFO + PRICING === */}
                 <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
@@ -174,61 +141,54 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
                       <IconBrandToyota className='text-muted-foreground mr-2 h-4 w-4' />
                       <span className='font-medium'>Sub-Category:</span>
                       <span className='ml-2'>
-                        {item.subcategoryName ||
-                          subcategory?.name ||
-                          item.subCategoryId ||
-                          '—'}
+                        {subcategory?.name || '—'}
                       </span>
                     </div>
                     <div className='flex items-center text-sm'>
-                      <IconBrandToyota className='text-muted-foreground mr-2 h-4 w-4' />
-                      <span className='font-medium'>Brand:</span>
-                      <span className='ml-2'>
-                        {item.brandName || brand?.name || item.brandId || '—'}
-                      </span>
+                      <span className='font-medium'>Display Order:</span>
+                      <span className='ml-2'>{item.display_order}</span>
                     </div>
                   </div>
 
                   <div className='space-y-3'>
                     <div className='text-muted-foreground mb-1 text-sm font-semibold'>
-                      Pricing & Stock
-                    </div>
-                    <div className='flex items-center text-sm'>
-                      <span className='w-32 font-medium'>SKU:</span>
-                      <span>{item.sku || '—'}</span>
+                      Pricing & Status
                     </div>
                     <div className='flex items-center text-sm'>
                       <span className='w-32 font-medium'>Price:</span>
                       <span>
-                        {item.price !== undefined ? `₹${item.price}` : '—'}
+                        {item.currency} {item.price?.toFixed(2)}
                       </span>
                     </div>
                     <div className='flex items-center text-sm'>
-                      <span className='w-32 font-medium'>Stock Quantity:</span>
-                      <span>
-                        {item.stockQuantity !== undefined
-                          ? item.stockQuantity
-                          : '—'}
-                      </span>
+                      <span className='w-32 font-medium'>Currency:</span>
+                      <span>{item.currency}</span>
+                    </div>
+                    <div className='flex items-center text-sm'>
+                      <span className='w-32 font-medium'>Available:</span>
+                      <Badge variant={item.available ? 'default' : 'destructive'}>
+                        {item.available ? 'Yes' : 'No'}
+                      </Badge>
                     </div>
                   </div>
                 </div>
 
-                {/* === SPECIFICATIONS === */}
-                {item.specifications &&
-                  typeof item.specifications === 'object' && (
+                {/* === DIETARY INFO === */}
+                {item.dietary_info &&
+                  typeof item.dietary_info === 'object' &&
+                  Object.keys(item.dietary_info).length > 0 && (
                     <div className='mt-6'>
                       <div className='text-muted-foreground mb-2 text-sm font-semibold'>
-                        Specifications
+                        Dietary Information
                       </div>
                       <ul className='text-muted-foreground list-disc space-y-1 pl-4 text-sm'>
-                        {Object.entries(item.specifications).map(
+                        {Object.entries(item.dietary_info).map(
                           ([key, value]) => (
                             <li key={key}>
                               <span className='font-medium capitalize'>
-                                {key}:
+                                {key.replace('_', ' ')}:
                               </span>{' '}
-                              {value || '—'}
+                              {String(value) || '—'}
                             </li>
                           )
                         )}
@@ -249,19 +209,29 @@ export function ItemsDetailsDialog({ open, onOpenChange, currentRow }: Props) {
                   </p>
                 </div>
 
-                {/* === STATUS & TIMESTAMP === */}
-                <div className='mt-4 flex flex-wrap items-center gap-4'>
-                  <div className='flex items-center text-sm'>
-                    <span className='mr-2 font-medium'>Active Status:</span>
-                    <Badge variant={item.isActive ? 'default' : 'destructive'}>
-                      {item.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
+                {/* === TIMESTAMPS === */}
+                <div className='mt-4 space-y-2'>
+                  <div className='text-muted-foreground text-sm'>
+                    <div className='flex items-center'>
+                      <IconCalendar className='text-muted-foreground mr-2 h-4 w-4' />
+                      <span className='font-medium'>Created At:</span>
+                      <span className='ml-2'>
+                        {item.created_at
+                          ? format(new Date(item.created_at), 'PPpp')
+                          : '—'}
+                      </span>
+                    </div>
                   </div>
                   <div className='text-muted-foreground text-sm'>
-                    Created at:{' '}
-                    {item.createdAt
-                      ? format(new Date(item.createdAt), 'PPpp')
-                      : '—'}
+                    <div className='flex items-center'>
+                      <IconCalendar className='text-muted-foreground mr-2 h-4 w-4' />
+                      <span className='font-medium'>Updated At:</span>
+                      <span className='ml-2'>
+                        {item.updated_at
+                          ? format(new Date(item.updated_at), 'PPpp')
+                          : '—'}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </>

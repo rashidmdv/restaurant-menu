@@ -45,9 +45,9 @@ export default function Item() {
       <Main>
         <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Catalog Items</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Items</h2>
             <p className='text-muted-foreground'>
-              Manage catalog items for different makes and years
+              Manage menu items with prices, descriptions, and availability
             </p>
           </div>
           <ItemsPrimaryButtons />

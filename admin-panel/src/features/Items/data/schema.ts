@@ -3,18 +3,15 @@ import { z } from 'zod'
 // Main schema for restaurant items - matching backend Item entity
 export const itemSchema = z.object({
   id: z.number(),
-  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  name: z.string().min(1, "Name is required").max(150, "Name too long"),
   description: z.string().default(""),
-  slug: z.string(),
   price: z.number().min(0, "Price must be positive"),
-  image_url: z.string().nullable().optional(),
+  currency: z.string().default("AED"),
+  dietary_info: z.record(z.any()).default({}),
+  image_url: z.string().optional(),
   sub_category_id: z.number(),
-  display_order: z.number().default(0),
   available: z.boolean().default(true),
-  featured: z.boolean().default(false),
-  allergens: z.string().nullable().optional(),
-  preparation_time: z.number().nullable().optional(),
-  calories: z.number().nullable().optional(),
+  display_order: z.number().default(0),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
   sub_category: z.object({
@@ -34,17 +31,15 @@ export type Item = z.infer<typeof itemSchema>
 
 // Schema for creating a new item
 export const createItemSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100, "Name too long"),
+  name: z.string().min(1, "Name is required").max(150, "Name too long"),
   description: z.string().optional(),
   price: z.number().min(0, "Price must be positive"),
+  currency: z.string().optional().default("AED"),
+  dietary_info: z.record(z.any()).optional().default({}),
   image_url: z.string().optional(),
   sub_category_id: z.number(),
-  display_order: z.number().optional().default(0),
   available: z.boolean().optional().default(true),
-  featured: z.boolean().optional().default(false),
-  allergens: z.string().optional(),
-  preparation_time: z.number().optional(),
-  calories: z.number().optional(),
+  display_order: z.number().optional().default(0),
 })
 
 // Type for creating a new item

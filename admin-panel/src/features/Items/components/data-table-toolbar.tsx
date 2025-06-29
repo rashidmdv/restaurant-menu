@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import { Input } from "@/components/ui/input"
 import { Table } from "@tanstack/react-table"
-import { VehicleType } from "../data/schema"
+import { Item } from "../data/schema"
 import { useItems } from "../context/items-context"
 import { useDebounce } from "@/hooks/use-debounce"
 import {
@@ -16,51 +16,15 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// Status options with proper labels
-// const statusOptions = [
-//   {
-//     value: VehicleStatus.ACTIVE,
-//     label: 'Active',
-//   },
-//   {
-//     value: VehicleStatus.DISCONTINUED,
-//     label: 'Discontinued',
-//   },
-//   {
-//     value: VehicleStatus.UPCOMING,
-//     label: 'Upcoming',
-//   },
-//   {
-//     value: VehicleStatus.LIMITED,
-//     label: 'Limited',
-//   },
-//   {
-//     value: VehicleStatus.PRODUCTION,
-//     label: 'In Production',
-//   },
-// ]
-
-// Type options with proper labels
-const typeOptions = [
+// Status options for availability
+const statusOptions = [
   {
-    value: VehicleType.SEDAN,
-    label: 'Sedan',
+    value: 'true',
+    label: 'Available',
   },
   {
-    value: VehicleType.SUV,
-    label: 'SUV',
-  },
-  {
-    value: VehicleType.HATCHBACK,
-    label: 'Hatchback',
-  },
-  {
-    value: VehicleType.TRUCK,
-    label: 'Truck',
-  },
-  {
-    value: VehicleType.COUPE,
-    label: 'Coupe',
+    value: 'false',
+    label: 'Unavailable',
   },
 ]
 
@@ -71,18 +35,18 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const { subcategories, brands, filters, setFilters, refreshItems } = useItems()
+  const { subcategories, filters, setFilters, refreshItems } = useItems()
   const [searchValue, setSearchValue] = useState<string>("")
   const debouncedSearchValue = useDebounce(searchValue, 300)
-  const [activeStatus, setActiveStatus] = useState<string>(filters.isActive === true ? "active" : 
-                                                          filters.isActive === false ? "inactive" : "all")
+  const [activeStatus, setActiveStatus] = useState<string>(filters.available === true ? "available" : 
+                                                          filters.available === false ? "unavailable" : "all")
   
   // Initialize search value from API filters
   useEffect(() => {
-    if (filters.name && filters.name !== searchValue) {
-      setSearchValue(filters.name)
+    if (filters.search && filters.search !== searchValue) {
+      setSearchValue(filters.search)
     }
-  }, [filters.name])
+  }, [filters.search])
   
   // Apply debounced search value to table filters and API
   useEffect(() => {
@@ -93,73 +57,54 @@ export function DataTableToolbar<TData>({
     if (debouncedSearchValue !== undefined) {
       setFilters(prev => ({
         ...prev,
-        name: debouncedSearchValue || undefined
+        search: debouncedSearchValue || undefined
       }))
     }
   }, [debouncedSearchValue, setFilters, table])
   
-  // Initialize status filters from API filters
+  // Initialize sub_category filters from API filters
   useEffect(() => {
-    if (filters.status && !table.getColumn('status')?.getFilterValue()) {
-      table.getColumn('status')?.setFilterValue([filters.status])
+    if (filters.sub_category_id && !table.getColumn('sub_category')?.getFilterValue()) {
+      table.getColumn('sub_category')?.setFilterValue([filters.sub_category_id.toString()])
     }
-  }, [filters.status, table])
+  }, [filters.sub_category_id, table])
   
-  // Initialize type filters from API filters
-  useEffect(() => {
-    if (filters.type && !table.getColumn('type')?.getFilterValue()) {
-      table.getColumn('type')?.setFilterValue([filters.type])
-    }
-  }, [filters.type, table])
-  
-  // Handle active status change
+  // Handle available status change
   useEffect(() => {
     // Only update if the filter changes externally (e.g. from reset)
     if (
-      (filters.isActive === true && activeStatus !== "active") ||
-      (filters.isActive === false && activeStatus !== "inactive") ||
-      (filters.isActive === undefined && activeStatus !== "all")
+      (filters.available === true && activeStatus !== "available") ||
+      (filters.available === false && activeStatus !== "unavailable") ||
+      (filters.available === undefined && activeStatus !== "all")
     ) {
-      setActiveStatus(filters.isActive === true ? "active" : 
-                      filters.isActive === false ? "inactive" : "all")
+      setActiveStatus(filters.available === true ? "available" : 
+                      filters.available === false ? "unavailable" : "all")
     }
-  }, [filters.isActive, activeStatus])
+  }, [filters.available, activeStatus])
 
-  // Handle active status selection
+  // Handle available status selection
   const handleActiveStatusChange = (value: string) => {
     setActiveStatus(value)
     
     // Update API filter
-    let isActiveValue: boolean | undefined = undefined
-    if (value === "active") isActiveValue = true
-    if (value === "inactive") isActiveValue = false
+    let availableValue: boolean | undefined = undefined
+    if (value === "available") availableValue = true
+    if (value === "unavailable") availableValue = false
     
     // Update API filters
     setFilters(prev => ({
       ...prev,
-      isActive: isActiveValue
+      available: availableValue
     }))
     
     // Update table filter
     if (value === "all") {
-      table.getColumn('isActive')?.setFilterValue(undefined)
+      table.getColumn('available')?.setFilterValue(undefined)
     } else {
-      table.getColumn('isActive')?.setFilterValue([String(isActiveValue)])
+      table.getColumn('available')?.setFilterValue([String(availableValue)])
     }
   }
 
-  // Initialize subcategory and brand filters from API filters
-  useEffect(() => {
-    if (filters.subcategoryId && !table.getColumn('subcategoryId')?.getFilterValue()) {
-      table.getColumn('subcategoryId')?.setFilterValue([filters.subcategoryId])
-    }
-  }, [filters.subcategoryId, table])
-
-  useEffect(() => {
-    if (filters.brandId && !table.getColumn('brandId')?.getFilterValue()) {
-      table.getColumn('brandId')?.setFilterValue([filters.brandId])
-    }
-  }, [filters.brandId, table])
 
 
   
@@ -174,15 +119,10 @@ export function DataTableToolbar<TData>({
     setSearchValue(value)
   }
 
-  // Generate subcategory and brand options from available 
+  // Generate subcategory options from available 
   const subcategoryOptions = subcategories.map(subcategory => ({
-    value: subcategory.id,
+    value: subcategory.id.toString(),
     label: subcategory.name,
-  }))
-
-  const brandOptions = brands.map(brand => ({
-    value: brand.id,
-    label: brand.name,
   }))
   
   // Reset all filters
@@ -198,8 +138,8 @@ export function DataTableToolbar<TData>({
     
     // Reset API filters, keeping only pagination
     setFilters({
-      page: filters.page,
-      limit: filters.limit
+      limit: filters.limit,
+      offset: filters.offset
     })
     
     // Force refresh to ensure UI is in sync
@@ -212,50 +152,29 @@ export function DataTableToolbar<TData>({
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
         <Input
-          placeholder='Filter items...'
+          placeholder='Search items...'
           value={searchValue}
           onChange={handleSearchChange}
           className='h-8 w-[150px] lg:w-[250px]'
         />
         <div className='flex gap-x-2 flex-wrap'>
-          {/* {table.getColumn('status') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('status')}
-              title='Production Status'
-              options={statusOptions}
-            />
-          )} */}
-          {table.getColumn('type') && (
-            <DataTableFacetedFilter
-              column={table.getColumn('type')}
-              title='Type'
-              options={typeOptions}
-            />
-          )}
-          {table.getColumn('isActive') && (
+          {table.getColumn('available') && (
             <Select value={activeStatus} onValueChange={handleActiveStatusChange}>
               <SelectTrigger className='h-8 w-[130px]'>
-                <SelectValue placeholder="Active Status" />
+                <SelectValue placeholder="Availability" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='all'>All Items</SelectItem>
-                <SelectItem value='active'>Active</SelectItem>
-                <SelectItem value='inactive'>Inactive</SelectItem>
+                <SelectItem value='available'>Available</SelectItem>
+                <SelectItem value='unavailable'>Unavailable</SelectItem>
               </SelectContent>
             </Select>
           )}
-          {table.getColumn('subcategoryId') && subcategoryOptions.length > 0 && (
+          {table.getColumn('sub_category') && subcategoryOptions.length > 0 && (
             <DataTableFacetedFilter
-              column={table.getColumn('subcategoryId')}
-              title='Subcategory'
+              column={table.getColumn('sub_category')}
+              title='Sub-Category'
               options={subcategoryOptions}
-            />
-          )}
-          {table.getColumn('brandId') && brandOptions.length > 0 && (
-            <DataTableFacetedFilter
-              column={table.getColumn('brandId')}
-              title='Brand'
-              options={brandOptions}
             />
           )}
         </div>

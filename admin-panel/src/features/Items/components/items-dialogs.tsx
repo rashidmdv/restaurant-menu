@@ -1,6 +1,5 @@
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useItems } from '../context/items-context'
-import { ItemsImportDialog } from './items-import-dialog'
 import { ItemsMutateDialog } from './items-mutate-dialog'
 import { ItemsDetailsDialog } from './items-details-dialog'
 import { useState, useCallback } from 'react'
@@ -53,14 +52,6 @@ export function ItemsDialogs() {
         />
       )}
 
-      {/* Import dialog - only render when open */}
-      {open === 'import' && (
-        <ItemsImportDialog
-          key='items-import'
-          open={true}
-          onOpenChange={() => setOpen(null)}
-        />
-      )}
 
       {/* Only render these dialogs if we have a currentRow */}
       {currentRow && (
@@ -99,10 +90,10 @@ export function ItemsDialogs() {
               }}
               handleConfirm={handleDelete}
               className='max-w-md'
-              title={`Delete Item: ${currentRow.name} (${currentRow.year})?`}
+              title={`Delete Item: ${currentRow.name}?`}
               desc={
                 <>
-                  You are about to delete the catalog item<strong>{currentRow.name}</strong> from year <strong>{currentRow.year}</strong>. <br />
+                  You are about to delete the menu item <strong>{currentRow.name}</strong>. <br />
                   This action cannot be undone.
                 </>
               }

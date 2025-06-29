@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: 'createdAt',
+      id: 'created_at',
       desc: true,
     },
   ])
@@ -75,49 +75,31 @@ export function DataTable<TData, TValue>({
       // Process column filters to API filters
       const apiFilters: Record<string, any> = {
         // Keep pagination
-        page: filters.page,
-        limit: filters.limit
+        limit: filters.limit,
+        offset: ((filters.page || 1) - 1) * (filters.limit || 10)
       }
 
       // Map column filters to API filters
       for (const filter of columnFilters) {
         switch (filter.id) {
           case 'name':
-            apiFilters.name = filter.value as string
+            apiFilters.search = filter.value as string
             break
-          case 'status':
+          case 'sub_category':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
               // Support multi-selection by passing array if multiple values selected
-              apiFilters.status = filter.value.length === 1 ? filter.value[0] : filter.value
+              apiFilters.sub_category_id = filter.value.length === 1 ? filter.value[0] : filter.value
             }
             break
-          case 'type':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.type = filter.value.length === 1 ? filter.value[0] : filter.value
-            }
-            break
-          case 'isActive':
+          case 'available':
             if (Array.isArray(filter.value) && filter.value.length > 0) {
               if (filter.value.length === 1) {
                 // Single selection - convert string to boolean
-                apiFilters.isActive = filter.value[0] === 'true'
+                apiFilters.available = filter.value[0] === 'true'
               } else {
-                // Multiple selection (both true and false) - don't filter by isActive
-                apiFilters.isActive = undefined
+                // Multiple selection (both true and false) - don't filter by available
+                apiFilters.available = undefined
               }
-            }
-            break
-          case 'subcategoryId':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.subcategoryId = filter.value.length === 1 ? filter.value[0] : filter.value
-            }
-            break
-            case 'brandId':
-            if (Array.isArray(filter.value) && filter.value.length > 0) {
-              // Support multi-selection by passing array if multiple values selected
-              apiFilters.brandId = filter.value.length === 1 ? filter.value[0] : filter.value
             }
             break
           // Add other filters as needed

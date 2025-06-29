@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
-import { CatalogItem } from '../data/schema'
-import { CatalogService, CatalogItemFilters, CatalogSubCategory, CatalogBrand } from '@/services/item-service'
+import { Item, CreateItem, UpdateItem } from '../data/schema'
+import { ItemService, ItemFilters, SubCategory } from '@/services/item-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
-type ItemDialogType = 'create' | 'update' | 'delete' | 'import' | 'details'
+type ItemDialogType = 'create' | 'update' | 'delete' | 'details'
 
 interface ItemsPaginationState {
   page: number
@@ -17,23 +17,21 @@ interface ItemsPaginationState {
 interface ItemsContextType {
   open: ItemDialogType | null
   setOpen: (str: ItemDialogType | null) => void
-  currentRow: CatalogItem | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<CatalogItem | null>>
-  items: CatalogItem[]
+  currentRow: Item | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<Item | null>>
+  items: Item[]
   isLoading: boolean
   isError: boolean
-  subcategories: CatalogSubCategory[],
-  subcategoriesLoading: boolean,
-  brands: CatalogBrand[],
-  brandsLoading: boolean,
-  itemsLoading: boolean
+  subcategories: SubCategory[]
+  subcategoriesLoading: boolean
   pagination: ItemsPaginationState
   setPagination: React.Dispatch<React.SetStateAction<ItemsPaginationState>>
-  filters: CatalogItemFilters
-  setFilters: React.Dispatch<React.SetStateAction<CatalogItemFilters>>
-  createItem: (item: Omit<CatalogItem, 'id' | 'createdAt'>) => Promise<void>
-  updateItem: (id: string, item: Partial<Omit<CatalogItem, 'id' | 'createdAt'>>) => Promise<void>
-  deleteItem: (id: string) => Promise<void>
+  filters: ItemFilters
+  setFilters: React.Dispatch<React.SetStateAction<ItemFilters>>
+  createItem: (item: CreateItem) => Promise<void>
+  updateItem: (id: number, item: UpdateItem) => Promise<void>
+  deleteItem: (id: number) => Promise<void>
+  toggleItemAvailable: (id: number) => Promise<void>
   refreshItems: () => void
 }
 
@@ -45,16 +43,16 @@ interface Props {
 
 export default function ItemsProvider({ children }: Props) {
   const [open, setOpen] = useDialogState<ItemDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<CatalogItem | null>(null)
+  const [currentRow, setCurrentRow] = useState<Item | null>(null)
   const [pagination, setPagination] = useState<ItemsPaginationState>({
     page: 1,
     limit: 10,
     total: 0,
   })
 
-  const [filters, setFilters] = useState<CatalogItemFilters>({
-    page: 1,
+  const [filters, setFilters] = useState<ItemFilters>({
     limit: 10,
+    offset: 0,
   })
 
   const queryClient = useQueryClient()
@@ -67,38 +65,27 @@ export default function ItemsProvider({ children }: Props) {
     isError,
     refetch: refreshItems,
   } = useQuery({
-    queryKey: ['catalog-items', filters],
-    queryFn: () => CatalogService.getItems(filters),
+    queryKey: ['items', filters],
+    queryFn: () => ItemService.getItemsPaginated(filters),
     keepPreviousData: true,
   })
 
-  // Fetch subcategories
+  // Fetch subcategories for dropdown
   const {
-      data: subcategoriesData,
-      isLoading: subcategoriesLoading
-    } = useQuery({
-      queryKey: ['catalog-sub-categories'],
-      queryFn: () => CatalogService.getSubCategories(),
-    })
-    
-  // Fetch brands
-  const { 
-    data: brandsData,
-    isLoading: brandsLoading
+    data: subcategoriesData,
+    isLoading: subcategoriesLoading
   } = useQuery({
-    queryKey: ['catalog-brands'],
-    queryFn: () => CatalogService.getBrands(),
+    queryKey: ['subcategories'],
+    queryFn: () => ItemService.getSubCategories(),
   })
 
-  // Set pagination from meta
+  // Set pagination from response
   useEffect(() => {
-    if (itemsData?.meta && didMountRef.current) {
+    if (itemsData?.pagination && didMountRef.current) {
       setPagination({
-        page: itemsData.meta.currentPage,
-        limit: itemsData.meta.itemsPerPage,
-        //total: itemsData.meta.totalItems,
-        total: Array.isArray(itemsData) ? itemsData.length : itemsData?.meta?.totalItems || 0,
-
+        page: itemsData.pagination.page,
+        limit: itemsData.pagination.limit,
+        total: itemsData.pagination.total,
       })
     }
 
@@ -109,53 +96,69 @@ export default function ItemsProvider({ children }: Props) {
 
   // Mutations
   const createItemMutation = useMutation({
-    mutationFn: CatalogService.createItem,
+    mutationFn: ItemService.createItem,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-items'] })
-      toast.success('Catalog item created successfully')
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+      toast.success('Item created successfully')
     },
     onError: handleServerError,
   })
 
   const updateItemMutation = useMutation({
-    mutationFn: ({ id, item }: { id: string; item: Partial<Omit<CatalogItem, 'id' | 'createdAt'>> }) =>
-      CatalogService.updateItem(id, item),
+    mutationFn: ({ id, item }: { id: string; item: UpdateItem }) =>
+      ItemService.updateItem(id, item),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-items'] })
-      toast.success('Catalog item updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+      toast.success('Item updated successfully')
     },
     onError: handleServerError,
   })
 
   const deleteItemMutation = useMutation({
-    mutationFn: CatalogService.deleteItem,
+    mutationFn: ItemService.deleteItem,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['catalog-items'] })
-      toast.success('Catalog item deleted successfully')
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+      toast.success('Item deleted successfully')
+    },
+    onError: handleServerError,
+  })
+
+  const toggleAvailableItemMutation = useMutation({
+    mutationFn: ItemService.toggleItemAvailable,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['items'] })
+      toast.success('Item availability updated successfully')
     },
     onError: handleServerError,
   })
 
   // Handlers
   const createItem = useCallback(
-    async (item: Omit<CatalogItem, 'id' | 'createdAt'>) => {
+    async (item: CreateItem) => {
       await createItemMutation.mutateAsync(item)
     },
     [createItemMutation]
   )
 
   const updateItem = useCallback(
-    async (id: string, item: Partial<Omit<CatalogItem, 'id' | 'createdAt'>>) => {
-      await updateItemMutation.mutateAsync({ id, item })
+    async (id: number, item: UpdateItem) => {
+      await updateItemMutation.mutateAsync({ id: id.toString(), item })
     },
     [updateItemMutation]
   )
 
   const deleteItem = useCallback(
-    async (id: string) => {
-      await deleteItemMutation.mutateAsync(id)
+    async (id: number) => {
+      await deleteItemMutation.mutateAsync(id.toString())
     },
     [deleteItemMutation]
+  )
+
+  const toggleItemAvailable = useCallback(
+    async (id: number) => {
+      await toggleAvailableItemMutation.mutateAsync(id.toString())
+    },
+    [toggleAvailableItemMutation]
   )
 
   return (
@@ -165,15 +168,11 @@ export default function ItemsProvider({ children }: Props) {
         setOpen,
         currentRow,
         setCurrentRow,
-        //items: itemsData?.items || [],
-        items: Array.isArray(itemsData) ? itemsData : itemsData?.items || [],
+        items: itemsData?.data || [],
         isLoading,
         isError,
         subcategories: subcategoriesData || [],
         subcategoriesLoading,
-        brands: brandsData || [],
-        brandsLoading,
-        itemsLoading: isLoading, // set this explicitly
         pagination,
         setPagination,
         filters,
@@ -181,6 +180,7 @@ export default function ItemsProvider({ children }: Props) {
         createItem,
         updateItem,
         deleteItem,
+        toggleItemAvailable,
         refreshItems,
       }}
     >
