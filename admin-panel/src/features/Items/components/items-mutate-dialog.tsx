@@ -31,7 +31,8 @@ import {
 } from '@/components/ui/select'
 import { Item } from '../data/schema'
 import { useItems } from '../context/items-context'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { Upload, X, Image as ImageIcon } from 'lucide-react'
 
 interface Props {
   open: boolean
@@ -55,6 +56,10 @@ type ItemForm = z.infer<typeof formSchema>
 
 export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string>('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { createItem, updateItem, subcategories, subcategoriesLoading } = useItems()
   const isUpdate = !!currentRow
 
@@ -99,6 +104,8 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         available: currentRow.available,
         display_order: currentRow.display_order,
       })
+      setPreviewUrl(currentRow.image_url || '')
+      setSelectedFile(null)
     } else {
       form.reset({
         name: '',
@@ -111,43 +118,198 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         available: true,
         display_order: 0,
       })
+      setPreviewUrl('')
+      setSelectedFile(null)
     }
   }, [currentRow, form])
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB')
+        return
+      }
+      
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+        alert('Only JPEG, PNG, WebP and GIF images are supported')
+        return
+      }
+      
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const generateFileName = (file: File): string => {
+    const timestamp = Date.now()
+    const randomId = Math.random().toString(36).substring(2, 8)
+    const extension = file.name.split('.').pop()?.toLowerCase()
+    return `items/${timestamp}-${randomId}.${extension}`
+  }
+
+  const uploadFileWithPresignedUrl = async (file: File): Promise<string> => {
+    const fileName = generateFileName(file)
+    
+    // Get presigned URL - trying POST first, then GET as fallback
+    let presignedResponse: Response
+    
+    try {
+      // Try POST method first (most likely correct)
+      presignedResponse = await fetch('http://127.0.0.1:8000/api/v1/upload/presigned-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: fileName,
+          content_type: file.type,
+          expires_in: 15
+        })
+      })
+    } catch (error) {
+      // Fallback to GET method if POST fails
+      const params = new URLSearchParams({
+        key: fileName,
+        content_type: file.type,
+        expires_in: '15'
+      })
+      
+      presignedResponse = await fetch(`http://127.0.0.1:8000/api/v1/upload/presigned-url?${params}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    if (!presignedResponse.ok) {
+      throw new Error('Failed to get upload URL')
+    }
+
+    const responseData = await presignedResponse.json()
+    const uploadUrl = responseData.data?.url || responseData.url
+
+    if (!uploadUrl) {
+      throw new Error('Invalid response from presigned URL endpoint')
+    }
+
+    // Upload directly to S3
+    const uploadResponse = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type
+      }
+    })
+
+    if (!uploadResponse.ok) {
+      throw new Error('Upload to S3 failed')
+    }
+
+    // Return the public URL for the uploaded file
+    return `https://restaurant-menu-images.s3.us-east-1.amazonaws.com/${fileName}`
+  }
+
+  // Main upload function using presigned URL approach
+  const uploadFile = async (file: File): Promise<string> => {
+    return await uploadFileWithPresignedUrl(file)
+  }
+
+  const removeImage = () => {
+    setSelectedFile(null)
+    setPreviewUrl('')
+    form.setValue('image_url', '')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const deleteUploadedImage = async (imageUrl: string) => {
+    try {
+      // Extract the S3 key from the full URL
+      // URL format: https://restaurant-menu-images.s3.us-east-1.amazonaws.com/items/filename.jpg
+      const url = new URL(imageUrl)
+      const key = url.pathname.substring(1) // Remove leading slash
+      
+      if (key) {
+        await fetch(`http://127.0.0.1:8000/api/v1/upload/image/${encodeURIComponent(key)}`, {
+          method: 'DELETE',
+        })
+      }
+    } catch {
+      // Ignore cleanup errors - don't fail the form submission
+    }
+  }
 
   const onSubmit = async (data: ItemForm) => {
     try {
       setLoading(true)
       
-      if (isUpdate && currentRow) {
-        await updateItem(currentRow.id, {
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          currency: data.currency,
-          dietary_info: data.dietary_info,
-          image_url: data.image_url,
-          sub_category_id: data.sub_category_id,
-          available: data.available,
-          display_order: data.display_order,
-        })
-      } else {
-        await createItem({
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          currency: data.currency,
-          dietary_info: data.dietary_info,
-          image_url: data.image_url,
-          sub_category_id: data.sub_category_id,
-          available: data.available,
-          display_order: data.display_order,
-        })
+      let finalImageUrl = data.image_url
+      let uploadedImageUrl: string | null = null
+      
+      if (selectedFile) {
+        setUploading(true)
+        try {
+          // Upload directly to S3 using presigned URL
+          finalImageUrl = await uploadFile(selectedFile)
+          uploadedImageUrl = finalImageUrl
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+          if (errorMessage.includes('presigned')) {
+            alert('Failed to get upload permission. Please check your connection and try again.')
+          } else if (errorMessage.includes('S3')) {
+            alert('Failed to upload image to storage. Please try again.')
+          } else {
+            alert('Failed to upload image. Please try again.')
+          }
+          return
+        } finally {
+          setUploading(false)
+        }
       }
       
-      onOpenChange(false)
-      form.reset()
-    } catch (error) {
-      console.error('Error:', error)
+      try {
+        if (isUpdate && currentRow) {
+          await updateItem(currentRow.id, {
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            currency: data.currency,
+            dietary_info: data.dietary_info,
+            image_url: finalImageUrl,
+            sub_category_id: data.sub_category_id,
+            available: data.available,
+            display_order: data.display_order,
+          })
+        } else {
+          await createItem({
+            name: data.name,
+            description: data.description,
+            price: data.price,
+            currency: data.currency,
+            dietary_info: data.dietary_info,
+            image_url: finalImageUrl,
+            sub_category_id: data.sub_category_id,
+            available: data.available,
+            display_order: data.display_order,
+          })
+        }
+        
+        onOpenChange(false)
+        form.reset()
+        setSelectedFile(null)
+        setPreviewUrl('')
+      } catch {
+        // If item creation failed and we uploaded an image, clean it up
+        if (uploadedImageUrl) {
+          await deleteUploadedImage(uploadedImageUrl)
+        }
+        alert('An error occurred while saving the item.')
+      }
+    } catch {
+      alert('An error occurred while saving the item.')
     } finally {
       setLoading(false)
     }
@@ -282,13 +444,76 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name="image_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image URL</FormLabel>
+                    <FormLabel>Image</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="https://example.com/image.jpg"
-                        type="url"
-                      />
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="flex items-center gap-2"
+                          >
+                            <Upload className="h-4 w-4" />
+                            Choose Image
+                          </Button>
+                          {previewUrl && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={removeImage}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp,image/gif"
+                          onChange={handleFileSelect}
+                          className="hidden"
+                        />
+                        
+                        {previewUrl && (
+                          <div className="relative w-full max-w-xs">
+                            <img
+                              src={previewUrl}
+                              alt="Preview"
+                              className="w-full h-32 object-cover rounded-lg border"
+                            />
+                            {selectedFile && (
+                              <div className="mt-2 text-sm text-gray-600">
+                                {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {!previewUrl && (
+                          <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg">
+                            <div className="text-center">
+                              <ImageIcon className="mx-auto h-8 w-8 text-gray-400" />
+                              <p className="mt-2 text-sm text-gray-500">No image selected</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <Input
+                          {...field}
+                          placeholder="Or paste image URL"
+                          className="text-sm"
+                          onChange={(e) => {
+                            field.onChange(e)
+                            if (e.target.value && !selectedFile) {
+                              setPreviewUrl(e.target.value)
+                            }
+                          }}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -342,9 +567,9 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
           <Button 
             form="item-form" 
             type="submit" 
-            disabled={loading}
+            disabled={loading || uploading}
           >
-            {loading ? 'Saving...' : isUpdate ? 'Update Item' : 'Create Item'}
+            {uploading ? 'Uploading...' : loading ? 'Saving...' : isUpdate ? 'Update Item' : 'Create Item'}
           </Button>
         </DialogFooter>
       </DialogContent>
