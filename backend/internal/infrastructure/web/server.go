@@ -106,6 +106,7 @@ func (s *Server) setupRoutes() {
 	itemRepo := databaseRepo.NewItemRepository(s.db.DB)
 	restaurantRepo := databaseRepo.NewRestaurantRepository(s.db.DB)
 	contentRepo := databaseRepo.NewContentRepository(s.db.DB)
+	dashboardRepo := databaseRepo.NewDashboardRepository(s.db.DB, s.logger)
 
 	// Initialize services
 	categoryService := services.NewCategoryService(categoryRepo, s.logger)
@@ -114,6 +115,7 @@ func (s *Server) setupRoutes() {
 	restaurantService := services.NewRestaurantService(restaurantRepo, s.logger)
 	contentService := services.NewContentService(contentRepo, s.logger)
 	menuService := services.NewMenuService(categoryRepo, subCategoryRepo, itemRepo, s.logger)
+	dashboardService := services.NewDashboardService(dashboardRepo, s.logger)
 
 	// Initialize handlers
 	healthHandler := handlers.NewHealthHandler(s.db, s.logger)
@@ -124,6 +126,7 @@ func (s *Server) setupRoutes() {
 	contentHandler := handlers.NewContentHandler(contentService, s.logger)
 	menuHandler := handlers.NewMenuHandler(menuService, s.logger)
 	uploadHandler := handlers.NewUploadHandler(s.s3Client, s.logger)
+	dashboardHandler := handlers.NewDashboardHandler(dashboardService, s.logger)
 
 	// Health check routes (ROOT level - industry standard)
 	s.router.GET("/health", healthHandler.Health)
@@ -215,6 +218,18 @@ func (s *Server) setupRoutes() {
 			upload.DELETE("/image/:key", uploadHandler.DeleteImage)
 			upload.GET("/presigned-url", uploadHandler.GetPresignedURL)
 			upload.GET("/image/:key", uploadHandler.GetImageInfo)
+		}
+
+		// Dashboard endpoints
+		dashboard := v1.Group("/dashboard")
+		{
+			dashboard.GET("", dashboardHandler.GetCompleteDashboardData)
+			dashboard.GET("/stats", dashboardHandler.GetDashboardStats)
+			dashboard.GET("/activity", dashboardHandler.GetRecentActivity)
+			dashboard.GET("/categories", dashboardHandler.GetCategoryStats)
+			dashboard.GET("/price-distribution", dashboardHandler.GetPriceDistribution)
+			dashboard.GET("/weekly-items", dashboardHandler.GetWeeklyItemsData)
+			dashboard.GET("/health", dashboardHandler.GetMenuHealthMetrics)
 		}
 	}
 
