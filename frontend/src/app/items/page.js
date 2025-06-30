@@ -65,18 +65,20 @@ export default function MenuSection() {
     return (
         <section className="bg-[#fef5e5] text-[#bc7a2e]">
             <div className="menu mt-12 shadow-md fixed w-full z-10 bg-[#fef5e5]">
-                <div className="category flex justify-center gap-5">
-                    {categories.map((category) => (
-                        <button
-                            key={category.id}
-                            className={`px-3 py-2 capitalize hover:font-semibold transition-all ${
-                                selectedCategoryId === category.id ? "font-semibold" : ""
-                            }`}
-                            onClick={() => setSelectedCategoryId(category.id)}
-                        >
-                            {category.name}
-                        </button>
-                    ))}
+                <div className="category overflow-x-auto whitespace-nowrap px-2 py-2">
+                    <div className="flex justify-center gap-2 sm:gap-5 min-w-max">
+                        {categories.map((category) => (
+                            <button
+                                key={category.id}
+                                className={`px-2 sm:px-3 py-2 capitalize hover:font-semibold transition-all text-sm sm:text-base ${
+                                    selectedCategoryId === category.id ? "font-semibold" : ""
+                                }`}
+                                onClick={() => setSelectedCategoryId(category.id)}
+                            >
+                                {category.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
                 
                 {subcategoriesLoading ? (
@@ -84,12 +86,12 @@ export default function MenuSection() {
                         <div className="animate-spin h-5 w-5 border-2 border-[#bc7a2e] border-t-transparent rounded-full"></div>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto whitespace-nowrap px-4 py-2 xl:max-w-7xl xl:mx-auto md:text-center">
-                        <div className="inline-flex gap-6">
+                    <div className="overflow-x-auto whitespace-nowrap px-2 sm:px-4 py-2 xl:max-w-7xl xl:mx-auto md:text-center">
+                        <div className="inline-flex gap-3 sm:gap-6 min-w-max">
                             {subcategories.map((subcategory) => (
                                 <button
                                     key={subcategory.id}
-                                    className={`capitalize hover:font-semibold transition-all ${
+                                    className={`capitalize hover:font-semibold transition-all text-sm sm:text-base px-1 sm:px-0 ${
                                         selectedSubCategoryId === subcategory.id ? "font-semibold" : ""
                                     }`}
                                     onClick={() => setSelectedSubCategoryId(subcategory.id)}
@@ -107,11 +109,11 @@ export default function MenuSection() {
                     <h2 className="text-[20px] lg:text-[30px] xl:text-[40px] font-bold mb-4 capitalize">
                         {selectedSubCategory ? selectedSubCategory.name : selectedCategory?.name || "Menu"}
                     </h2>
-                    {selectedSubCategory?.description && (
+                    {/* {selectedSubCategory?.description && (
                         <p className="font-semibold text-[15px] lg:text-[17px] xl:text-[19px] leading-relaxed px-4 md:px-0 xl:mt-3">
                             {selectedSubCategory.description}
                         </p>
-                    )}
+                    )} */}
                     {selectedCategory?.description && (
                         <p className="text-[15px] lg:text-[17px]">
                             {selectedCategory.description}
