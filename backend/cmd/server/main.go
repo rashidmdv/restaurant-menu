@@ -29,7 +29,6 @@ import (
 
 	"restaurant-menu-api/internal/config"
 	"restaurant-menu-api/internal/database"
-	"restaurant-menu-api/internal/database/migrations"
 	"restaurant-menu-api/internal/infrastructure/redis"
 	"restaurant-menu-api/internal/infrastructure/storage"
 	"restaurant-menu-api/internal/infrastructure/web"
@@ -53,27 +52,6 @@ func main() {
 		appLogger.WithError(err).Fatal("Failed to connect to database")
 	}
 	defer db.Close()
-
-	// Run database migrations (only in development mode)
-	// In production, use proper migrations: make db-migrate
-	if cfg.IsDevelopment() {
-		if err := db.AutoMigrate(); err != nil {
-			appLogger.WithError(err).Fatal("Failed to run database auto-migration")
-		}
-		appLogger.Info("Database auto-migration completed successfully")
-		appLogger.Warn("Auto-migration is enabled in development mode. Use 'make db-migrate' for production")
-	} else {
-		appLogger.Info("Production mode: Use 'make db-migrate' to run database migrations")
-	}
-
-	// Seed database with initial data (only in development)
-	if cfg.IsDevelopment() {
-		if err := migrations.SeedData(db.DB); err != nil {
-			appLogger.WithError(err).Warn("Failed to seed database")
-		} else {
-			appLogger.Info("Database seeded successfully")
-		}
-	}
 
 	// Initialize storage client using factory
 	ctx := context.Background()

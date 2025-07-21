@@ -290,7 +290,6 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                         onChange={field.onChange}
                         onUpload={ItemService.uploadItemImage}
                         label="Item Image"
-                        placeholder="Enter image URL or upload file"
                         disabled={loading}
                       />
                     </FormControl>

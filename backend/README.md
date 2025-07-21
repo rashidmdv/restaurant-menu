@@ -278,14 +278,7 @@ go test -v ./...
 ```
 
 ### Database Migrations
-
-The application uses GORM's AutoMigrate feature. Migrations run automatically on startup.
-
-To manually seed the database with sample data:
-```bash
-# This happens automatically in development mode
-# For production, implement a separate seeding strategy
-```
+<!-- TODO: update -->
 
 ## Production Deployment
 

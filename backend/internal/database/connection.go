@@ -9,7 +9,6 @@ import (
 	"gorm.io/gorm/logger"
 
 	"restaurant-menu-api/internal/config"
-	"restaurant-menu-api/internal/domain/entities"
 )
 
 type Database struct {
@@ -53,21 +52,6 @@ func New(cfg *config.Config) (*Database, error) {
 	return &Database{DB: db}, nil
 }
 
-// AutoMigrate is deprecated - use proper migrations instead
-// This method is kept for backwards compatibility but should not be used in production
-func (d *Database) AutoMigrate() error {
-	// In production, migrations should be run separately using the migrate command
-	// This is kept only for development convenience and backwards compatibility
-	return d.DB.AutoMigrate(
-		&entities.Category{},
-		&entities.SubCategory{},
-		&entities.Item{},
-		&entities.RestaurantInfo{},
-		&entities.OperatingHour{},
-		&entities.ContentSection{},
-	)
-}
-
 func (d *Database) Close() error {
 	sqlDB, err := d.DB.DB()
 	if err != nil {
@@ -92,14 +76,14 @@ func (d *Database) GetStats() map[string]interface{} {
 
 	stats := sqlDB.Stats()
 	return map[string]interface{}{
-		"max_open_connections":     stats.MaxOpenConnections,
-		"open_connections":         stats.OpenConnections,
-		"in_use":                  stats.InUse,
-		"idle":                    stats.Idle,
-		"wait_count":              stats.WaitCount,
-		"wait_duration":           stats.WaitDuration,
-		"max_idle_closed":         stats.MaxIdleClosed,
-		"max_idle_time_closed":    stats.MaxIdleTimeClosed,
-		"max_lifetime_closed":     stats.MaxLifetimeClosed,
+		"max_open_connections": stats.MaxOpenConnections,
+		"open_connections":     stats.OpenConnections,
+		"in_use":               stats.InUse,
+		"idle":                 stats.Idle,
+		"wait_count":           stats.WaitCount,
+		"wait_duration":        stats.WaitDuration,
+		"max_idle_closed":      stats.MaxIdleClosed,
+		"max_idle_time_closed": stats.MaxIdleTimeClosed,
+		"max_lifetime_closed":  stats.MaxLifetimeClosed,
 	}
 }

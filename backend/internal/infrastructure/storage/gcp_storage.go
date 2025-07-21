@@ -100,10 +100,11 @@ func (g *GCPStorage) UploadFile(ctx context.Context, file multipart.File, header
 		writer.Metadata[k] = v
 	}
 
-	// Set ACL based on options
-	if options.ACL == "public-read" || options.ACL == "" {
-		writer.PredefinedACL = "publicRead"
-	}
+	// Note: Skip ACL settings when uniform bucket-level access is enabled
+	// The bucket should be configured to allow public access through IAM policies
+	// if options.ACL == "public-read" || options.ACL == "" {
+	//     writer.PredefinedACL = "publicRead" // This causes issues with uniform bucket access
+	// }
 
 	// Write file content
 	if _, err := writer.Write(fileBytes); err != nil {
@@ -150,10 +151,11 @@ func (g *GCPStorage) UploadFromReader(ctx context.Context, reader io.Reader, key
 		writer.Metadata[k] = v
 	}
 
-	// Set ACL based on options
-	if options.ACL == "public-read" || options.ACL == "" {
-		writer.PredefinedACL = "publicRead"
-	}
+	// Note: Skip ACL settings when uniform bucket-level access is enabled
+	// The bucket should be configured to allow public access through IAM policies
+	// if options.ACL == "public-read" || options.ACL == "" {
+	//     writer.PredefinedACL = "publicRead" // This causes issues with uniform bucket access
+	// }
 
 	// Copy from reader to writer
 	if _, err := io.Copy(writer, reader); err != nil {
@@ -186,21 +188,21 @@ func (g *GCPStorage) DeleteFile(ctx context.Context, key string) error {
 func (g *GCPStorage) FileExists(ctx context.Context, key string) (bool, error) {
 	obj := g.client.Bucket(g.bucketName).Object(key)
 	_, err := obj.Attrs(ctx)
-	
+
 	if err != nil {
 		if err == storage.ErrObjectNotExist {
 			return false, nil
 		}
 		return false, appErrors.WrapInternalError(err, "Failed to check if file exists")
 	}
-	
+
 	return true, nil
 }
 
 func (g *GCPStorage) GetFileInfo(ctx context.Context, key string) (*interfaces.FileMetadata, error) {
 	obj := g.client.Bucket(g.bucketName).Object(key)
 	attrs, err := obj.Attrs(ctx)
-	
+
 	if err != nil {
 		if err == storage.ErrObjectNotExist {
 			return nil, appErrors.NewNotFoundError("File")
@@ -239,12 +241,12 @@ func (g *GCPStorage) GetPresignedUploadURL(ctx context.Context, key string, cont
 func (g *GCPStorage) CopyFile(ctx context.Context, sourceKey, destinationKey string) error {
 	srcObj := g.client.Bucket(g.bucketName).Object(sourceKey)
 	dstObj := g.client.Bucket(g.bucketName).Object(destinationKey)
-	
+
 	_, err := dstObj.CopierFrom(srcObj).Run(ctx)
 	if err != nil {
 		return appErrors.WrapInternalError(err, "Failed to copy file")
 	}
-	
+
 	return nil
 }
 
@@ -255,12 +257,12 @@ func (g *GCPStorage) ListFiles(ctx context.Context, prefix string, maxResults in
 
 	query := &storage.Query{Prefix: prefix}
 	query.SetAttrSelection([]string{"Name", "Size", "ContentType", "Updated", "Etag"})
-	
+
 	it := g.client.Bucket(g.bucketName).Objects(ctx, query)
-	
+
 	files := make([]*interfaces.FileMetadata, 0)
 	count := 0
-	
+
 	for count < maxResults {
 		attrs, err := it.Next()
 		if err == iterator.Done {
@@ -269,7 +271,7 @@ func (g *GCPStorage) ListFiles(ctx context.Context, prefix string, maxResults in
 		if err != nil {
 			return nil, appErrors.WrapInternalError(err, "Failed to list files")
 		}
-		
+
 		files = append(files, &interfaces.FileMetadata{
 			Key:          attrs.Name,
 			URL:          g.GetPublicURL(attrs.Name),
@@ -279,10 +281,10 @@ func (g *GCPStorage) ListFiles(ctx context.Context, prefix string, maxResults in
 			LastModified: &attrs.Updated,
 			ETag:         attrs.Etag,
 		})
-		
+
 		count++
 	}
-	
+
 	return files, nil
 }
 
@@ -301,7 +303,7 @@ func (g *GCPStorage) ValidateFileType(filename string, contentType string) error
 	if filename != "" {
 		ext := strings.ToLower(filepath.Ext(filename))
 		validExtensions := []string{".jpg", ".jpeg", ".png", ".webp", ".gif"}
-		
+
 		isValid := false
 		for _, validExt := range validExtensions {
 			if ext == validExt {
@@ -309,7 +311,7 @@ func (g *GCPStorage) ValidateFileType(filename string, contentType string) error
 				break
 			}
 		}
-		
+
 		if !isValid {
 			return appErrors.NewValidationError("Invalid file type", "Only JPEG, PNG, WebP, and GIF images are allowed")
 		}
@@ -323,7 +325,7 @@ func (g *GCPStorage) ValidateFileType(filename string, contentType string) error
 			"image/webp",
 			"image/gif",
 		}
-		
+
 		isValid := false
 		for _, validType := range validTypes {
 			if contentType == validType {
@@ -331,7 +333,7 @@ func (g *GCPStorage) ValidateFileType(filename string, contentType string) error
 				break
 			}
 		}
-		
+
 		if !isValid {
 			return appErrors.NewValidationError("Invalid content type", "File must be a valid image")
 		}

@@ -11,7 +11,6 @@ interface ImageUploadFieldProps {
   onChange: (value: string) => void
   onUpload: (file: File) => Promise<{ url: string }>
   label?: string
-  placeholder?: string
   accept?: string
   disabled?: boolean
   className?: string
@@ -22,7 +21,6 @@ export function ImageUploadField({
   onChange,
   onUpload,
   label = "Image",
-  placeholder = "Enter image URL or upload file",
   accept = "image/*",
   disabled = false,
   className
@@ -175,17 +173,6 @@ export function ImageUploadField({
         </div>
       </div>
 
-      {/* Manual URL Input */}
-      <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Or enter URL directly</Label>
-        <Input
-          type="url"
-          placeholder={placeholder}
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled || isUploading}
-        />
-      </div>
     </div>
   )
 }
