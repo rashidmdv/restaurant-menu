@@ -29,8 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ImageUploadField } from '@/components/ui/image-upload-field'
 import { Item } from '../data/schema'
 import { useItems } from '../context/items-context'
+import { ItemService } from '@/services/item-service'
 import { useState, useEffect } from 'react'
 
 interface Props {
@@ -282,12 +284,14 @@ export function ItemsMutateDrawer({ open, onOpenChange, currentRow }: Props) {
                 name="image_url"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Image URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="https://example.com/image.jpg"
-                        type="url"
+                      <ImageUploadField
+                        value={field.value}
+                        onChange={field.onChange}
+                        onUpload={ItemService.uploadItemImage}
+                        label="Item Image"
+                        placeholder="Enter image URL or upload file"
+                        disabled={loading}
                       />
                     </FormControl>
                     <FormMessage />

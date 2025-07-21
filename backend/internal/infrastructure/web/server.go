@@ -10,8 +10,8 @@ import (
 
 	"restaurant-menu-api/internal/config"
 	"restaurant-menu-api/internal/database"
+	"restaurant-menu-api/internal/domain/interfaces"
 	"restaurant-menu-api/internal/domain/services"
-	"restaurant-menu-api/internal/infrastructure/aws"
 	databaseRepo "restaurant-menu-api/internal/infrastructure/database"
 	"restaurant-menu-api/internal/infrastructure/redis"
 	"restaurant-menu-api/internal/interfaces/handlers"
@@ -22,20 +22,20 @@ import (
 )
 
 type ServerConfig struct {
-	Config      *config.Config
-	DB          *database.Database
-	S3Client    *aws.S3Client
-	RedisClient *redis.Client
-	Logger      *logger.Logger
+	Config        *config.Config
+	DB            *database.Database
+	StorageClient interfaces.StorageInterface
+	RedisClient   *redis.Client
+	Logger        *logger.Logger
 }
 
 type Server struct {
-	config      *config.Config
-	router      *gin.Engine
-	db          *database.Database
-	s3Client    *aws.S3Client
-	redisClient *redis.Client
-	logger      *logger.Logger
+	config        *config.Config
+	router        *gin.Engine
+	db            *database.Database
+	storageClient interfaces.StorageInterface
+	redisClient   *redis.Client
+	logger        *logger.Logger
 }
 
 func NewServer(cfg *ServerConfig) *Server {
@@ -47,11 +47,11 @@ func NewServer(cfg *ServerConfig) *Server {
 	}
 
 	server := &Server{
-		config:      cfg.Config,
-		db:          cfg.DB,
-		s3Client:    cfg.S3Client,
-		redisClient: cfg.RedisClient,
-		logger:      cfg.Logger,
+		config:        cfg.Config,
+		db:            cfg.DB,
+		storageClient: cfg.StorageClient,
+		redisClient:   cfg.RedisClient,
+		logger:        cfg.Logger,
 	}
 
 	server.setupRouter()
@@ -123,7 +123,7 @@ func (s *Server) setupRoutes() {
 	restaurantHandler := handlers.NewRestaurantHandler(restaurantService, s.logger)
 	contentHandler := handlers.NewContentHandler(contentService, s.logger)
 	menuHandler := handlers.NewMenuHandler(menuService, s.logger)
-	uploadHandler := handlers.NewUploadHandler(s.s3Client, s.logger)
+	uploadHandler := handlers.NewUploadHandler(s.storageClient, s.logger)
 
 	// Health check routes (ROOT level - industry standard)
 	s.router.GET("/health", healthHandler.Health)
@@ -213,8 +213,8 @@ func (s *Server) setupRoutes() {
 		{
 			upload.POST("/image", uploadHandler.UploadImage)
 			upload.DELETE("/image/:key", uploadHandler.DeleteImage)
-			upload.GET("/presigned-url", uploadHandler.GetPresignedURL)
-			upload.GET("/image/:key", uploadHandler.GetImageInfo)
+			upload.POST("/presigned-url", uploadHandler.GetPresignedURL)
+			upload.GET("/image/:key/info", uploadHandler.GetImageInfo)
 		}
 	}
 

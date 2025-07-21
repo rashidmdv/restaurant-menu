@@ -205,13 +205,13 @@ export const ItemService = {
 
   uploadItemImage: async (file: File): Promise<{ url: string }> => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('image', file);
 
     const response = await API.post<BackendResponse<{ url: string }>>('/api/v1/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    return response.data.data;
+    return { url: response.data.data.url };
   },
 
   // Get subcategories for item creation

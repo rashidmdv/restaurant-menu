@@ -13,6 +13,8 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	AWS      AWSConfig
+	GCP      GCPConfig
+	Storage  StorageConfig
 	Redis    RedisConfig
 	Logger   LoggerConfig
 }
@@ -42,6 +44,18 @@ type AWSConfig struct {
 	SecretAccessKey string
 	S3Bucket        string
 	S3Region        string
+}
+
+type GCPConfig struct {
+	ProjectID               string
+	ServiceAccountKeyPath   string
+	ServiceAccountKey       string // JSON key content
+	Bucket                  string
+	Region                  string
+}
+
+type StorageConfig struct {
+	Provider string // "aws" or "gcp"
 }
 
 type RedisConfig struct {
@@ -86,6 +100,16 @@ func Load() (*Config, error) {
 			S3Bucket:        getEnv("S3_BUCKET", "restaurant-menu-images"),
 			S3Region:        getEnv("S3_REGION", "us-east-1"),
 		},
+		GCP: GCPConfig{
+			ProjectID:               getEnv("GCP_PROJECT_ID", ""),
+			ServiceAccountKeyPath:   getEnv("GCP_SERVICE_ACCOUNT_KEY_PATH", ""),
+			ServiceAccountKey:       getEnv("GCP_SERVICE_ACCOUNT_KEY", ""),
+			Bucket:                  getEnv("GCP_BUCKET", "restaurant-menu-images"),
+			Region:                  getEnv("GCP_REGION", "us-central1"),
+		},
+		Storage: StorageConfig{
+			Provider: getEnv("STORAGE_PROVIDER", "aws"),
+		},
 		Redis: RedisConfig{
 			URL:      getEnv("REDIS_URL", "redis://localhost:6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
@@ -109,8 +133,21 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("database password is required")
 	}
 
-	if c.AWS.AccessKeyID == "" || c.AWS.SecretAccessKey == "" {
-		return fmt.Errorf("AWS credentials are required")
+	// Validate storage provider configuration
+	switch c.Storage.Provider {
+	case "aws":
+		if c.AWS.AccessKeyID == "" || c.AWS.SecretAccessKey == "" {
+			return fmt.Errorf("AWS credentials are required when using AWS storage provider")
+		}
+	case "gcp":
+		if c.GCP.ProjectID == "" {
+			return fmt.Errorf("GCP project ID is required when using GCP storage provider")
+		}
+		if c.GCP.ServiceAccountKeyPath == "" && c.GCP.ServiceAccountKey == "" {
+			return fmt.Errorf("GCP service account key (path or content) is required when using GCP storage provider")
+		}
+	default:
+		return fmt.Errorf("invalid storage provider: %s. Supported providers: aws, gcp", c.Storage.Provider)
 	}
 
 	validEnvs := map[string]bool{

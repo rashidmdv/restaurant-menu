@@ -26,3 +26,21 @@ db.sqlite3
 node_modules/
 .next/
 npm-debug.log*
+
+# Security - Service Account Keys and Secrets  
+*.key
+*.pem
+*.p12
+.env
+.env.local
+.env.*.local
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+vendor/
+*.test
+*.out

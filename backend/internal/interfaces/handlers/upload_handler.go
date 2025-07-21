@@ -7,15 +7,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"restaurant-menu-api/internal/infrastructure/aws"
+	"restaurant-menu-api/internal/domain/interfaces"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
 	appErrors "restaurant-menu-api/pkg/errors"
 )
 
 type UploadHandler struct {
-	s3Client *aws.S3Client
-	logger   *logger.Logger
+	storageClient interfaces.StorageInterface
+	logger        *logger.Logger
 }
 
 type UploadImageResponse struct {
@@ -38,16 +38,16 @@ type PresignedURLResponse struct {
 	ExpiresIn int    `json:"expires_in"`
 }
 
-func NewUploadHandler(s3Client *aws.S3Client, logger *logger.Logger) *UploadHandler {
+func NewUploadHandler(storageClient interfaces.StorageInterface, logger *logger.Logger) *UploadHandler {
 	return &UploadHandler{
-		s3Client: s3Client,
-		logger:   logger,
+		storageClient: storageClient,
+		logger:        logger,
 	}
 }
 
 // UploadImage godoc
 // @Summary Upload an image
-// @Description Upload an image file to S3 storage
+// @Description Upload an image file to cloud storage
 // @Tags Upload
 // @Accept multipart/form-data
 // @Produce json
@@ -77,8 +77,14 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 	// Get folder from form (optional)
 	folder := c.DefaultPostForm("folder", "items")
 
-	// Upload file to S3
-	result, err := h.s3Client.UploadFile(ctx, file, header, folder)
+	// Prepare upload options
+	options := interfaces.UploadOptions{
+		Folder: folder,
+		ACL:    "public-read",
+	}
+
+	// Upload file using storage interface
+	result, err := h.storageClient.UploadFile(ctx, file, header, options)
 	if err != nil {
 		h.logger.LogError(ctx, err, "Failed to upload image", map[string]interface{}{
 			"filename": header.Filename,
@@ -107,11 +113,11 @@ func (h *UploadHandler) UploadImage(c *gin.Context) {
 
 // DeleteImage godoc
 // @Summary Delete an image
-// @Description Delete an image file from S3 storage
+// @Description Delete an image file from cloud storage
 // @Tags Upload
 // @Accept json
 // @Produce json
-// @Param key path string true "Image key (S3 object key)"
+// @Param key path string true "Image key (storage object key)"
 // @Success 204
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
@@ -130,7 +136,7 @@ func (h *UploadHandler) DeleteImage(c *gin.Context) {
 	key = strings.ReplaceAll(key, "%2F", "/")
 
 	// Check if file exists
-	exists, err := h.s3Client.FileExists(ctx, key)
+	exists, err := h.storageClient.FileExists(ctx, key)
 	if err != nil {
 		h.logger.LogError(ctx, err, "Failed to check if file exists", map[string]interface{}{
 			"key": key,
@@ -145,7 +151,7 @@ func (h *UploadHandler) DeleteImage(c *gin.Context) {
 	}
 
 	// Delete file
-	if err := h.s3Client.DeleteFile(ctx, key); err != nil {
+	if err := h.storageClient.DeleteFile(ctx, key); err != nil {
 		h.logger.LogError(ctx, err, "Failed to delete image", map[string]interface{}{
 			"key": key,
 		})
@@ -162,7 +168,7 @@ func (h *UploadHandler) DeleteImage(c *gin.Context) {
 
 // GetPresignedURL godoc
 // @Summary Get presigned upload URL
-// @Description Generate a presigned URL for direct file upload to S3
+// @Description Generate a presigned URL for direct file upload to cloud storage
 // @Tags Upload
 // @Accept json
 // @Produce json
@@ -192,11 +198,12 @@ func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 	}
 
 	// Generate presigned URL
-	options := aws.PresignedURLOptions{
-		Expires: duration(req.ExpiresIn),
+	options := interfaces.PresignedURLOptions{
+		Expires:     duration(req.ExpiresIn),
+		ContentType: req.ContentType,
 	}
 
-	url, err := h.s3Client.GetPresignedUploadURL(ctx, req.Key, req.ContentType, options)
+	url, err := h.storageClient.GetPresignedUploadURL(ctx, req.Key, req.ContentType, options)
 	if err != nil {
 		h.logger.LogError(ctx, err, "Failed to generate presigned URL", map[string]interface{}{
 			"key":          req.Key,
@@ -224,7 +231,7 @@ func (h *UploadHandler) GetPresignedURL(c *gin.Context) {
 // @Tags Upload
 // @Accept json
 // @Produce json
-// @Param key path string true "Image key (S3 object key)"
+// @Param key path string true "Image key (storage object key)"
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} response.APIResponse
 // @Failure 404 {object} response.APIResponse
@@ -243,7 +250,7 @@ func (h *UploadHandler) GetImageInfo(c *gin.Context) {
 	key = strings.ReplaceAll(key, "%2F", "/")
 
 	// Get file info
-	info, err := h.s3Client.GetFileInfo(ctx, key)
+	info, err := h.storageClient.GetFileInfo(ctx, key)
 	if err != nil {
 		if appErr, ok := appErrors.IsAppError(err); ok && appErr.Type == appErrors.NotFoundError {
 			response.NotFound(c, "Image")
@@ -259,11 +266,13 @@ func (h *UploadHandler) GetImageInfo(c *gin.Context) {
 
 	response.Success(c, map[string]interface{}{
 		"key":           key,
-		"size":          *info.ContentLength,
-		"content_type":  *info.ContentType,
+		"size":          info.Size,
+		"content_type":  info.MimeType,
 		"last_modified": info.LastModified,
-		"etag":          *info.ETag,
+		"etag":          info.ETag,
 		"metadata":      info.Metadata,
+		"url":           info.URL,
+		"bucket":        info.Bucket,
 	})
 }
 

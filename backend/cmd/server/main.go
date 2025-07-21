@@ -30,8 +30,8 @@ import (
 	"restaurant-menu-api/internal/config"
 	"restaurant-menu-api/internal/database"
 	"restaurant-menu-api/internal/database/migrations"
-	"restaurant-menu-api/internal/infrastructure/aws"
 	"restaurant-menu-api/internal/infrastructure/redis"
+	"restaurant-menu-api/internal/infrastructure/storage"
 	"restaurant-menu-api/internal/infrastructure/web"
 	"restaurant-menu-api/pkg/logger"
 )
@@ -75,12 +75,14 @@ func main() {
 		}
 	}
 
-	// Initialize AWS S3 client
-	s3Client, err := aws.NewS3Client(&cfg.AWS)
+	// Initialize storage client using factory
+	ctx := context.Background()
+	storageFactory := storage.NewStorageFactory(cfg)
+	storageClient, err := storageFactory.CreateStorageClient(ctx)
 	if err != nil {
-		appLogger.WithError(err).Fatal("Failed to initialize S3 client")
+		appLogger.WithError(err).Fatal("Failed to initialize storage client")
 	}
-	appLogger.Info("S3 client initialized successfully")
+	appLogger.WithField("provider", cfg.Storage.Provider).Info("Storage client initialized successfully")
 
 	// Initialize Redis client (optional)
 	var redisClient *redis.Client
@@ -94,11 +96,11 @@ func main() {
 
 	// Initialize web server
 	server := web.NewServer(&web.ServerConfig{
-		Config:      cfg,
-		DB:          db,
-		S3Client:    s3Client,
-		RedisClient: redisClient,
-		Logger:      appLogger,
+		Config:        cfg,
+		DB:            db,
+		StorageClient: storageClient,
+		RedisClient:   redisClient,
+		Logger:        appLogger,
 	})
 
 	// Create HTTP server
