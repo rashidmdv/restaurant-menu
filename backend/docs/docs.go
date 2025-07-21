@@ -24,6 +24,399 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/categories": {
+            "get": {
+                "description": "Get all categories with optional filtering and pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "List all categories",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search in name and description",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to return",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to skip",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to order by",
+                        "name": "order_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Order direction (ASC/DESC)",
+                        "name": "order_dir",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Include total count",
+                        "name": "include_count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new menu category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Create a new category",
+                "parameters": [
+                    {
+                        "description": "Category data",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.CreateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}": {
+            "get": {
+                "description": "Get a specific category by its ID with optional subcategories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get category by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Include subcategories in response",
+                        "name": "include_subcategories",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an existing menu category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update a category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category data",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateCategoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a menu category by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}/display-order": {
+            "patch": {
+                "description": "Update the display order of a category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update category display order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Display order data",
+                        "name": "order",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}/toggle-active": {
+            "patch": {
+                "description": "Toggle the active status of a category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Toggle category active status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/content": {
             "get": {
                 "description": "Get all content with optional filtering and pagination",
@@ -327,6 +720,455 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard": {
+            "get": {
+                "description": "Get all dashboard data including stats, activity, category stats, price distribution, weekly data, and health metrics",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get complete dashboard data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of days for time-based data (default: 7)",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date for filtering (YYYY-MM-DD)",
+                        "name": "date_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date for filtering (YYYY-MM-DD)",
+                        "name": "date_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DashboardResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/activity": {
+            "get": {
+                "description": "Get recent activities like item creation, category updates, etc.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get recent activity",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of days for recent activity (default: 7)",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date for filtering (YYYY-MM-DD)",
+                        "name": "date_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date for filtering (YYYY-MM-DD)",
+                        "name": "date_to",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.RecentActivity"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/categories": {
+            "get": {
+                "description": "Get statistics for all categories including item counts and average prices",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get category statistics",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.CategoryStats"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/health": {
+            "get": {
+                "description": "Get menu health metrics including categories without items, items without images, etc.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get menu health metrics",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.MenuHealthMetrics"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/price-distribution": {
+            "get": {
+                "description": "Get price distribution data showing item counts across different price ranges",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get price distribution",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.PriceDistribution"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/stats": {
+            "get": {
+                "description": "Get overall dashboard statistics including items, categories, and activity counts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get dashboard statistics",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of days for recent activity (default: 7)",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date for filtering (YYYY-MM-DD)",
+                        "name": "date_from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date for filtering (YYYY-MM-DD)",
+                        "name": "date_to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DashboardStats"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/dashboard/weekly-items": {
+            "get": {
+                "description": "Get daily breakdown of items added over the specified time period",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get weekly items data",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of days to include (default: 7)",
+                        "name": "days",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.WeeklyItemsData"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
                         }
@@ -1846,399 +2688,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/v1/categories": {
-            "get": {
-                "description": "Get all categories with optional filtering and pagination",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "List all categories",
-                "parameters": [
-                    {
-                        "type": "boolean",
-                        "description": "Filter by active status",
-                        "name": "active",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Search in name and description",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items to return",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items to skip",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Field to order by",
-                        "name": "order_by",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Order direction (ASC/DESC)",
-                        "name": "order_dir",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Include total count",
-                        "name": "include_count",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new menu category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Create a new category",
-                "parameters": [
-                    {
-                        "description": "Category data",
-                        "name": "category",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.CreateCategoryRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/categories/{id}": {
-            "get": {
-                "description": "Get a specific category by its ID with optional subcategories",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Get category by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Include subcategories in response",
-                        "name": "include_subcategories",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Update an existing menu category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Update a category",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Category data",
-                        "name": "category",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateCategoryRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a menu category by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Delete a category",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/categories/{id}/display-order": {
-            "patch": {
-                "description": "Update the display order of a category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Update category display order",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Display order data",
-                        "name": "order",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/internal_interfaces_handlers.UpdateDisplayOrderRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/categories/{id}/toggle-active": {
-            "patch": {
-                "description": "Toggle the active status of a category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Categories"
-                ],
-                "summary": "Toggle category active status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.Category"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/restaurant-menu-api_pkg_response.APIResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -2623,9 +3072,53 @@ const docTemplate = `{
                 }
             }
         },
+        "restaurant-menu-api_internal_domain_entities.ActionType": {
+            "type": "string",
+            "enum": [
+                "created",
+                "updated",
+                "deleted"
+            ],
+            "x-enum-varnames": [
+                "ActionTypeCreated",
+                "ActionTypeUpdated",
+                "ActionTypeDeleted"
+            ]
+        },
+        "restaurant-menu-api_internal_domain_entities.ActivityType": {
+            "type": "string",
+            "enum": [
+                "item",
+                "category",
+                "subcategory"
+            ],
+            "x-enum-varnames": [
+                "ActivityTypeItem",
+                "ActivityTypeCategory",
+                "ActivityTypeSubCategory"
+            ]
+        },
         "restaurant-menu-api_internal_domain_entities.Address": {
             "type": "object",
             "additionalProperties": true
+        },
+        "restaurant-menu-api_internal_domain_entities.AvailabilityStats": {
+            "type": "object",
+            "properties": {
+                "availability_rate": {
+                    "description": "Percentage",
+                    "type": "number"
+                },
+                "available_items": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "unavailable_items": {
+                    "type": "integer"
+                }
+            }
         },
         "restaurant-menu-api_internal_domain_entities.Category": {
             "type": "object",
@@ -2668,6 +3161,30 @@ const docTemplate = `{
                 }
             }
         },
+        "restaurant-menu-api_internal_domain_entities.CategoryStats": {
+            "type": "object",
+            "properties": {
+                "available_items": {
+                    "type": "integer"
+                },
+                "average_price": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "item_count": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "total_revenue": {
+                    "description": "For future use",
+                    "type": "number"
+                }
+            }
+        },
         "restaurant-menu-api_internal_domain_entities.ContactInfo": {
             "type": "object",
             "additionalProperties": true
@@ -2706,6 +3223,70 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.DashboardResponse": {
+            "type": "object",
+            "properties": {
+                "category_stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.CategoryStats"
+                    }
+                },
+                "menu_health": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.MenuHealthMetrics"
+                },
+                "price_distribution": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.PriceDistribution"
+                    }
+                },
+                "recent_activity": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.RecentActivity"
+                    }
+                },
+                "stats": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.DashboardStats"
+                },
+                "weekly_data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.WeeklyItemsData"
+                    }
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.DashboardStats": {
+            "type": "object",
+            "properties": {
+                "available_items": {
+                    "type": "integer"
+                },
+                "average_price": {
+                    "type": "number"
+                },
+                "recent_categories_count": {
+                    "type": "integer"
+                },
+                "recent_items_count": {
+                    "type": "integer"
+                },
+                "total_categories": {
+                    "type": "integer"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_sub_categories": {
+                    "type": "integer"
+                },
+                "unavailable_items": {
+                    "type": "integer"
                 }
             }
         },
@@ -2770,6 +3351,32 @@ const docTemplate = `{
                 }
             }
         },
+        "restaurant-menu-api_internal_domain_entities.MenuHealthMetrics": {
+            "type": "object",
+            "properties": {
+                "availability_stats": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.AvailabilityStats"
+                },
+                "categories_without_items": {
+                    "type": "integer"
+                },
+                "items_without_description": {
+                    "type": "integer"
+                },
+                "items_without_images": {
+                    "type": "integer"
+                },
+                "price_range_stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.PriceDistribution"
+                    }
+                },
+                "subcategories_without_items": {
+                    "type": "integer"
+                }
+            }
+        },
         "restaurant-menu-api_internal_domain_entities.Metadata": {
             "type": "object",
             "additionalProperties": true
@@ -2825,6 +3432,43 @@ const docTemplate = `{
                 },
                 "total_pages": {
                     "type": "integer"
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.PriceDistribution": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "percentage": {
+                    "type": "number"
+                },
+                "range": {
+                    "type": "string"
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.RecentActivity": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ActionType"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/restaurant-menu-api_internal_domain_entities.ActivityType"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -2924,6 +3568,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "restaurant-menu-api_internal_domain_entities.WeeklyItemsData": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "day": {
                     "type": "string"
                 }
             }
