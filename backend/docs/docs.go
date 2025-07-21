@@ -1557,7 +1557,7 @@ const docTemplate = `{
         },
         "/api/v1/upload": {
             "post": {
-                "description": "Upload an image file to S3 storage",
+                "description": "Upload an image file to cloud storage",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1607,7 +1607,7 @@ const docTemplate = `{
         },
         "/api/v1/upload/presigned-url": {
             "post": {
-                "description": "Generate a presigned URL for direct file upload to S3",
+                "description": "Generate a presigned URL for direct file upload to cloud storage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1653,7 +1653,7 @@ const docTemplate = `{
         },
         "/api/v1/upload/{key}": {
             "delete": {
-                "description": "Delete an image file from S3 storage",
+                "description": "Delete an image file from cloud storage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1667,7 +1667,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Image key (S3 object key)",
+                        "description": "Image key (storage object key)",
                         "name": "key",
                         "in": "path",
                         "required": true
@@ -1714,7 +1714,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Image key (S3 object key)",
+                        "description": "Image key (storage object key)",
                         "name": "key",
                         "in": "path",
                         "required": true

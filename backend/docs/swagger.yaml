@@ -1529,7 +1529,7 @@ paths:
     post:
       consumes:
       - multipart/form-data
-      description: Upload an image file to S3 storage
+      description: Upload an image file to cloud storage
       parameters:
       - description: Image file
         in: formData
@@ -1562,9 +1562,9 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Delete an image file from S3 storage
+      description: Delete an image file from cloud storage
       parameters:
-      - description: Image key (S3 object key)
+      - description: Image key (storage object key)
         in: path
         name: key
         required: true
@@ -1595,7 +1595,7 @@ paths:
       - application/json
       description: Get metadata and information about an uploaded image
       parameters:
-      - description: Image key (S3 object key)
+      - description: Image key (storage object key)
         in: path
         name: key
         required: true
@@ -1627,7 +1627,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Generate a presigned URL for direct file upload to S3
+      description: Generate a presigned URL for direct file upload to cloud storage
       parameters:
       - description: Presigned URL request
         in: body

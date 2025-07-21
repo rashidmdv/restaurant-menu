@@ -133,6 +133,7 @@ func (s *Server) setupRoutes() {
 
 	// Swagger documentation route
 	if s.config.IsDevelopment() || s.config.Server.Environment == "staging" {
+		// Configure Swagger with default settings
 		s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
