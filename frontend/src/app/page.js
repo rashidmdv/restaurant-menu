@@ -6,6 +6,7 @@ import OurPeopleSection from "./components/OurPeopleSection";
 import OurLocationSection from "./components/OurLocationSection";
 import HeroSection from "./components/HeroSection";
 import LoadingScreen from "./components/LoadingScreen";
+import ClientOnly from "./components/ClientOnly";
 import { useHomeData } from "./hooks/useHomeData";
 
 export default function Home() {
@@ -17,30 +18,32 @@ export default function Home() {
 
   return (
     <main>
-      <HeroSection 
-        heroData={data.hero} 
-        loading={loading.hero} 
-        error={errors.hero} 
-      />
+      <ClientOnly fallback={<div>Loading...</div>}>
+        <HeroSection 
+          heroData={data.hero} 
+          loading={loading.hero} 
+          error={errors.hero} 
+        />
 
-      <OurStorySection 
-        storyData={data.story} 
-        loading={loading.story} 
-        error={errors.story} 
-      />
+        <OurStorySection 
+          storyData={data.story} 
+          loading={loading.story} 
+          error={errors.story} 
+        />
 
-      <OurPeopleSection 
-        peopleData={data.people} 
-        loading={loading.people} 
-        error={errors.people} 
-      />
+        <OurPeopleSection 
+          peopleData={data.people} 
+          loading={loading.people} 
+          error={errors.people} 
+        />
 
-      <OurLocationSection 
-        restaurantData={data.restaurant} 
-        hoursData={data.hours} 
-        loading={{ restaurant: loading.restaurant, hours: loading.hours }} 
-        error={{ restaurant: errors.restaurant, hours: errors.hours }} 
-      />
+        <OurLocationSection 
+          restaurantData={data.restaurant} 
+          hoursData={data.hours} 
+          loading={{ restaurant: loading.restaurant, hours: loading.hours }} 
+          error={{ restaurant: errors.restaurant, hours: errors.hours }} 
+        />
+      </ClientOnly>
     </main>
   );
 }
