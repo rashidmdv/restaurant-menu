@@ -507,28 +507,28 @@ export default function Dashboard() {
 }
 
 const topNav = [
-  {
-    title: 'Dashboard',
-    href: '/',
-    isActive: true,
-    disabled: false,
-  },
-  {
-    title: 'Menu Items',
-    href: '/items',
-    isActive: false,
-    disabled: false,
-  },
-  {
-    title: 'Categories',
-    href: '/categories',
-    isActive: false,
-    disabled: false,
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    isActive: false,
-    disabled: false,
-  },
+  // {
+  //   title: 'Dashboard',
+  //   href: '/',
+  //   isActive: true,
+  //   disabled: false,
+  // },
+  // {
+  //   title: 'Menu Items',
+  //   href: '/items',
+  //   isActive: false,
+  //   disabled: false,
+  // },
+  // {
+  //   title: 'Categories',
+  //   href: '/categories',
+  //   isActive: false,
+  //   disabled: false,
+  // },
+  // {
+  //   title: 'Settings',
+  //   href: '/settings',
+  //   isActive: false,
+  //   disabled: false,
+  // },
 ]
