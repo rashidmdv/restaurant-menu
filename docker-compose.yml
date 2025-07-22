@@ -61,6 +61,7 @@ services:
       REDIS_URL: redis://redis:6379
       LOG_LEVEL: info
       STORAGE_PROVIDER: gcp
+      CORS_ALLOWED_ORIGINS: "*"
     command: ["./main"]
     volumes:
       - ./backend/uploads:/app/uploads

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -17,6 +18,7 @@ type Config struct {
 	Storage  StorageConfig
 	Redis    RedisConfig
 	Logger   LoggerConfig
+	CORS     CORSConfig
 }
 
 type ServerConfig struct {
@@ -69,6 +71,10 @@ type LoggerConfig struct {
 	Format string
 }
 
+type CORSConfig struct {
+	AllowedOrigins []string
+}
+
 func Load() (*Config, error) {
 	if err := godotenv.Load(); err != nil {
 		// .env file is optional in production
@@ -118,6 +124,20 @@ func Load() (*Config, error) {
 		Logger: LoggerConfig{
 			Level:  getEnv("LOG_LEVEL", "info"),
 			Format: getEnv("LOG_FORMAT", "json"),
+		},
+		CORS: CORSConfig{
+			AllowedOrigins: getStringSliceEnv("CORS_ALLOWED_ORIGINS", []string{
+				"http://localhost:3000",
+				"http://127.0.0.1:3000",
+				"http://localhost:3002", 
+				"http://127.0.0.1:3002",
+				"http://localhost:4000",
+				"http://127.0.0.1:4000",
+				"http://localhost:5173",
+				"http://127.0.0.1:5173",
+				"http://localhost:5174",
+				"http://127.0.0.1:5174",
+			}),
 		},
 	}
 
@@ -204,6 +224,17 @@ func getDurationEnv(key string, defaultValue time.Duration) time.Duration {
 		if duration, err := time.ParseDuration(value); err == nil {
 			return duration
 		}
+	}
+	return defaultValue
+}
+
+func getStringSliceEnv(key string, defaultValue []string) []string {
+	if value := os.Getenv(key); value != "" {
+		parts := strings.Split(value, ",")
+		for i := range parts {
+			parts[i] = strings.TrimSpace(parts[i])
+		}
+		return parts
 	}
 	return defaultValue
 }

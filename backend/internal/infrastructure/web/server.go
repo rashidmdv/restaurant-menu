@@ -73,14 +73,24 @@ func (s *Server) setupMiddleware() {
 	s.router.Use(gin.Recovery())
 
 	// CORS middleware
-	s.router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3002", "http://127.0.0.1:3002", "http://localhost:5174", "http://127.0.0.1:5174", "http://localhost:5173", "http://127.0.0.1:5173"}, // Add your frontend URLs
+	// CORS configuration - handle wildcard properly
+	corsConfig := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length", "X-Request-ID"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
-	}))
+	}
+	
+	// Check if wildcard is used
+	if len(s.config.CORS.AllowedOrigins) == 1 && s.config.CORS.AllowedOrigins[0] == "*" {
+		corsConfig.AllowAllOrigins = true
+		corsConfig.AllowCredentials = false // Cannot use credentials with wildcard
+	} else {
+		corsConfig.AllowOrigins = s.config.CORS.AllowedOrigins
+	}
+	
+	s.router.Use(cors.New(corsConfig))
 
 	// Custom middleware
 	s.router.Use(middleware.RequestLogger(s.logger))
