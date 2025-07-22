@@ -1,5 +1,5 @@
 # Multi-stage build for production optimization
-FROM golang:1.21-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 # Install git and build dependencies
 RUN apk add --no-cache git ca-certificates tzdata
@@ -35,8 +35,8 @@ WORKDIR /app
 # Copy binary from builder stage
 COPY --from=builder /app/main .
 
-# Copy any additional files needed
-COPY --from=builder /app/uploads ./uploads
+# Create uploads directory
+RUN mkdir -p uploads
 
 # Change ownership to non-root user
 RUN chown -R appuser:appgroup /app

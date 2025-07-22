@@ -1,0 +1,144 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: restaurant-menu-postgres
+    environment:
+      POSTGRES_DB: restaurant_menu
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: restaurant-menu-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: restaurant-menu-backend
+    user: root
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      SERVER_PORT: 8000
+      SERVER_HOST: 0.0.0.0
+      SERVER_ENVIRONMENT: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: restaurant_menu
+      DB_SSL_MODE: disable
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: info
+      STORAGE_PROVIDER: gcp
+    command: ["./main"]
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/.env:/app/.env:ro
+      - ./backend/keys:/app/keys:ro
+    networks:
+      - restaurant-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: restaurant-menu-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - restaurant-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Admin Panel
+  admin:
+    build:
+      context: ./admin-panel
+      dockerfile: Dockerfile
+    container_name: restaurant-menu-admin
+    ports:
+      - "4000:80"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./admin-panel:/app
+      - /app/node_modules
+    networks:
+      - restaurant-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  postgres_data:
+  redis_data:
+  go_mod_cache:
+
+networks:
+  restaurant-network:
+    driver: bridge
