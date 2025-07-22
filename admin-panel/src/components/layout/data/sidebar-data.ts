@@ -1,17 +1,11 @@
 import {
   IconLayoutDashboard,
   IconCategory,
-  IconBox,
   IconSettings,
   IconUserCog,
-  IconTool,
   IconPalette,
-  IconNotification,
-  IconBrowserCheck,
-  IconHelp,
   IconHierarchy,
   IconChefHat,
-  IconToolsKitchen2,
 } from '@tabler/icons-react'
 import SpareitLogo from '@/components/icons/spareit-logo'
 import { type SidebarData } from '../types'
@@ -73,31 +67,11 @@ export const sidebarData: SidebarData = {
               icon: IconUserCog,
             },
             {
-              title: 'Account',
-              url: '/settings/account',
-              icon: IconTool,
-            },
-            {
               title: 'Appearance',
               url: '/settings/appearance',
               icon: IconPalette,
             },
-            {
-              title: 'Notifications',
-              url: '/settings/notifications',
-              icon: IconNotification,
-            },
-            {
-              title: 'Display',
-              url: '/settings/display',
-              icon: IconBrowserCheck,
-            },
           ],
-        },
-        {
-          title: 'Help Center',
-          url: '/help-center',
-          icon: IconHelp,
         },
       ],
     },
