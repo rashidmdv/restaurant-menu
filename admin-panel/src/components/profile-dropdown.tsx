@@ -40,19 +40,19 @@ export function ProfileDropdown() {
               {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          {/* <DropdownMenuItem asChild>
             <Link to='/settings'>
               Billing
-              {/* <DropdownMenuShortcut>⌘B</DropdownMenuShortcut> */}
+              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to='/settings'>
               Settings
-              {/* <DropdownMenuShortcut>⌘S</DropdownMenuShortcut> */}
+              <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
+          <DropdownMenuItem>New Team</DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

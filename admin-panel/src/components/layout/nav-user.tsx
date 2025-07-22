@@ -73,22 +73,22 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
-            </DropdownMenuGroup>
+            </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+           <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to='/settings/account'>
+                <Link to='/settings/profile'>
                   <BadgeCheck />
-                  Account
+                  Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+              {/* <DropdownMenuItem asChild>
                 <Link to='/settings'>
                   <CreditCard />
                   Billing
@@ -99,8 +99,8 @@ export function NavUser({
                   <Bell />
                   Notifications
                 </Link>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+              </DropdownMenuItem> */}
+            </DropdownMenuGroup> 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />
