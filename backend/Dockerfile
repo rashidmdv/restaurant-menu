@@ -19,6 +19,12 @@ COPY . .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/server
 
+# Build the seed command
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o seed ./cmd/seed
+
+# Build the migrate command
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o migrate ./cmd/migrate
+
 # Production stage
 FROM alpine:latest AS production
 
@@ -32,8 +38,13 @@ RUN addgroup -g 1001 appgroup && \
 # Set working directory
 WORKDIR /app
 
-# Copy binary from builder stage
+# Copy binaries from builder stage
 COPY --from=builder /app/main .
+COPY --from=builder /app/seed .
+COPY --from=builder /app/migrate .
+
+# Copy migrations directory
+COPY --from=builder /app/migrations ./migrations
 
 # Create uploads directory
 RUN mkdir -p uploads

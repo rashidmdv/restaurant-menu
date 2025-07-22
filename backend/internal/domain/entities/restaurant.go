@@ -81,7 +81,7 @@ type RestaurantInfo struct {
 }
 
 func (ri *RestaurantInfo) TableName() string {
-	return "restaurant_info"
+	return "restaurant_infos"
 }
 
 type OperatingHour struct {

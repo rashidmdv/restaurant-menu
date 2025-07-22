@@ -231,7 +231,22 @@ db-migrate-create: ## Create a new migration file (requires NAME=migration_name)
 .PHONY: db-seed
 db-seed: ## Seed database with sample data
 	@echo "$(GREEN)Seeding database...$(NC)"
-	go run $(MAIN_PATH) seed
+	go run ./cmd/seed
+
+.PHONY: db-seed-clear
+db-seed-clear: ## Clear seeded data from database
+	@echo "$(YELLOW)Clearing seeded data...$(NC)"
+	go run ./cmd/seed -action=clear
+
+.PHONY: docker-seed
+docker-seed: ## Seed database using Docker container
+	@echo "$(GREEN)Seeding database in Docker container...$(NC)"
+	docker compose exec backend ./seed
+
+.PHONY: docker-seed-clear
+docker-seed-clear: ## Clear seeded data using Docker container
+	@echo "$(YELLOW)Clearing seeded data in Docker container...$(NC)"
+	docker compose exec backend ./seed -action=clear
 
 .PHONY: db-reset
 db-reset: ## Reset database (drop and recreate with migrations)
