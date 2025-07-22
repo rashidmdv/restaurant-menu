@@ -27,7 +27,7 @@ func (s *Seeder) seedContentSections(ctx context.Context, db *gorm.DB) error {
 			Active:   true,
 		},
 		{
-			SectionName: "about",
+			SectionName: "story",
 			Title:       "Our Story",
 			Content:     "Olive Grove Mediterranean was born from a passion for authentic Mediterranean cuisine and a desire to bring the warmth of traditional hospitality to Dubai. Our chefs, trained in the coastal regions of Greece, Turkey, and Lebanon, craft each dish with carefully sourced ingredients and time-honored techniques. We believe that great food brings people together, creating memories that last a lifetime.",
 			Metadata: entities.Metadata{
@@ -76,7 +76,7 @@ func (s *Seeder) seedContentSections(ctx context.Context, db *gorm.DB) error {
 			Active:   true,
 		},
 		{
-			SectionName: "team",
+			SectionName: "people",
 			Title:       "Meet Our Culinary Team",
 			Content:     "Our passionate team of chefs and hospitality professionals are dedicated to providing you with an unforgettable dining experience. Led by Executive Chef Maria Komnenos and Sous Chef Ahmad Khalil, our kitchen team brings over 40 years of combined experience in Mediterranean cuisine.",
 			Metadata: entities.Metadata{
