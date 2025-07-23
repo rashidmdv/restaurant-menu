@@ -13,7 +13,7 @@ export default function OurStorySection({ storyData, loading, error }) {
   const imageUrl = storyData?.image_url || defaultImage;
 
   return (
-    <section className="md:px-10 md:py-12" id="ourStory">
+    <section className="md:px-10 md:py-12" id="story">
       <div className="flex flex-col md:flex-row max-w-7xl items-center mx-auto">
         {/* Image Section */}
         <div className="w-full lg:w-1/2 lg:h-[500px] md:flex md:justify-center lg:mt-4">

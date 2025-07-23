@@ -1,0 +1,10 @@
+node_modules/
+npm-debug.log*
+.npm
+.env*.local
+.next/
+.vercel/
+.DS_Store
+*.log
+coverage/
+.nyc_output/

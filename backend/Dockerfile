@@ -46,11 +46,19 @@ COPY --from=builder /app/migrate .
 # Copy migrations directory
 COPY --from=builder /app/migrations ./migrations
 
+# Copy entrypoint script
+COPY docker-entrypoint.sh .
+
+# Install netcat for connection checking
+USER root
+RUN apk add --no-cache netcat-openbsd
+
 # Create uploads directory
 RUN mkdir -p uploads
 
-# Change ownership to non-root user
-RUN chown -R appuser:appgroup /app
+# Make entrypoint script executable and change ownership
+RUN chmod +x docker-entrypoint.sh && \
+    chown -R appuser:appgroup /app
 
 # Switch to non-root user
 USER appuser
@@ -62,5 +70,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1
 
-# Run the application
-CMD ["./main"]
+# Use entrypoint script
+ENTRYPOINT ["./docker-entrypoint.sh"]
