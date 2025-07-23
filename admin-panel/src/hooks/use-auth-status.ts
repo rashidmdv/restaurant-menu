@@ -17,7 +17,7 @@ export function useAuthStatus() {
       if (auth.accessToken) {
         try {
           setIsLoading(true);
-          const response = await API.get<User>('/auth/me');
+          const response = await API.get<User>('/v1/auth/me');
           setUser(response.data);
         } catch (_error) {
           // If fetching user fails, reset auth state

@@ -56,7 +56,7 @@ api.interceptors.response.use(
       
       try {
         // Try to refresh token (implement this function in authStore)
-        const refreshed = await refreshToken();
+        const refreshed = await refreshTokenHelper();
         
         if (refreshed) {
           // Get new token
@@ -82,16 +82,10 @@ api.interceptors.response.use(
 );
 
 // Function to refresh the token
-const refreshToken = async (): Promise<boolean> => {
+const refreshTokenHelper = async (): Promise<boolean> => {
   try {
-    // Implement your refresh token logic here
-    // For example:
-    // const response = await axios.post(`${API_BASE_URL}/auth/refresh`);
-    // if (response.data.accessToken) {
-    //   useAuthStore.getState().auth.setAccessToken(response.data.accessToken);
-    //   return true;
-    // }
-    return false;
+    const { auth } = useAuthStore.getState();
+    return await auth.refreshTokens();
   } catch (_error) {
     return false;
   }
