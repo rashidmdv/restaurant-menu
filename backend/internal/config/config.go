@@ -276,25 +276,16 @@ func getStringSliceEnv(key string, defaultValue []string) []string {
 func getPasswordFromEnv() string {
 	// First try DB_PASSWORD
 	if password := os.Getenv("DB_PASSWORD"); password != "" {
-		fmt.Printf("DEBUG: Using DB_PASSWORD\n")
 		return password
 	}
 	
 	// Then try DB_PASSWORD_FILE
 	if passwordFile := os.Getenv("DB_PASSWORD_FILE"); passwordFile != "" {
-		fmt.Printf("DEBUG: Reading password from file: %s\n", passwordFile)
 		if content, err := os.ReadFile(passwordFile); err == nil {
-			password := strings.TrimSpace(string(content))
-			fmt.Printf("DEBUG: Successfully read password from file (length: %d)\n", len(password))
-			return password
-		} else {
-			fmt.Printf("DEBUG: Error reading password file: %v\n", err)
+			return strings.TrimSpace(string(content))
 		}
-	} else {
-		fmt.Printf("DEBUG: No DB_PASSWORD_FILE environment variable set\n")
 	}
 	
-	fmt.Printf("DEBUG: No password found, returning empty string\n")
 	return ""
 }
 
