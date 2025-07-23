@@ -41,7 +41,7 @@ func NewDashboardHandler(service services.DashboardService, logger *logger.Logge
 // @Success 200 {object} response.APIResponse{data=entities.DashboardStats}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/stats [get]
+// @Router /v1/dashboard/stats [get]
 func (h *DashboardHandler) GetDashboardStats(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -76,7 +76,7 @@ func (h *DashboardHandler) GetDashboardStats(c *gin.Context) {
 // @Success 200 {object} response.APIResponse{data=[]entities.RecentActivity}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/activity [get]
+// @Router /v1/dashboard/activity [get]
 func (h *DashboardHandler) GetRecentActivity(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -110,7 +110,7 @@ func (h *DashboardHandler) GetRecentActivity(c *gin.Context) {
 // @Success 200 {object} response.APIResponse{data=[]entities.CategoryStats}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/categories [get]
+// @Router /v1/dashboard/categories [get]
 func (h *DashboardHandler) GetCategoryStats(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -143,7 +143,7 @@ func (h *DashboardHandler) GetCategoryStats(c *gin.Context) {
 // @Success 200 {object} response.APIResponse{data=[]entities.PriceDistribution}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/price-distribution [get]
+// @Router /v1/dashboard/price-distribution [get]
 func (h *DashboardHandler) GetPriceDistribution(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -176,7 +176,7 @@ func (h *DashboardHandler) GetPriceDistribution(c *gin.Context) {
 // @Success 200 {object} response.APIResponse{data=[]entities.WeeklyItemsData}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/weekly-items [get]
+// @Router /v1/dashboard/weekly-items [get]
 func (h *DashboardHandler) GetWeeklyItemsData(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -207,7 +207,7 @@ func (h *DashboardHandler) GetWeeklyItemsData(c *gin.Context) {
 // @Produce json
 // @Success 200 {object} response.APIResponse{data=entities.MenuHealthMetrics}
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard/health [get]
+// @Router /v1/dashboard/health [get]
 func (h *DashboardHandler) GetMenuHealthMetrics(c *gin.Context) {
 	ctx := c.Request.Context()
 	
@@ -244,7 +244,7 @@ func (h *DashboardHandler) GetMenuHealthMetrics(c *gin.Context) {
 // @Success 200 {object} response.APIResponse{data=entities.DashboardResponse}
 // @Failure 400 {object} response.APIResponse
 // @Failure 500 {object} response.APIResponse
-// @Router /api/v1/dashboard [get]
+// @Router /v1/dashboard [get]
 func (h *DashboardHandler) GetCompleteDashboardData(c *gin.Context) {
 	ctx := c.Request.Context()
 	

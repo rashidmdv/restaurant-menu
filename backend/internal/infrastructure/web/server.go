@@ -82,7 +82,7 @@ func (s *Server) setupMiddleware() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}
-	
+
 	// Check if wildcard is used
 	if len(s.config.CORS.AllowedOrigins) == 1 && s.config.CORS.AllowedOrigins[0] == "*" {
 		corsConfig.AllowAllOrigins = true
@@ -90,7 +90,7 @@ func (s *Server) setupMiddleware() {
 	} else {
 		corsConfig.AllowOrigins = s.config.CORS.AllowedOrigins
 	}
-	
+
 	s.router.Use(cors.New(corsConfig))
 
 	// Custom middleware
@@ -168,7 +168,7 @@ func (s *Server) setupRoutes() {
 	jwtMiddleware := middleware.JWTAuth(jwtService, s.logger)
 
 	// API v1 routes
-	v1 := s.router.Group("/api/v1")
+	v1 := s.router.Group("/v1")
 	{
 		// Status endpoint
 		v1.GET("/status", healthHandler.Status)
@@ -178,7 +178,7 @@ func (s *Server) setupRoutes() {
 		{
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/refresh", authHandler.RefreshToken)
-			
+
 			// Protected auth routes
 			authProtected := auth.Group("", jwtMiddleware)
 			{
@@ -213,7 +213,7 @@ func (s *Server) setupRoutes() {
 			// Public endpoints (for customer website)
 			categories.GET("", categoryHandler.GetAll)
 			categories.GET("/:id", categoryHandler.GetByID)
-			
+
 			// Admin endpoints (require authentication and admin/moderator role)
 			categoriesAdmin := categories.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
 			{
@@ -231,7 +231,7 @@ func (s *Server) setupRoutes() {
 			// Public endpoints (for customer website)
 			subcategories.GET("", subCategoryHandler.GetAll)
 			subcategories.GET("/:id", subCategoryHandler.GetByID)
-			
+
 			// Admin endpoints (require authentication and admin/moderator role)
 			subcategoriesAdmin := subcategories.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
 			{
@@ -251,7 +251,7 @@ func (s *Server) setupRoutes() {
 			items.GET("/:id", itemHandler.GetByID)
 			items.GET("/search", itemHandler.Search)
 			items.GET("/featured", itemHandler.GetFeatured)
-			
+
 			// Admin endpoints (require authentication and admin/moderator role)
 			itemsAdmin := items.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
 			{
@@ -270,7 +270,7 @@ func (s *Server) setupRoutes() {
 			// Public endpoints (for customer website)
 			restaurants.GET("/info", restaurantHandler.GetInfo)
 			restaurants.GET("/hours", restaurantHandler.GetOperatingHours)
-			
+
 			// Admin endpoints (require authentication and admin/moderator role)
 			restaurantsAdmin := restaurants.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
 			{
@@ -287,7 +287,7 @@ func (s *Server) setupRoutes() {
 			content.GET("", contentHandler.GetAll)
 			content.GET("/:id", contentHandler.GetByID)
 			content.GET("/by-key/:key", contentHandler.GetByKey)
-			
+
 			// Admin endpoints (require authentication and admin/moderator role)
 			contentAdmin := content.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
 			{

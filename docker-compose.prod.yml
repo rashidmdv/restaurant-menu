@@ -101,7 +101,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=http://34.93.138.229/api
+        - NEXT_PUBLIC_API_URL=http://34.93.138.229
     container_name: restaurant-menu-frontend
     ports:
       - "127.0.0.1:3000:3000"  # Bind to localhost only
