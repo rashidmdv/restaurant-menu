@@ -125,6 +125,8 @@ services:
     build:
       context: ./admin-panel
       dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=http://34.93.138.229/api
     container_name: restaurant-menu-admin
     ports:
       - "127.0.0.1:4000:4000"  # Bind to localhost only
