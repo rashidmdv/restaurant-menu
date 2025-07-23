@@ -5,7 +5,7 @@
 //
 // @title Restaurant Menu API
 // @version 1.0
-// @description A production-ready REST API for restaurant menu management
+// @description A production-ready REST API for restaurant menu management with JWT authentication
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.url http://www.restaurant-menu-api.com/support
@@ -15,6 +15,10 @@
 // @host localhost:8000
 // @BasePath /
 // @schemes http https
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 package main
 
 import (

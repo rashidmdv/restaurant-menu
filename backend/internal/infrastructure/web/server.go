@@ -16,6 +16,7 @@ import (
 	"restaurant-menu-api/internal/infrastructure/redis"
 	"restaurant-menu-api/internal/interfaces/handlers"
 	"restaurant-menu-api/internal/interfaces/middleware"
+	"restaurant-menu-api/internal/utils"
 	"restaurant-menu-api/pkg/logger"
 
 	_ "restaurant-menu-api/docs" // Import generated docs
@@ -117,6 +118,15 @@ func (s *Server) setupRoutes() {
 	restaurantRepo := databaseRepo.NewRestaurantRepository(s.db.DB)
 	contentRepo := databaseRepo.NewContentRepository(s.db.DB)
 	dashboardRepo := databaseRepo.NewDashboardRepository(s.db.DB, s.logger)
+	userRepo := databaseRepo.NewUserRepository(s.db.DB)
+
+	// Initialize JWT service
+	jwtService := utils.NewJWTService(
+		s.config.JWT.AccessSecret,
+		s.config.JWT.RefreshSecret,
+		s.config.JWT.AccessExpiration,
+		s.config.JWT.RefreshExpiration,
+	)
 
 	// Initialize services
 	categoryService := services.NewCategoryService(categoryRepo, s.logger)
@@ -126,6 +136,8 @@ func (s *Server) setupRoutes() {
 	contentService := services.NewContentService(contentRepo, s.logger)
 	menuService := services.NewMenuService(categoryRepo, subCategoryRepo, itemRepo, s.logger)
 	dashboardService := services.NewDashboardService(dashboardRepo, s.logger)
+	userService := services.NewUserService(userRepo, s.logger)
+	authService := services.NewAuthService(userRepo, jwtService, s.logger)
 
 	// Initialize handlers
 	healthHandler := handlers.NewHealthHandler(s.db, s.logger)
@@ -137,6 +149,8 @@ func (s *Server) setupRoutes() {
 	menuHandler := handlers.NewMenuHandler(menuService, s.logger)
 	uploadHandler := handlers.NewUploadHandler(s.storageClient, s.logger)
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService, s.logger)
+	userHandler := handlers.NewUserHandler(userService, s.logger)
+	authHandler := handlers.NewAuthHandler(authService, jwtService, s.logger)
 
 	// Health check routes (ROOT level - industry standard)
 	s.router.GET("/health", healthHandler.Health)
@@ -150,13 +164,44 @@ func (s *Server) setupRoutes() {
 		s.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
+	// Create JWT middleware
+	jwtMiddleware := middleware.JWTAuth(jwtService, s.logger)
+
 	// API v1 routes
 	v1 := s.router.Group("/api/v1")
 	{
 		// Status endpoint
 		v1.GET("/status", healthHandler.Status)
 
-		// Menu endpoints
+		// Authentication routes (public)
+		auth := v1.Group("/auth")
+		{
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/refresh", authHandler.RefreshToken)
+			
+			// Protected auth routes
+			authProtected := auth.Group("", jwtMiddleware)
+			{
+				authProtected.GET("/me", authHandler.GetCurrentUser)
+				authProtected.POST("/logout", authHandler.Logout)
+			}
+		}
+
+		// User management routes (admin only)
+		users := v1.Group("/users", jwtMiddleware, middleware.RequireAdmin())
+		{
+			users.GET("", userHandler.GetAllUsers)
+			users.POST("", userHandler.CreateUser)
+			users.GET("/:id", userHandler.GetUserByID)
+			users.PUT("/:id", userHandler.UpdateUser)
+			users.DELETE("/:id", userHandler.DeleteUser)
+			users.PATCH("/:id/status", userHandler.ToggleUserActive)
+		}
+
+		// Change password route (authenticated users can change their own password)
+		v1.POST("/users/change-password", jwtMiddleware, userHandler.ChangePassword)
+
+		// Menu endpoints (public - for customer website)
 		menu := v1.Group("/menu")
 		{
 			menu.GET("", menuHandler.GetCompleteMenu)
@@ -165,65 +210,95 @@ func (s *Server) setupRoutes() {
 		// Category endpoints
 		categories := v1.Group("/categories")
 		{
+			// Public endpoints (for customer website)
 			categories.GET("", categoryHandler.GetAll)
-			categories.POST("", categoryHandler.Create)
 			categories.GET("/:id", categoryHandler.GetByID)
-			categories.PUT("/:id", categoryHandler.Update)
-			categories.DELETE("/:id", categoryHandler.Delete)
-			categories.PATCH("/:id/toggle", categoryHandler.ToggleActive)
-			categories.PATCH("/:id/order", categoryHandler.UpdateDisplayOrder)
+			
+			// Admin endpoints (require authentication and admin/moderator role)
+			categoriesAdmin := categories.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				categoriesAdmin.POST("", categoryHandler.Create)
+				categoriesAdmin.PUT("/:id", categoryHandler.Update)
+				categoriesAdmin.DELETE("/:id", categoryHandler.Delete)
+				categoriesAdmin.PATCH("/:id/toggle", categoryHandler.ToggleActive)
+				categoriesAdmin.PATCH("/:id/order", categoryHandler.UpdateDisplayOrder)
+			}
 		}
 
 		// SubCategory endpoints
 		subcategories := v1.Group("/subcategories")
 		{
+			// Public endpoints (for customer website)
 			subcategories.GET("", subCategoryHandler.GetAll)
-			subcategories.POST("", subCategoryHandler.Create)
 			subcategories.GET("/:id", subCategoryHandler.GetByID)
-			subcategories.PUT("/:id", subCategoryHandler.Update)
-			subcategories.DELETE("/:id", subCategoryHandler.Delete)
-			subcategories.PATCH("/:id/toggle", subCategoryHandler.ToggleActive)
-			subcategories.PATCH("/:id/order", subCategoryHandler.UpdateDisplayOrder)
+			
+			// Admin endpoints (require authentication and admin/moderator role)
+			subcategoriesAdmin := subcategories.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				subcategoriesAdmin.POST("", subCategoryHandler.Create)
+				subcategoriesAdmin.PUT("/:id", subCategoryHandler.Update)
+				subcategoriesAdmin.DELETE("/:id", subCategoryHandler.Delete)
+				subcategoriesAdmin.PATCH("/:id/toggle", subCategoryHandler.ToggleActive)
+				subcategoriesAdmin.PATCH("/:id/order", subCategoryHandler.UpdateDisplayOrder)
+			}
 		}
 
 		// Item endpoints
 		items := v1.Group("/items")
 		{
+			// Public endpoints (for customer website)
 			items.GET("", itemHandler.GetAll)
-			items.POST("", itemHandler.Create)
 			items.GET("/:id", itemHandler.GetByID)
-			items.PUT("/:id", itemHandler.Update)
-			items.DELETE("/:id", itemHandler.Delete)
-			items.PATCH("/:id/toggle", itemHandler.ToggleAvailable)
-			items.PATCH("/:id/order", itemHandler.UpdateDisplayOrder)
-			items.PATCH("/:id/price", itemHandler.UpdatePrice)
 			items.GET("/search", itemHandler.Search)
 			items.GET("/featured", itemHandler.GetFeatured)
+			
+			// Admin endpoints (require authentication and admin/moderator role)
+			itemsAdmin := items.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				itemsAdmin.POST("", itemHandler.Create)
+				itemsAdmin.PUT("/:id", itemHandler.Update)
+				itemsAdmin.DELETE("/:id", itemHandler.Delete)
+				itemsAdmin.PATCH("/:id/toggle", itemHandler.ToggleAvailable)
+				itemsAdmin.PATCH("/:id/order", itemHandler.UpdateDisplayOrder)
+				itemsAdmin.PATCH("/:id/price", itemHandler.UpdatePrice)
+			}
 		}
 
 		// Restaurant endpoints
 		restaurants := v1.Group("/restaurants")
 		{
+			// Public endpoints (for customer website)
 			restaurants.GET("/info", restaurantHandler.GetInfo)
-			restaurants.POST("/info", restaurantHandler.CreateInfo)
-			restaurants.PUT("/info", restaurantHandler.UpdateInfo)
 			restaurants.GET("/hours", restaurantHandler.GetOperatingHours)
-			restaurants.DELETE("/info", restaurantHandler.Delete)
+			
+			// Admin endpoints (require authentication and admin/moderator role)
+			restaurantsAdmin := restaurants.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				restaurantsAdmin.POST("/info", restaurantHandler.CreateInfo)
+				restaurantsAdmin.PUT("/info", restaurantHandler.UpdateInfo)
+				restaurantsAdmin.DELETE("/info", restaurantHandler.Delete)
+			}
 		}
 
 		// Content endpoints
 		content := v1.Group("/content")
 		{
+			// Public endpoints (for customer website)
 			content.GET("", contentHandler.GetAll)
-			content.POST("", contentHandler.Create)
 			content.GET("/:id", contentHandler.GetByID)
-			content.PUT("/:id", contentHandler.Update)
-			content.DELETE("/:id", contentHandler.Delete)
 			content.GET("/by-key/:key", contentHandler.GetByKey)
+			
+			// Admin endpoints (require authentication and admin/moderator role)
+			contentAdmin := content.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				contentAdmin.POST("", contentHandler.Create)
+				contentAdmin.PUT("/:id", contentHandler.Update)
+				contentAdmin.DELETE("/:id", contentHandler.Delete)
+			}
 		}
 
-		// Upload endpoints
-		upload := v1.Group("/upload")
+		// Upload endpoints (admin only)
+		upload := v1.Group("/upload", jwtMiddleware, middleware.RequireAdminOrModerator())
 		{
 			upload.POST("/image", uploadHandler.UploadImage)
 			upload.DELETE("/image/:key", uploadHandler.DeleteImage)
@@ -231,8 +306,8 @@ func (s *Server) setupRoutes() {
 			upload.GET("/image/:key/info", uploadHandler.GetImageInfo)
 		}
 
-		// Dashboard endpoints
-		dashboard := v1.Group("/dashboard")
+		// Dashboard endpoints (require authentication, all roles can view)
+		dashboard := v1.Group("/dashboard", jwtMiddleware)
 		{
 			dashboard.GET("", dashboardHandler.GetCompleteDashboardData)
 			dashboard.GET("/stats", dashboardHandler.GetDashboardStats)
