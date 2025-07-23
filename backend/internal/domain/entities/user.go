@@ -72,6 +72,11 @@ type UpdateUserRequest struct {
 	IsActive *bool     `json:"is_active,omitempty"`
 }
 
+type UpdateProfileRequest struct {
+	Name  string `json:"name" binding:"required,min=1,max=100"`
+	Email string `json:"email" binding:"required,email"`
+}
+
 type UserResponse struct {
 	ID          uint       `json:"id"`
 	Email       string     `json:"email"`

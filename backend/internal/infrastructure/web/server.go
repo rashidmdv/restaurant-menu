@@ -200,6 +200,9 @@ func (s *Server) setupRoutes() {
 
 		// Change password route (authenticated users can change their own password)
 		v1.POST("/users/change-password", jwtMiddleware, userHandler.ChangePassword)
+		
+		// Update profile route (authenticated users can update their own profile)
+		v1.PUT("/users/profile", jwtMiddleware, userHandler.UpdateProfile)
 
 		// Menu endpoints (public - for customer website)
 		menu := v1.Group("/menu")

@@ -20,6 +20,7 @@ type UserService interface {
 	Delete(ctx context.Context, id uint) error
 	ToggleActive(ctx context.Context, id uint) (*entities.User, error)
 	ChangePassword(ctx context.Context, userID uint, currentPassword, newPassword string) error
+	UpdateProfile(ctx context.Context, userID uint, req *entities.UpdateProfileRequest) (*entities.User, error)
 }
 
 type userService struct {
@@ -363,4 +364,57 @@ func (s *userService) ChangePassword(ctx context.Context, userID uint, currentPa
 	})
 
 	return nil
+}
+
+func (s *userService) UpdateProfile(ctx context.Context, userID uint, req *entities.UpdateProfileRequest) (*entities.User, error) {
+	// Get current user
+	user, err := s.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		s.logger.LogError(ctx, err, "Failed to get user for profile update", map[string]interface{}{
+			"user_id": userID,
+		})
+		return nil, appErrors.WrapInternalError(err, "Failed to get user")
+	}
+
+	if user == nil {
+		return nil, appErrors.NewNotFoundError("User")
+	}
+
+	// Check if email is being changed and if it already exists for another user
+	if strings.ToLower(req.Email) != strings.ToLower(user.Email) {
+		exists, err := s.userRepo.ExistsByEmail(ctx, strings.ToLower(req.Email))
+		if err != nil {
+			s.logger.LogError(ctx, err, "Failed to check existing email for profile update", map[string]interface{}{
+				"user_id": userID,
+				"email":   req.Email,
+			})
+			return nil, appErrors.WrapInternalError(err, "Failed to validate email")
+		}
+
+		if exists {
+			return nil, appErrors.NewConflictError("User with this email already exists")
+		}
+	}
+
+	// Update user fields
+	user.Name = strings.TrimSpace(req.Name)
+	user.Email = strings.ToLower(strings.TrimSpace(req.Email))
+
+	// Save updated user
+	if err := s.userRepo.Update(ctx, user); err != nil {
+		s.logger.LogError(ctx, err, "Failed to update user profile", map[string]interface{}{
+			"user_id": userID,
+			"name":    req.Name,
+			"email":   req.Email,
+		})
+		return nil, appErrors.WrapInternalError(err, "Failed to update profile")
+	}
+
+	s.logger.LogInfo(ctx, "User profile updated successfully", map[string]interface{}{
+		"user_id": userID,
+		"name":    req.Name,
+		"email":   req.Email,
+	})
+
+	return user, nil
 }

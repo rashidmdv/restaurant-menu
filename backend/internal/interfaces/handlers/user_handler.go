@@ -7,6 +7,7 @@ import (
 
 	"restaurant-menu-api/internal/domain/entities"
 	"restaurant-menu-api/internal/domain/services"
+	"restaurant-menu-api/internal/interfaces/middleware"
 	appErrors "restaurant-menu-api/pkg/errors"
 	"restaurant-menu-api/pkg/logger"
 	"restaurant-menu-api/pkg/response"
@@ -22,6 +23,7 @@ type ChangePasswordRequest struct {
 	CurrentPassword string `json:"current_password" binding:"required"`
 	NewPassword     string `json:"new_password" binding:"required,min=8,max=72"`
 }
+
 
 func NewUserHandler(service services.UserService, logger *logger.Logger) *UserHandler {
 	return &UserHandler{
@@ -295,4 +297,53 @@ func (h *UserHandler) ChangePassword(c *gin.Context) {
 	}
 
 	response.Success(c, gin.H{"message": "Password changed successfully"})
+}
+
+// UpdateProfile godoc
+// @Summary Update user profile
+// @Description Update the authenticated user's profile information (name and email)
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param profile body UpdateProfileRequest true "Profile update information"
+// @Success 200 {object} response.APIResponse{data=entities.UserResponse}
+// @Failure 400 {object} response.APIResponse{error=response.APIError}
+// @Failure 401 {object} response.APIResponse{error=response.APIError}
+// @Failure 409 {object} response.APIResponse{error=response.APIError}
+// @Failure 500 {object} response.APIResponse{error=response.APIError}
+// @Router /users/profile [put]
+func (h *UserHandler) UpdateProfile(c *gin.Context) {
+	var req entities.UpdateProfileRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Error(c, appErrors.WrapValidationError(err, "Invalid request data"))
+		return
+	}
+
+	// Get user ID from auth context (set by JWT middleware)
+	userIDUint, exists := middleware.GetCurrentUserID(c)
+	if !exists {
+		response.Error(c, appErrors.NewUnauthorizedError("User not authenticated"))
+		return
+	}
+
+	updatedUser, err := h.service.UpdateProfile(c.Request.Context(), userIDUint, &req)
+	if err != nil {
+		response.Error(c, err)
+		return
+	}
+
+	// Convert to UserResponse (excludes password hash)
+	userResponse := &entities.UserResponse{
+		ID:           updatedUser.ID,
+		Email:        updatedUser.Email,
+		Name:         updatedUser.Name,
+		Role:         updatedUser.Role,
+		IsActive:     updatedUser.IsActive,
+		LastLoginAt:  updatedUser.LastLoginAt,
+		CreatedAt:    updatedUser.CreatedAt,
+		UpdatedAt:    updatedUser.UpdatedAt,
+	}
+
+	response.Success(c, userResponse)
 }

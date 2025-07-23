@@ -21,6 +21,11 @@ export interface RefreshTokenRequest {
   refresh_token: string;
 }
 
+export interface UpdateProfileRequest {
+  name: string;
+  email: string;
+}
+
 export interface LoginResponse {
   access_token: string;
   refresh_token: string;

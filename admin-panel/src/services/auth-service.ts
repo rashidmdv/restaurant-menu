@@ -4,6 +4,7 @@ import {
   LoginResponse, 
   RefreshTokenRequest, 
   RefreshTokenResponse, 
+  UpdateProfileRequest,
   User,
   AuthResponse 
 } from '@/types/auth';
@@ -16,6 +17,11 @@ export const AuthService = {
   
   getProfile: async (): Promise<User> => {
     const response = await API.get<{success: boolean, data: User}>('/v1/auth/me');
+    return response.data.data;
+  },
+
+  updateProfile: async (profileData: UpdateProfileRequest): Promise<User> => {
+    const response = await API.put<{success: boolean, data: User}>('/v1/users/profile', profileData);
     return response.data.data;
   },
   
