@@ -27,7 +27,8 @@ services:
   redis:
     image: redis:7-alpine
     container_name: restaurant-menu-redis
-    command: redis-server --requirepass "$(cat /run/secrets/redis_password)"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["redis-server --requirepass $$(cat /run/secrets/redis_password)"]
     secrets:
       - redis_password
     ports:
