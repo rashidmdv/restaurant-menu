@@ -6,6 +6,7 @@ import (
 )
 
 type ContentRepository interface {
+	GetByID(ctx context.Context, id uint) (*entities.ContentSection, error)
 	GetBySection(ctx context.Context, sectionName string) (*entities.ContentSection, error)
 	GetAll(ctx context.Context, filter entities.ContentSectionFilter) ([]*entities.ContentSection, error)
 	Create(ctx context.Context, content *entities.ContentSection) error

@@ -19,6 +19,21 @@ func NewContentRepository(db *gorm.DB) repositories.ContentRepository {
 	return &contentRepository{db: db}
 }
 
+func (r *contentRepository) GetByID(ctx context.Context, id uint) (*entities.ContentSection, error) {
+	var content entities.ContentSection
+	err := r.db.WithContext(ctx).
+		Where("id = ?", id).
+		First(&content).Error
+	
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &content, nil
+}
+
 func (r *contentRepository) GetBySection(ctx context.Context, sectionName string) (*entities.ContentSection, error) {
 	var content entities.ContentSection
 	err := r.db.WithContext(ctx).

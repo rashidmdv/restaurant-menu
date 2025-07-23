@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	"restaurant-menu-api/internal/domain/entities"
 	"restaurant-menu-api/internal/domain/repositories"
@@ -36,8 +35,7 @@ func (s *contentService) GetAll(ctx context.Context, filter entities.ContentSect
 }
 
 func (s *contentService) GetByID(ctx context.Context, id uint) (*entities.ContentSection, error) {
-	// This method needs to be implemented in the repository
-	return nil, fmt.Errorf("GetByID not implemented in ContentRepository")
+	return s.repo.GetByID(ctx, id)
 }
 
 func (s *contentService) GetBySection(ctx context.Context, sectionName string) (*entities.ContentSection, error) {
