@@ -1,0 +1,168 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: restaurant-menu-postgres
+    environment:
+      POSTGRES_DB: restaurant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    ports:
+      - "127.0.0.1:5433:5432"  # Bind to localhost only
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: restaurant-menu-redis
+    command: redis-server --requirepass $(cat /run/secrets/redis_password)
+    secrets:
+      - redis_password
+    ports:
+      - "127.0.0.1:6380:6379"  # Bind to localhost only
+    volumes:
+      - redis_data:/data
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "$(cat /run/secrets/redis_password)", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: restaurant-menu-backend
+    # Remove user: root - use Dockerfile's appuser
+    ports:
+      - "127.0.0.1:8000:8000"  # Bind to localhost only
+    env_file:
+      - ./backend/.env.prod
+    environment:
+      SERVER_PORT: 8000
+      SERVER_HOST: 0.0.0.0
+      SERVER_ENVIRONMENT: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      DB_NAME: restaurant
+      DB_SSL_MODE: disable
+      REDIS_URL: redis://:$(cat /run/secrets/redis_password)@redis:6379
+      LOG_LEVEL: info
+      STORAGE_PROVIDER: gcp
+      CORS_ALLOWED_ORIGINS: https://yourdomain.com,http://localhost
+      RUN_SEED: "false"
+    secrets:
+      - db_password
+      - redis_password
+      - gcp_service_account
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/.env.prod:/app/.env:ro
+      - ./backend/keys:/app/keys:ro
+    networks:
+      - restaurant-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: restaurant-menu-frontend
+    ports:
+      - "127.0.0.1:3000:3000"  # Bind to localhost only
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://yourdomain.com/api
+    networks:
+      - restaurant-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Admin Panel
+  admin:
+    build:
+      context: ./admin-panel
+      dockerfile: Dockerfile.prod
+    container_name: restaurant-menu-admin
+    ports:
+      - "127.0.0.1:4000:4000"  # Bind to localhost only
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=https://yourdomain.com/api
+    networks:
+      - restaurant-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: restaurant-menu-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - restaurant-network
+    depends_on:
+      - frontend
+      - backend
+      - admin
+    restart: unless-stopped
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  gcp_service_account:
+    file: ./secrets/gcp-service-account.json
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  restaurant-network:
+    driver: bridge
