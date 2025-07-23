@@ -19,7 +19,7 @@ export const sidebarData: SidebarData = {
   },
   teams: [
     {
-      name: 'Restaurant Menu',
+      name: 'Loma',
       logo: SpareitLogo,
       plan: 'Admin Panel',
     },
