@@ -18,25 +18,23 @@ COPY . .
 # Build the application
 RUN pnpm run build
 
-# Production stage with nginx
-FROM nginx:alpine AS production
+# Production stage with simple HTTP server
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Install serve globally
+RUN npm install -g serve
 
 # Create non-root user
-RUN addgroup -g 1001 -S nginxgroup && \
-    adduser -D -s /bin/sh -u 1001 -G nginxgroup nginxuser
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -D -s /bin/sh -u 1001 -G appgroup appuser
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Create nginx directories and set permissions
-RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
-    chown -R nginxuser:nginxgroup /var/cache/nginx /var/log/nginx /var/run /usr/share/nginx/html
+COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
 
 # Switch to non-root user
-USER nginxuser
+USER appuser
 
 # Expose port
 EXPOSE 4000
@@ -45,5 +43,5 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:4000 || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start simple HTTP server
+CMD ["serve", "-s", "dist", "-l", "4000"]
