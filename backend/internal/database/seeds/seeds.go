@@ -42,6 +42,7 @@ func (s *Seeder) SeedAll(ctx context.Context) error {
 		name string
 		fn   func(context.Context, *gorm.DB) error
 	}{
+		{"Users", s.seedUsers},
 		{"Restaurant Info", s.seedRestaurantInfo},
 		{"Operating Hours", s.seedOperatingHours},
 		{"Content Sections", s.seedContentSections},
@@ -95,6 +96,7 @@ func (s *Seeder) ClearAll(ctx context.Context) error {
 		"content_sections",
 		"operating_hours",
 		"restaurant_infos",
+		"users",
 	}
 
 	for _, table := range tables {

@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GenerateSlug creates a URL-friendly slug from a string
@@ -154,4 +156,22 @@ func TruncateString(s string, maxLength int) string {
 		return s
 	}
 	return s[:maxLength-3] + "..."
+}
+
+// ParsePagination parses page and limit query parameters from gin context
+func ParsePagination(c *gin.Context) (page, limit int) {
+	page = ParseInt(c.Query("page"), 1)
+	if page < 1 {
+		page = 1
+	}
+	
+	limit = ParseInt(c.Query("limit"), 10)
+	if limit < 1 {
+		limit = 10
+	}
+	if limit > 100 {
+		limit = 100
+	}
+	
+	return page, limit
 }

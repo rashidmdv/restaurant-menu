@@ -19,6 +19,7 @@ type Config struct {
 	Redis    RedisConfig
 	Logger   LoggerConfig
 	CORS     CORSConfig
+	JWT      JWTConfig
 }
 
 type ServerConfig struct {
@@ -73,6 +74,13 @@ type LoggerConfig struct {
 
 type CORSConfig struct {
 	AllowedOrigins []string
+}
+
+type JWTConfig struct {
+	AccessSecret     string
+	RefreshSecret    string
+	AccessExpiration time.Duration
+	RefreshExpiration time.Duration
 }
 
 func Load() (*Config, error) {
@@ -139,6 +147,12 @@ func Load() (*Config, error) {
 				"http://127.0.0.1:5174",
 			}),
 		},
+		JWT: JWTConfig{
+			AccessSecret:      getEnv("JWT_ACCESS_SECRET", "your-super-secret-access-key-change-this-in-production"),
+			RefreshSecret:     getEnv("JWT_REFRESH_SECRET", "your-super-secret-refresh-key-change-this-in-production"),
+			AccessExpiration:  getDurationEnv("JWT_ACCESS_EXPIRATION", 15*time.Minute),
+			RefreshExpiration: getDurationEnv("JWT_REFRESH_EXPIRATION", 7*24*time.Hour), // 7 days
+		},
 	}
 
 	if err := cfg.Validate(); err != nil {
@@ -179,6 +193,26 @@ func (c *Config) Validate() error {
 
 	if !validEnvs[c.Server.Environment] {
 		return fmt.Errorf("invalid environment: %s", c.Server.Environment)
+	}
+
+	// Validate JWT configuration
+	if len(c.JWT.AccessSecret) < 32 {
+		return fmt.Errorf("JWT access secret must be at least 32 characters long")
+	}
+	if len(c.JWT.RefreshSecret) < 32 {
+		return fmt.Errorf("JWT refresh secret must be at least 32 characters long")
+	}
+	if c.JWT.AccessSecret == c.JWT.RefreshSecret {
+		return fmt.Errorf("JWT access secret and refresh secret must be different")
+	}
+	if c.JWT.AccessExpiration <= 0 {
+		return fmt.Errorf("JWT access token expiration must be positive")
+	}
+	if c.JWT.RefreshExpiration <= 0 {
+		return fmt.Errorf("JWT refresh token expiration must be positive")
+	}
+	if c.JWT.AccessExpiration >= c.JWT.RefreshExpiration {
+		return fmt.Errorf("JWT refresh token expiration must be longer than access token expiration")
 	}
 
 	return nil
