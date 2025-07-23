@@ -26,8 +26,8 @@ export function ProfileDropdown() {
       .slice(0, 2)
   }
 
-  const handleLogout = () => {
-    auth.logout()
+  const handleLogout = async () => {
+    await auth.logout()
     router.navigate({ to: '/sign-in' })
   }
 

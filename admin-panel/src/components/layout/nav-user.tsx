@@ -35,8 +35,8 @@ export function NavUser({
   const router = useRouter()
   const { auth } = useAuthStore()
 
-  const handleLogout = () => {
-    auth.logout()
+  const handleLogout = async () => {
+    await auth.logout()
     router.navigate({ to: '/sign-in' })
   }
 
