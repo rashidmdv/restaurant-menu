@@ -65,7 +65,7 @@ export function SubCategoriesImportDialog({ open, onOpenChange }: Props) {
         formData.append('file', file[0])
 
         // Upload file
-        await API.post('/api/v1/subcategories/import', formData, {
+        await API.post('/v1/subcategories/import', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           }

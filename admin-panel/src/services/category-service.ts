@@ -96,7 +96,7 @@ export interface PaginatedResponse<T> {
 export const CategoryService = {
   getCategories: async (filters?: CategoryFilters): Promise<Category[]> => {
     const cleanedFilters = cleanFilters(filters);
-    const response = await API.get<BackendResponse<Category[]>>('/api/v1/categories', {
+    const response = await API.get<BackendResponse<Category[]>>('/v1/categories', {
       params: cleanedFilters,
     });
     return response.data.data;
@@ -107,7 +107,7 @@ export const CategoryService = {
       ...filters,
       include_count: true, // Always include count for pagination
     });
-    const response = await API.get<BackendResponse<Category[]>>('/api/v1/categories', {
+    const response = await API.get<BackendResponse<Category[]>>('/v1/categories', {
       params: cleanedFilters,
     });
     
@@ -126,38 +126,38 @@ export const CategoryService = {
   },
 
   getCategoryById: async (id: string): Promise<Category> => {
-    const response = await API.get<BackendResponse<Category>>(`/api/v1/categories/${id}`);
+    const response = await API.get<BackendResponse<Category>>(`/v1/categories/${id}`);
     return response.data.data;
   },
 
   getCategoryWithSubCategories: async (id: string): Promise<Category> => {
-    const response = await API.get<BackendResponse<Category>>(`/api/v1/categories/${id}`, {
+    const response = await API.get<BackendResponse<Category>>(`/v1/categories/${id}`, {
       params: { include_subcategories: true }
     });
     return response.data.data;
   },
 
   createCategory: async (category: CreateCategoryDto): Promise<Category> => {
-    const response = await API.post<BackendResponse<Category>>('/api/v1/categories', category);
+    const response = await API.post<BackendResponse<Category>>('/v1/categories', category);
     return response.data.data;
   },
 
   updateCategory: async (id: string, category: UpdateCategoryDto): Promise<Category> => {
-    const response = await API.put<BackendResponse<Category>>(`/api/v1/categories/${id}`, category);
+    const response = await API.put<BackendResponse<Category>>(`/v1/categories/${id}`, category);
     return response.data.data;
   },
 
   deleteCategory: async (id: string): Promise<void> => {
-    await API.delete(`/api/v1/categories/${id}`);
+    await API.delete(`/v1/categories/${id}`);
   },
 
   toggleCategoryActive: async (id: string): Promise<Category> => {
-    const response = await API.patch<BackendResponse<Category>>(`/api/v1/categories/${id}/toggle`);
+    const response = await API.patch<BackendResponse<Category>>(`/v1/categories/${id}/toggle`);
     return response.data.data;
   },
 
   updateDisplayOrder: async (id: string, displayOrder: number): Promise<Category> => {
-    const response = await API.patch<BackendResponse<Category>>(`/api/v1/categories/${id}/order`, {
+    const response = await API.patch<BackendResponse<Category>>(`/v1/categories/${id}/order`, {
       display_order: displayOrder
     });
     return response.data.data;
@@ -167,7 +167,7 @@ export const CategoryService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await API.post<BackendResponse<{ url: string }>>('/api/v1/upload/image', formData, {
+    const response = await API.post<BackendResponse<{ url: string }>>('/v1/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 

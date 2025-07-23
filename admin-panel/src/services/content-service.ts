@@ -7,7 +7,7 @@ import {
 } from '@/features/content/data/schema'
 
 export class ContentService {
-  private static baseUrl = '/api/v1/content'
+  private static baseUrl = '/v1/content'
 
   static async getAllContent(params?: ContentFilter): Promise<ContentSection[]> {
     const queryParams = new URLSearchParams()

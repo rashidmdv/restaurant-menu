@@ -101,13 +101,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_API_URL=http://34.93.138.229/api
     container_name: restaurant-menu-frontend
     ports:
       - "127.0.0.1:3000:3000"  # Bind to localhost only
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_API_URL=http://34.93.138.229/api
     networks:
       - restaurant-network
     depends_on:
@@ -130,7 +130,7 @@ services:
       - "127.0.0.1:4000:4000"  # Bind to localhost only
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
+      - VITE_API_URL=http://34.93.138.229/api
     networks:
       - restaurant-network
     depends_on:

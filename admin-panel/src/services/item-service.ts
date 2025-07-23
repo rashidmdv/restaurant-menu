@@ -123,7 +123,7 @@ export interface PaginatedResponse<T> {
 export const ItemService = {
   getItems: async (filters?: ItemFilters): Promise<Item[]> => {
     const cleanedFilters = cleanFilters(filters);
-    const response = await API.get<BackendResponse<Item[]>>('/api/v1/items', {
+    const response = await API.get<BackendResponse<Item[]>>('/v1/items', {
       params: cleanedFilters,
     });
     return response.data.data;
@@ -134,7 +134,7 @@ export const ItemService = {
       ...filters,
       include_count: true, // Always include count for pagination
     });
-    const response = await API.get<BackendResponse<Item[]>>('/api/v1/items', {
+    const response = await API.get<BackendResponse<Item[]>>('/v1/items', {
       params: cleanedFilters,
     });
     
@@ -153,51 +153,51 @@ export const ItemService = {
   },
 
   getItemById: async (id: string): Promise<Item> => {
-    const response = await API.get<BackendResponse<Item>>(`/api/v1/items/${id}`);
+    const response = await API.get<BackendResponse<Item>>(`/v1/items/${id}`);
     return response.data.data;
   },
 
   getFeaturedItems: async (): Promise<Item[]> => {
-    const response = await API.get<BackendResponse<Item[]>>('/api/v1/items/featured');
+    const response = await API.get<BackendResponse<Item[]>>('/v1/items/featured');
     return response.data.data;
   },
 
   searchItems: async (query: string, filters?: ItemFilters): Promise<Item[]> => {
     const cleanedFilters = cleanFilters(filters);
-    const response = await API.get<BackendResponse<Item[]>>('/api/v1/items/search', {
+    const response = await API.get<BackendResponse<Item[]>>('/v1/items/search', {
       params: { search: query, ...cleanedFilters },
     });
     return response.data.data;
   },
 
   createItem: async (item: CreateItemDto): Promise<Item> => {
-    const response = await API.post<BackendResponse<Item>>('/api/v1/items', item);
+    const response = await API.post<BackendResponse<Item>>('/v1/items', item);
     return response.data.data;
   },
 
   updateItem: async (id: string, item: UpdateItemDto): Promise<Item> => {
-    const response = await API.put<BackendResponse<Item>>(`/api/v1/items/${id}`, item);
+    const response = await API.put<BackendResponse<Item>>(`/v1/items/${id}`, item);
     return response.data.data;
   },
 
   deleteItem: async (id: string): Promise<void> => {
-    await API.delete(`/api/v1/items/${id}`);
+    await API.delete(`/v1/items/${id}`);
   },
 
   toggleItemAvailable: async (id: string): Promise<Item> => {
-    const response = await API.patch<BackendResponse<Item>>(`/api/v1/items/${id}/toggle`);
+    const response = await API.patch<BackendResponse<Item>>(`/v1/items/${id}/toggle`);
     return response.data.data;
   },
 
   updateDisplayOrder: async (id: string, displayOrder: number): Promise<Item> => {
-    const response = await API.patch<BackendResponse<Item>>(`/api/v1/items/${id}/order`, {
+    const response = await API.patch<BackendResponse<Item>>(`/v1/items/${id}/order`, {
       display_order: displayOrder
     });
     return response.data.data;
   },
 
   updatePrice: async (id: string, price: number): Promise<Item> => {
-    const response = await API.patch<BackendResponse<Item>>(`/api/v1/items/${id}/price`, {
+    const response = await API.patch<BackendResponse<Item>>(`/v1/items/${id}/price`, {
       price: price
     });
     return response.data.data;
@@ -207,7 +207,7 @@ export const ItemService = {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await API.post<BackendResponse<{ url: string }>>('/api/v1/upload/image', formData, {
+    const response = await API.post<BackendResponse<{ url: string }>>('/v1/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -216,7 +216,7 @@ export const ItemService = {
 
   // Get subcategories for item creation
   getSubCategories: async (): Promise<SubCategory[]> => {
-    const response = await API.get<BackendResponse<SubCategory[]>>('/api/v1/subcategories');
+    const response = await API.get<BackendResponse<SubCategory[]>>('/v1/subcategories');
     return response.data.data;
   },
 };

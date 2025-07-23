@@ -110,7 +110,7 @@ export interface PaginatedResponse<T> {
 export const SubCategoryService = {
   getSubCategories: async (filters?: SubCategoryFilters): Promise<SubCategory[]> => {
     const cleanedFilters = cleanFilters(filters);
-    const response = await API.get<BackendResponse<SubCategory[]>>('/api/v1/subcategories', {
+    const response = await API.get<BackendResponse<SubCategory[]>>('/v1/subcategories', {
       params: cleanedFilters,
     });
     return response.data.data;
@@ -121,7 +121,7 @@ export const SubCategoryService = {
       ...filters,
       include_count: true, // Always include count for pagination
     });
-    const response = await API.get<BackendResponse<SubCategory[]>>('/api/v1/subcategories', {
+    const response = await API.get<BackendResponse<SubCategory[]>>('/v1/subcategories', {
       params: cleanedFilters,
     });
     
@@ -140,38 +140,38 @@ export const SubCategoryService = {
   },
 
   getSubCategoryById: async (id: string): Promise<SubCategory> => {
-    const response = await API.get<BackendResponse<SubCategory>>(`/api/v1/subcategories/${id}`);
+    const response = await API.get<BackendResponse<SubCategory>>(`/v1/subcategories/${id}`);
     return response.data.data;
   },
 
   getSubCategoryWithItems: async (id: string): Promise<SubCategory> => {
-    const response = await API.get<BackendResponse<SubCategory>>(`/api/v1/subcategories/${id}`, {
+    const response = await API.get<BackendResponse<SubCategory>>(`/v1/subcategories/${id}`, {
       params: { include_items: true }
     });
     return response.data.data;
   },
 
   createSubCategory: async (subCategory: CreateSubCategoryDto): Promise<SubCategory> => {
-    const response = await API.post<BackendResponse<SubCategory>>('/api/v1/subcategories', subCategory);
+    const response = await API.post<BackendResponse<SubCategory>>('/v1/subcategories', subCategory);
     return response.data.data;
   },
 
   updateSubCategory: async (id: string, subCategory: UpdateSubCategoryDto): Promise<SubCategory> => {
-    const response = await API.put<BackendResponse<SubCategory>>(`/api/v1/subcategories/${id}`, subCategory);
+    const response = await API.put<BackendResponse<SubCategory>>(`/v1/subcategories/${id}`, subCategory);
     return response.data.data;
   },
 
   deleteSubCategory: async (id: string): Promise<void> => {
-    await API.delete(`/api/v1/subcategories/${id}`);
+    await API.delete(`/v1/subcategories/${id}`);
   },
 
   toggleSubCategoryActive: async (id: string): Promise<SubCategory> => {
-    const response = await API.patch<BackendResponse<SubCategory>>(`/api/v1/subcategories/${id}/toggle-active`);
+    const response = await API.patch<BackendResponse<SubCategory>>(`/v1/subcategories/${id}/toggle-active`);
     return response.data.data;
   },
 
   updateDisplayOrder: async (id: string, displayOrder: number): Promise<SubCategory> => {
-    const response = await API.patch<BackendResponse<SubCategory>>(`/api/v1/subcategories/${id}/display-order`, {
+    const response = await API.patch<BackendResponse<SubCategory>>(`/v1/subcategories/${id}/display-order`, {
       display_order: displayOrder
     });
     return response.data.data;
@@ -179,7 +179,7 @@ export const SubCategoryService = {
 
   // Get categories for subcategory creation
   getCategories: async (): Promise<Category[]> => {
-    const response = await API.get<BackendResponse<Category[]>>('/api/v1/categories');
+    const response = await API.get<BackendResponse<Category[]>>('/v1/categories');
     return response.data.data;
   },
 
@@ -187,7 +187,7 @@ export const SubCategoryService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await API.post<BackendResponse<{ url: string }>>('/api/v1/upload/image', formData, {
+    const response = await API.post<BackendResponse<{ url: string }>>('/v1/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
