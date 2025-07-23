@@ -101,7 +101,7 @@ func Load() (*Config, error) {
 			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnv("DB_PORT", "5432"),
 			User:     getEnv("DB_USER", "postgres"),
-			Password: getEnv("DB_PASSWORD", ""),
+			Password: getPasswordFromEnv(),
 			DBName:   getEnv("DB_NAME", "restaurant_menu"),
 			SSLMode:  getEnv("DB_SSL_MODE", "disable"),
 			MaxConns: getIntEnv("DB_MAX_CONNS", 25),
@@ -125,8 +125,8 @@ func Load() (*Config, error) {
 			Provider: getEnv("STORAGE_PROVIDER", "aws"),
 		},
 		Redis: RedisConfig{
-			URL:      getEnv("REDIS_URL", "redis://localhost:6379"),
-			Password: getEnv("REDIS_PASSWORD", ""),
+			URL:      buildRedisURL(),
+			Password: getRedisPasswordFromEnv(),
 			DB:       getIntEnv("REDIS_DB", 0),
 		},
 		Logger: LoggerConfig{
@@ -271,4 +271,53 @@ func getStringSliceEnv(key string, defaultValue []string) []string {
 		return parts
 	}
 	return defaultValue
+}
+
+func getPasswordFromEnv() string {
+	// First try DB_PASSWORD
+	if password := os.Getenv("DB_PASSWORD"); password != "" {
+		return password
+	}
+	
+	// Then try DB_PASSWORD_FILE
+	if passwordFile := os.Getenv("DB_PASSWORD_FILE"); passwordFile != "" {
+		if content, err := os.ReadFile(passwordFile); err == nil {
+			return strings.TrimSpace(string(content))
+		}
+	}
+	
+	return ""
+}
+
+func getRedisPasswordFromEnv() string {
+	// First try REDIS_PASSWORD
+	if password := os.Getenv("REDIS_PASSWORD"); password != "" {
+		return password
+	}
+	
+	// Then try REDIS_PASSWORD_FILE
+	if passwordFile := os.Getenv("REDIS_PASSWORD_FILE"); passwordFile != "" {
+		if content, err := os.ReadFile(passwordFile); err == nil {
+			return strings.TrimSpace(string(content))
+		}
+	}
+	
+	return ""
+}
+
+func buildRedisURL() string {
+	// If REDIS_URL is set, use it directly
+	if url := os.Getenv("REDIS_URL"); url != "" {
+		return url
+	}
+	
+	// Otherwise build from components
+	host := getEnv("REDIS_HOST", "localhost")
+	port := getEnv("REDIS_PORT", "6379")
+	password := getRedisPasswordFromEnv()
+	
+	if password != "" {
+		return fmt.Sprintf("redis://:%s@%s:%s", password, host, port)
+	}
+	return fmt.Sprintf("redis://%s:%s", host, port)
 }
