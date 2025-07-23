@@ -60,7 +60,6 @@ export default function ProfileForm() {
       toast.success('Profile updated successfully!')
       form.reset(data) // Reset form with new data to clear dirty state
     } catch (error: any) {
-      console.error('Profile update error:', error)
       const errorMessage = error.response?.data?.error?.message || 'Failed to update profile. Please try again.'
       toast.error(errorMessage)
     } finally {

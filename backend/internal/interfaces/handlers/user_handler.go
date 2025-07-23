@@ -333,17 +333,5 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	// Convert to UserResponse (excludes password hash)
-	userResponse := &entities.UserResponse{
-		ID:           updatedUser.ID,
-		Email:        updatedUser.Email,
-		Name:         updatedUser.Name,
-		Role:         updatedUser.Role,
-		IsActive:     updatedUser.IsActive,
-		LastLoginAt:  updatedUser.LastLoginAt,
-		CreatedAt:    updatedUser.CreatedAt,
-		UpdatedAt:    updatedUser.UpdatedAt,
-	}
-
-	response.Success(c, userResponse)
+	response.Success(c, updatedUser.ToResponse())
 }
