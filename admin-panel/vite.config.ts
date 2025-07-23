@@ -23,4 +23,14 @@ export default defineConfig({
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
     },
   },
+  server: {
+    host: '0.0.0.0', // Allow access from outside container
+    port: 5173,
+    watch: {
+      usePolling: true, // Enable polling for Docker on some systems
+    },
+    hmr: {
+      host: 'localhost', // HMR host for browser connections
+    },
+  },
 })

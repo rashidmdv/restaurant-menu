@@ -30,6 +30,7 @@ import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticat
 import { Route as AuthenticatedModelIndexImport } from './routes/_authenticated/model/index'
 import { Route as AuthenticatedMakeIndexImport } from './routes/_authenticated/make/index'
 import { Route as AuthenticatedItemsIndexImport } from './routes/_authenticated/items/index'
+import { Route as AuthenticatedContentIndexImport } from './routes/_authenticated/content/index'
 import { Route as AuthenticatedChatsIndexImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedCategoryIndexImport } from './routes/_authenticated/category/index'
 import { Route as AuthenticatedBrandsIndexImport } from './routes/_authenticated/brands/index'
@@ -153,6 +154,12 @@ const AuthenticatedMakeIndexRoute = AuthenticatedMakeIndexImport.update({
 const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexImport.update({
   id: '/items/',
   path: '/items/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedContentIndexRoute = AuthenticatedContentIndexImport.update({
+  id: '/content/',
+  path: '/content/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
@@ -319,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatsIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/content/': {
+      id: '/_authenticated/content/'
+      path: '/content'
+      fullPath: '/content'
+      preLoaderRoute: typeof AuthenticatedContentIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/items/': {
       id: '/_authenticated/items/'
       path: '/items'
@@ -389,6 +403,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBrandsIndexRoute: typeof AuthenticatedBrandsIndexRoute
   AuthenticatedCategoryIndexRoute: typeof AuthenticatedCategoryIndexRoute
   AuthenticatedChatsIndexRoute: typeof AuthenticatedChatsIndexRoute
+  AuthenticatedContentIndexRoute: typeof AuthenticatedContentIndexRoute
   AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
   AuthenticatedMakeIndexRoute: typeof AuthenticatedMakeIndexRoute
   AuthenticatedModelIndexRoute: typeof AuthenticatedModelIndexRoute
@@ -403,6 +418,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBrandsIndexRoute: AuthenticatedBrandsIndexRoute,
   AuthenticatedCategoryIndexRoute: AuthenticatedCategoryIndexRoute,
   AuthenticatedChatsIndexRoute: AuthenticatedChatsIndexRoute,
+  AuthenticatedContentIndexRoute: AuthenticatedContentIndexRoute,
   AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
   AuthenticatedMakeIndexRoute: AuthenticatedMakeIndexRoute,
   AuthenticatedModelIndexRoute: AuthenticatedModelIndexRoute,
@@ -432,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/brands': typeof AuthenticatedBrandsIndexRoute
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
+  '/content': typeof AuthenticatedContentIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
   '/make': typeof AuthenticatedMakeIndexRoute
   '/model': typeof AuthenticatedModelIndexRoute
@@ -457,6 +474,7 @@ export interface FileRoutesByTo {
   '/brands': typeof AuthenticatedBrandsIndexRoute
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
+  '/content': typeof AuthenticatedContentIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
   '/make': typeof AuthenticatedMakeIndexRoute
   '/model': typeof AuthenticatedModelIndexRoute
@@ -485,6 +503,7 @@ export interface FileRoutesById {
   '/_authenticated/brands/': typeof AuthenticatedBrandsIndexRoute
   '/_authenticated/category/': typeof AuthenticatedCategoryIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
+  '/_authenticated/content/': typeof AuthenticatedContentIndexRoute
   '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
   '/_authenticated/make/': typeof AuthenticatedMakeIndexRoute
   '/_authenticated/model/': typeof AuthenticatedModelIndexRoute
@@ -514,6 +533,7 @@ export interface FileRouteTypes {
     | '/brands'
     | '/category'
     | '/chats'
+    | '/content'
     | '/items'
     | '/make'
     | '/model'
@@ -538,6 +558,7 @@ export interface FileRouteTypes {
     | '/brands'
     | '/category'
     | '/chats'
+    | '/content'
     | '/items'
     | '/make'
     | '/model'
@@ -564,6 +585,7 @@ export interface FileRouteTypes {
     | '/_authenticated/brands/'
     | '/_authenticated/category/'
     | '/_authenticated/chats/'
+    | '/_authenticated/content/'
     | '/_authenticated/items/'
     | '/_authenticated/make/'
     | '/_authenticated/model/'
@@ -633,6 +655,7 @@ export const routeTree = rootRoute
         "/_authenticated/brands/",
         "/_authenticated/category/",
         "/_authenticated/chats/",
+        "/_authenticated/content/",
         "/_authenticated/items/",
         "/_authenticated/make/",
         "/_authenticated/model/",
@@ -700,6 +723,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/chats/": {
       "filePath": "_authenticated/chats/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/content/": {
+      "filePath": "_authenticated/content/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/items/": {

@@ -1,0 +1,1 @@
+export { default as ContentManagement } from './components/content-page'

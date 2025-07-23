@@ -6,6 +6,7 @@ import {
   IconPalette,
   IconHierarchy,
   IconChefHat,
+  IconFileText,
 } from '@tabler/icons-react'
 import SpareitLogo from '@/components/icons/spareit-logo'
 import { type SidebarData } from '../types'
@@ -31,6 +32,16 @@ export const sidebarData: SidebarData = {
           title: 'Dashboard',
           url: '/',
           icon: IconLayoutDashboard,
+        },
+      ],
+    },
+    {
+      title: 'Website Management',
+      items: [
+        {
+          title: 'Content Sections',
+          icon: IconFileText,
+          url: '/content',
         },
       ],
     },
