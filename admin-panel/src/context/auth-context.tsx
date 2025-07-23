@@ -27,11 +27,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Login function
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await API.post<{ accessToken: string }>('/auth/login', { email, password });
-      const { accessToken } = response.data;
+      const response = await API.post<{ access_token: string, refresh_token: string, expires_at: string, user: User }>('/auth/login', { email, password });
+      const { access_token, refresh_token, expires_at, user } = response.data;
       
-      if (accessToken) {
-        auth.setAccessToken(accessToken);
+      if (access_token && refresh_token && expires_at) {
+        auth.setTokens(access_token, refresh_token, expires_at);
+        auth.setUser(user);
         return true;
       }
       

@@ -34,7 +34,7 @@ export const AuthService = {
 
   // Legacy method for backward compatibility
   loginLegacy: async (credentials: LoginRequest): Promise<AuthResponse> => {
-    const loginResponse = await this.login(credentials);
+    const loginResponse = await AuthService.login(credentials);
     return {
       accessToken: loginResponse.access_token,
       refreshToken: loginResponse.refresh_token,

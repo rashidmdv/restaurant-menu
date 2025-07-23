@@ -4,6 +4,7 @@ export interface User {
   name: string;
   role: UserRole;
   is_active: boolean;
+  avatar?: string;
   last_login_at?: string;
   created_at: string;
   updated_at: string;
