@@ -248,6 +248,16 @@ docker-seed-clear: ## Clear seeded data using Docker container
 	@echo "$(YELLOW)Clearing seeded data in Docker container...$(NC)"
 	docker compose exec backend ./seed -action=clear
 
+.PHONY: docker-migrate
+docker-migrate: ## Run database migrations using Docker container
+	@echo "$(GREEN)Running database migrations in Docker container...$(NC)"
+	docker compose exec backend ./migrate -command=up
+
+.PHONY: docker-migrate-down
+docker-migrate-down: ## Rollback database migrations using Docker container
+	@echo "$(YELLOW)Rolling back database migrations in Docker container...$(NC)"
+	docker compose exec backend ./migrate -command=down
+
 .PHONY: db-reset
 db-reset: ## Reset database (drop and recreate with migrations)
 	@echo "$(YELLOW)Resetting database...$(NC)"

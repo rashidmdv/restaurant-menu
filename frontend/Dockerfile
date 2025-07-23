@@ -18,6 +18,9 @@ RUN pnpm install
 # Copy source code and change ownership
 COPY --chown=nextjs:nodejs . .
 
+# Create .next directory with proper permissions
+RUN mkdir -p .next && chown -R nextjs:nodejs .next
+
 # Switch to non-root user
 USER nextjs
 
