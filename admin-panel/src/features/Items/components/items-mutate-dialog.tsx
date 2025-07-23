@@ -175,7 +175,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         expires_in: '15'
       })
       
-      presignedResponse = await API.get(`/v1/upload/presigned-url?${params}`)
+      presignedResponse = await API.get(`/api/v1/upload/presigned-url?${params}`)
     }
 
     const uploadUrl = presignedResponse.data.data?.url || presignedResponse.data.url
@@ -221,7 +221,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       const key = url.pathname.substring(1) // Remove leading slash
       
       if (key) {
-        await API.delete(`/v1/upload/image/${encodeURIComponent(key)}`)
+        await API.delete(`/api/v1/upload/image/${encodeURIComponent(key)}`)
       }
     } catch {
       // Ignore cleanup errors - don't fail the form submission
