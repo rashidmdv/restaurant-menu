@@ -32,16 +32,12 @@ export interface PriceDistribution {
   percentage: number
 }
 
-export class DashboardService {
-  private static baseUrl = 'http://127.0.0.1:8000/api/v1/dashboard'
+import { API } from '@/lib/api'
 
+export class DashboardService {
   static async getDashboardStats(): Promise<DashboardStats> {
-    const response = await fetch(`${this.baseUrl}/stats`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch dashboard stats')
-    }
-    const data = await response.json()
-    const stats = data.data
+    const response = await API.get('/v1/dashboard/stats')
+    const stats = response.data.data
     
     // Transform backend snake_case to frontend camelCase
     return {
@@ -57,14 +53,10 @@ export class DashboardService {
   }
 
   static async getRecentActivity(): Promise<RecentActivity[]> {
-    const response = await fetch(`${this.baseUrl}/activity`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch recent activity')
-    }
-    const data = await response.json()
+    const response = await API.get('/v1/dashboard/activity')
     
     // Transform backend snake_case to frontend camelCase
-    return data.data.map((activity: any) => ({
+    return response.data.data.map((activity: any) => ({
       id: activity.id,
       type: activity.type,
       name: activity.name,
@@ -75,14 +67,10 @@ export class DashboardService {
   }
 
   static async getCategoryStats(): Promise<CategoryStats[]> {
-    const response = await fetch(`${this.baseUrl}/categories`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch category stats')
-    }
-    const data = await response.json()
+    const response = await API.get('/v1/dashboard/categories')
     
     // Transform backend snake_case to frontend camelCase
-    return data.data.map((category: any) => ({
+    return response.data.data.map((category: any) => ({
       id: category.id,
       name: category.name,
       itemCount: category.item_count,
@@ -92,23 +80,15 @@ export class DashboardService {
   }
 
   static async getPriceDistribution(): Promise<PriceDistribution[]> {
-    const response = await fetch(`${this.baseUrl}/price-distribution`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch price distribution')
-    }
-    const data = await response.json()
-    return data.data
+    const response = await API.get('/v1/dashboard/price-distribution')
+    return response.data.data
   }
 
   static async getWeeklyItemsChart(): Promise<{ name: string; items: number }[]> {
-    const response = await fetch(`${this.baseUrl}/weekly-items`)
-    if (!response.ok) {
-      throw new Error('Failed to fetch weekly items data')
-    }
-    const data = await response.json()
+    const response = await API.get('/v1/dashboard/weekly-items')
     
     // Transform backend format to frontend expected format
-    return data.data.map((item: any) => ({
+    return response.data.data.map((item: any) => ({
       name: item.day,
       items: item.count
     }))

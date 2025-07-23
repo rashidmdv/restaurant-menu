@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { API } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -157,20 +158,16 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     const fileName = generateFileName(file)
     
     // Get presigned URL - trying POST first, then GET as fallback
-    let presignedResponse: Response
+    let presignedResponse
     
     try {
       // Try POST method first (most likely correct)
-      presignedResponse = await fetch('http://127.0.0.1:8000/api/v1/upload/presigned-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: fileName,
-          content_type: file.type,
-          expires_in: 15
-        })
+      presignedResponse = await API.post('/v1/upload/presigned-url', {
+        key: fileName,
+        content_type: file.type,
+        expires_in: 15
       })
-    } catch (error) {
+    } catch (_error) {
       // Fallback to GET method if POST fails
       const params = new URLSearchParams({
         key: fileName,
@@ -178,18 +175,10 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
         expires_in: '15'
       })
       
-      presignedResponse = await fetch(`http://127.0.0.1:8000/api/v1/upload/presigned-url?${params}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      })
+      presignedResponse = await API.get(`/v1/upload/presigned-url?${params}`)
     }
 
-    if (!presignedResponse.ok) {
-      throw new Error('Failed to get upload URL')
-    }
-
-    const responseData = await presignedResponse.json()
-    const uploadUrl = responseData.data?.url || responseData.url
+    const uploadUrl = presignedResponse.data.data?.url || presignedResponse.data.url
 
     if (!uploadUrl) {
       throw new Error('Invalid response from presigned URL endpoint')
@@ -232,9 +221,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       const key = url.pathname.substring(1) // Remove leading slash
       
       if (key) {
-        await fetch(`http://127.0.0.1:8000/api/v1/upload/image/${encodeURIComponent(key)}`, {
-          method: 'DELETE',
-        })
+        await API.delete(`/v1/upload/image/${encodeURIComponent(key)}`)
       }
     } catch {
       // Ignore cleanup errors - don't fail the form submission
