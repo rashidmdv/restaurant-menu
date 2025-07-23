@@ -53,7 +53,7 @@ gcloud services enable compute.googleapis.com
 ```bash
 # Create the VM instance
 gcloud compute instances create restaurant-menu-vm \
-  --zone=us-central1-a \
+  --zone=asia-south1-c \
   --machine-type=e2-medium \
   --boot-disk-size=20GB \
   --boot-disk-type=pd-ssd \
@@ -94,7 +94,7 @@ gcloud compute addresses describe restaurant-menu-ip \
 
 # Assign to VM
 gcloud compute instances add-access-config restaurant-menu-vm \
-  --zone=us-central1-a \
+  --zone=asia-south1-c \
   --access-config-name="external-nat" \
   --address=RESERVED_IP_ADDRESS
 ```
@@ -105,7 +105,7 @@ gcloud compute instances add-access-config restaurant-menu-vm \
 
 ```bash
 # SSH into the VM
-gcloud compute ssh restaurant-menu-vm --zone=us-central1-a
+gcloud compute ssh restaurant-menu-vm --zone=asia-south1-c
 ```
 
 ### Step 2: Install Dependencies
@@ -130,7 +130,7 @@ sudo apt install -y git nginx certbot python3-certbot-nginx
 
 # Logout and reconnect for group changes
 exit
-gcloud compute ssh restaurant-menu-vm --zone=us-central1-a
+gcloud compute ssh restaurant-menu-vm --zone=asia-south1-c
 ```
 
 ### Step 3: Clone and Setup Project
@@ -142,7 +142,7 @@ cd restaurant-menu
 
 # Or upload from local machine:
 # From your local machine, run:
-# gcloud compute scp --recurse /path/to/restaurant-menu restaurant-menu-vm:~/ --zone=us-central1-a
+# gcloud compute scp --recurse /path/to/restaurant-menu restaurant-menu-vm:~/ --zone=asia-south1-c
 ```
 
 ### Step 4: Configure Environment
@@ -158,7 +158,7 @@ openssl rand -base64 32 > secrets/redis_password.txt
 # Create GCP Service Account and download key
 # (Do this in GCP Console, then upload the JSON file)
 # Upload service account key:
-# gcloud compute scp gcp-service-account.json restaurant-menu-vm:~/restaurant-menu/secrets/ --zone=us-central1-a
+# gcloud compute scp gcp-service-account.json restaurant-menu-vm:~/restaurant-menu/secrets/ --zone=asia-south1-c
 ```
 
 ### Step 5: Configure Production Environment
