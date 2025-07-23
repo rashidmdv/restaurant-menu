@@ -82,7 +82,7 @@ export function ItemsMutateDrawer({ open, onOpenChange, currentRow }: Props) {
     display_order: 0,
   }
 
-  const form = useForm<ItemForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues,
   })

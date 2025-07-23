@@ -3,17 +3,11 @@ import {
   Utensils,
   BookOpen,
   Grid3x3,
-  Eye,
-  TrendingUp,
   Clock,
   DollarSign,
   Activity,
-  Plus,
   RefreshCw,
   MoreVertical,
-  ChefHat,
-  Star,
-  AlertCircle,
 } from 'lucide-react'
 import {
   Area,
@@ -39,14 +33,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
 import { TopNav } from '@/components/layout/top-nav'
@@ -418,7 +404,7 @@ export default function Dashboard() {
                       fill='#8884d8'
                       dataKey='count'
                     >
-                      {priceDistribution.map((entry, index) => (
+                      {priceDistribution.map((_entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -506,7 +492,7 @@ export default function Dashboard() {
   )
 }
 
-const topNav = [
+const topNav: Array<{title: string; href: string; isActive: boolean; disabled: boolean}> = [
   // {
   //   title: 'Dashboard',
   //   href: '/',

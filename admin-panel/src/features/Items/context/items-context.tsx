@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Item, CreateItem, UpdateItem } from '../data/schema'
-import { ItemService, ItemFilters, SubCategory } from '@/services/item-service'
+import { ItemService, ItemFilters, SubCategory, PaginatedResponse, Item as ServiceItem } from '@/services/item-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type ItemDialogType = 'create' | 'update' | 'delete' | 'details'
@@ -64,10 +64,10 @@ export default function ItemsProvider({ children }: Props) {
     isLoading,
     isError,
     refetch: refreshItems,
-  } = useQuery({
+  } = useQuery<PaginatedResponse<ServiceItem>>({
     queryKey: ['items', filters],
     queryFn: () => ItemService.getItemsPaginated(filters),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   })
 
   // Fetch subcategories for dropdown

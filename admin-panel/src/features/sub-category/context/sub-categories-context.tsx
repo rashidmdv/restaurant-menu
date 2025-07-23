@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
 import { SubCategory, CreateSubCategory, UpdateSubCategory } from '../data/schema'
-import { SubCategoryService, SubCategoryFilters, Category } from '@/services/sub-category-service'
+import { SubCategoryService, SubCategoryFilters, Category, PaginatedResponse, SubCategory as SubCategoryType } from '@/services/sub-category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type SubCategoryDialogType = 'create' | 'update' | 'delete' | 'details'
@@ -64,10 +64,10 @@ export default function SubCategoriesProvider({ children }: Props) {
     isLoading,
     isError,
     refetch: refreshSubCategories,
-  } = useQuery({
+  } = useQuery<PaginatedResponse<SubCategoryType>>({
     queryKey: ['sub-categories', filters],
     queryFn: () => SubCategoryService.getSubCategoriesPaginated(filters),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   })
 
   // Fetch categories for dropdown

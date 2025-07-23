@@ -26,7 +26,7 @@ export function SubCategoriesDialogs() {
     }
   }, [currentRow, deleteSubCategory, setOpen, setCurrentRow])
 
-  const handleDialogClose = useCallback((type: string) => {
+  const handleDialogClose = useCallback((_type: string) => {
     return () => {
       setOpen(null)
       // Use a timeout to ensure the dialog is closed before clearing the row

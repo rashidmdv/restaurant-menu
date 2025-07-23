@@ -33,8 +33,8 @@ import { ImageUploadField } from '@/components/ui/image-upload-field'
 import { Item } from '../data/schema'
 import { useItems } from '../context/items-context'
 import { ItemService } from '@/services/item-service'
-import { useState, useEffect, useRef } from 'react'
-import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+// import { Upload, X, Image as ImageIcon } from 'lucide-react'
 
 interface Props {
   open: boolean
@@ -46,12 +46,12 @@ const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(150, "Name too long"),
   description: z.string().optional(),
   price: z.number().min(0, "Price must be positive"),
-  currency: z.string().optional().default("AED"),
-  dietary_info: z.record(z.any()).optional().default({}),
+  currency: z.string().default("AED"),
+  dietary_info: z.record(z.any()).default({}),
   image_url: z.string().optional(),
   sub_category_id: z.number({ required_error: "Sub-category is required" }),
-  available: z.boolean().optional().default(true),
-  display_order: z.number().optional().default(0),
+  available: z.boolean().default(true),
+  display_order: z.number().default(0),
 })
 
 type ItemForm = z.infer<typeof formSchema>
@@ -60,8 +60,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string>('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [_previewUrl, setPreviewUrl] = useState<string>('')
   const { createItem, updateItem, subcategories, subcategoriesLoading } = useItems()
   const isUpdate = !!currentRow
 
@@ -87,7 +86,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     display_order: 0,
   }
 
-  const form = useForm<ItemForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
@@ -125,7 +124,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     }
   }, [currentRow, form])
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  /* const _handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
@@ -145,7 +144,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
       }
       reader.readAsDataURL(file)
     }
-  }
+  } */
 
   const generateFileName = (file: File): string => {
     const timestamp = Date.now()
@@ -218,14 +217,12 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
     return await uploadFileWithPresignedUrl(file)
   }
 
-  const removeImage = () => {
+  /* const _removeImage = () => {
     setSelectedFile(null)
     setPreviewUrl('')
     form.setValue('image_url', '')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
+    // fileInputRef.current.value = ''
+  } */
 
   const deleteUploadedImage = async (imageUrl: string) => {
     try {

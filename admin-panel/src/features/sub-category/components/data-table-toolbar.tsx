@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 
 import { Input } from "@/components/ui/input"
 import { Table } from "@tanstack/react-table"
-import { VehicleStatus, VehicleType } from "../data/schema"
 import { useSubCategories } from "../context/sub-categories-context"
 import { useDebounce } from "@/hooks/use-debounce"
 import {
@@ -25,7 +24,7 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const { subcategories, filters, setFilters, refreshSubCategories } = useSubCategories()
+  const { /* subcategories, */ filters, setFilters, refreshSubCategories } = useSubCategories()
   const [searchValue, setSearchValue] = useState<string>("")
   const debouncedSearchValue = useDebounce(searchValue, 300)
   const [activeStatus, setActiveStatus] = useState<string>(filters.active === true ? "active" : 
@@ -102,11 +101,11 @@ export function DataTableToolbar<TData>({
     setSearchValue(value)
   }
   
-  // Generate category options from available categories
-  const subcategoryOptions = subcategories.map(subcategory => ({
-    value: subcategory.id,
-    label: subcategory.name,
-  }))
+  // Generate category options from available categories (currently unused)
+  // const _subcategoryOptions = subcategories.map(subcategory => ({
+  //   value: subcategory.id,
+  //   label: subcategory.name,
+  // }))
   
   // Reset all filters
   const handleResetFilters = () => {

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Category, CreateCategory, UpdateCategory } from '../data/schema'
-import { CategoryService, CategoryFilters, Pagination } from '@/services/category-service'
+import { CategoryService, CategoryFilters } from '@/services/category-service'
 import { handleServerError } from '@/utils/handle-server-error'
 
 type CategoryDialogType = 'create' | 'update' | 'delete' | 'details'

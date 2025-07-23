@@ -76,7 +76,7 @@ export function SubCategoriesMutateDialog({ open, onOpenChange, currentRow }: Pr
     }
   }
 
-  const form = useForm<SubCategoryForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   })

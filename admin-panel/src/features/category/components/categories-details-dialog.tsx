@@ -18,24 +18,18 @@ import {
 } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Category } from '../data/schema'
-import { cn } from '@/lib/utils'
 import { useCategories } from '../context/categories-context'
 import { useQuery } from '@tanstack/react-query'
 import { CategoryService } from '@/services/category-service'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useState } from 'react'
-
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow: Category
 }
 
-
-
 export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Props) {
-  const { setOpen, categories } = useCategories();
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const { setOpen } = useCategories();
   
   // Fetch category details directly from API to get latest data
   const {
@@ -55,16 +49,6 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
 
   
   return (
-    <>
-      <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
-        <DialogContent className="max-w-3xl">
-          <img
-            src={previewImage || ""}
-            alt="Preview"
-            className="w-full h-auto max-h-[80vh] object-contain rounded"
-          />
-        </DialogContent>
-      </Dialog>
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
@@ -103,21 +87,6 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
             </div>
           ) : (
             <>
-              {category.image && (
-                <div className="rounded-md overflow-hidden h-48 bg-muted flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() => setPreviewImage(category.image)}
-                >
-                  <img
-                    src={category.image}
-                    alt={category.name} 
-                    className="max-h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x200?text=No+Image";
-                    }}
-                  />
-                </div>
-              )}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center">
@@ -134,7 +103,7 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
               </div>
               <Separator />
 
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <div className="flex items-center">
                   <IconFileDescription className="h-4 w-4 mr-2 text-muted-foreground" />
                   <span className="font-medium">Description:</span>
@@ -142,15 +111,13 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
                 <p className="text-sm text-muted-foreground pl-6">
                   {category.description || 'No description available.'}
                 </p>
-                </div>
-
-              
+              </div>
 
               <div className="flex flex-wrap gap-2">
                 <div className="flex items-center">
                   <span className="font-medium mr-2">Active Status:</span>
-                  <Badge variant={category.isActive ? 'default' : 'destructive'}>
-                    {category.isActive ? 'Active' : 'Inactive'}
+                  <Badge variant={category.active ? 'default' : 'destructive'}>
+                    {category.active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </div>
@@ -178,6 +145,5 @@ export function CategoriesDetailsDialog({ open, onOpenChange, currentRow }: Prop
         </DialogFooter>
       </DialogContent>
     </Dialog>
-    </>
   )
 }

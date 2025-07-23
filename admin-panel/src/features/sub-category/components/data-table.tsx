@@ -39,7 +39,7 @@ export function DataTable<TData, TValue>({
     pagination, 
     filters, 
     setFilters,
-    refreshSubCategories
+    // refreshSubCategories // Unused
   } = useSubCategories()
 
   const [rowSelection, setRowSelection] = React.useState({})
@@ -55,7 +55,7 @@ export function DataTable<TData, TValue>({
 
   // Use a ref to track if this is an initial render
   const isInitialRender = React.useRef(true)
-  const filterTimeoutRef = React.useRef<NodeJS.Timeout>()
+  const filterTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   // When a column filter changes, update the API filters
   React.useEffect(() => {

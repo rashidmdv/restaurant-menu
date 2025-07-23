@@ -20,7 +20,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { ContentSection } from '../data/schema'
 import { columns } from './columns'
 import { useContentContext } from '../context/content-context'
 import { ContentTableToolbar } from './content-table-toolbar'

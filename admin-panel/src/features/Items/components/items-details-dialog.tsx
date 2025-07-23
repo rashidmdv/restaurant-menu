@@ -5,7 +5,6 @@ import {
   IconCalendar,
   IconCar,
   IconBrandToyota,
-  IconPhoto,
   IconId,
   IconFileDescription,
 } from '@tabler/icons-react'

@@ -62,7 +62,7 @@ export function subcategoriesMutateDrawer({ open, onOpenChange, currentRow }: Pr
     active: true,
   }
 
-  const form = useForm<SubCategoryForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues,
   })
@@ -159,10 +159,9 @@ export function subcategoriesMutateDrawer({ open, onOpenChange, currentRow }: Pr
                       <FormLabel>Category</FormLabel>
                       <FormControl>
                         <SelectDropdown 
-                          {...field}
-                          value={field.value?.toString() || ''}
+                          defaultValue={field.value?.toString() || ''}
                           onValueChange={(value) => field.onChange(parseInt(value))}
-                          options={categories.map(cat => ({
+                          items={categories.map(cat => ({
                             value: cat.id.toString(),
                             label: cat.name,
                           }))}

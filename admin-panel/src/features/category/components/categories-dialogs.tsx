@@ -26,14 +26,12 @@ export function CategoriesDialogs() {
     }
   }, [currentRow, deleteCategory, setOpen, setCurrentRow])
   
-  const handleDialogClose = useCallback((type: string) => {
-    return () => {
-      setOpen(null)
-      // Use a timeout to ensure the dialog is closed before clearing the row
-      setTimeout(() => {
-        setCurrentRow(null)
-      }, 300)
-    }
+  const handleDialogClose = useCallback(() => {
+    setOpen(null)
+    // Use a timeout to ensure the dialog is closed before clearing the row
+    setTimeout(() => {
+      setCurrentRow(null)
+    }, 300)
   }, [setOpen, setCurrentRow])
   
   // Return null if no dialog is open and no current row
@@ -61,7 +59,7 @@ export function CategoriesDialogs() {
             <CategoriesDetailsDialog
               key={`category-details-${currentRow.id}`}
               open={true}
-              onOpenChange={handleDialogClose('details')}
+              onOpenChange={handleDialogClose}
               currentRow={currentRow}
             />
           )}
@@ -71,7 +69,7 @@ export function CategoriesDialogs() {
             <CategoriesMutateDialog
               key={`category-update-${currentRow.id}`}
               open={true}
-              onOpenChange={handleDialogClose('update')}
+              onOpenChange={handleDialogClose}
               currentRow={currentRow}
             />
           )}

@@ -51,7 +51,7 @@ export function handleApiError(error: unknown, defaultMessage: string = 'Somethi
       errorMessage = 'This operation cannot be completed due to a conflict.'
     } else if (response?.status === 422) {
       errorMessage = 'Validation failed. Please check your input and try again.'
-    } else if (response?.status >= 500) {
+    } else if (response?.status && response.status >= 500) {
       errorMessage = 'Server error. Please try again later.'
     }
   }

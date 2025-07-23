@@ -19,14 +19,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { SelectDropdown } from '@/components/select-dropdown'
 import { Category } from '../data/schema'
 import { useCategories } from '../context/categories-context'
-import { CategoryService } from '@/services/category-service'
 
 interface Props {
   open: boolean
@@ -70,7 +67,7 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
     }
   }
 
-  const form = useForm<CategoryForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: getDefaultValues(),
   })

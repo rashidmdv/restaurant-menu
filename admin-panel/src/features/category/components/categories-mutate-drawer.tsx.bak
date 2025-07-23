@@ -23,13 +23,13 @@ import {
 } from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { CatalogCategory } from '../data/schema'
+import { Category } from '../data/schema'
 import { useState } from 'react'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  currentRow?: CatalogCategory
+  currentRow?: Category
 }
 
 const formSchema = z.object({
@@ -63,7 +63,7 @@ export function categoriesMutateDrawer({ open, onOpenChange, currentRow }: Props
     
   }
 
-  const form = useForm<CatalogCategoryForm>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues,
   })

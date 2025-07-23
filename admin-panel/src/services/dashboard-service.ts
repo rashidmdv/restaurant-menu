@@ -1,5 +1,3 @@
-import { ApiService } from '@/lib/api'
-
 export interface DashboardStats {
   totalCategories: number
   totalSubCategories: number

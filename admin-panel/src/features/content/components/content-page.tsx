@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import { ContentProvider, useContentContext } from '../context/content-context'
 import { ContentDataTable } from './content-data-table'
 import { ContentDetailsDialog } from './content-details-dialog'
-import { ContentMutateDialog } from './content-mutate-dialog'
+// import { ContentMutateDialog } from './content-mutate-dialog' // Temporarily disabled
 import { ContentDeleteDialog } from './content-delete-dialog'
+import { ContentMutateDialog } from './content-mutate-dialog'
 
 function ContentPageContent() {
   const { fetchContent } = useContentContext()

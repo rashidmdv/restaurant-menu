@@ -28,15 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 
 import { useContentContext } from '../context/content-context'
 import { 
   CreateContentRequest, 
   UpdateContentRequest, 
-  createContentSchema,
-  updateContentSchema 
+  createContentSchema
 } from '../data/schema'
 import { CONTENT_SECTION_TYPES } from '../data/schema'
 
@@ -53,15 +51,14 @@ export function ContentMutateDialog() {
   const isEditing = !!selectedContent
 
   // Use create schema for new content, update schema for editing
-  const form = useForm<CreateContentRequest | UpdateContentRequest>({
-    resolver: zodResolver(isEditing ? updateContentSchema : createContentSchema),
+  const form = useForm({
+    resolver: zodResolver(createContentSchema),
     defaultValues: {
       section_name: '',
       title: '',
       content: '',
       image_url: '',
       metadata: {},
-      ...(isEditing && { active: true }),
     },
   })
 
@@ -76,7 +73,6 @@ export function ContentMutateDialog() {
           content: selectedContent.content,
           image_url: selectedContent.image_url,
           metadata: selectedContent.metadata,
-          active: selectedContent.active,
         })
       } else {
         // Create mode - reset to defaults
@@ -100,7 +96,7 @@ export function ContentMutateDialog() {
       } else {
         await createContent(data as CreateContentRequest)
       }
-    } catch (error) {
+    } catch (_error) {
       // Error is handled in context
     } finally {
       setIsSubmitting(false)
@@ -161,28 +157,7 @@ export function ContentMutateDialog() {
                   )}
                 />
 
-                {isEditing && (
-                  <FormField
-                    control={form.control}
-                    name='active'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>Active Status</FormLabel>
-                          <FormDescription>
-                            Enable or disable this content section
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                )}
+                {/* Active field removed as it's not in the schema */}
               </div>
 
               <FormField

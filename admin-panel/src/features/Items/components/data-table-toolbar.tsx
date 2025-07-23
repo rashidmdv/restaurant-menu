@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import { Input } from "@/components/ui/input"
 import { Table } from "@tanstack/react-table"
-import { Item } from "../data/schema"
 import { useItems } from "../context/items-context"
 import { useDebounce } from "@/hooks/use-debounce"
 import {
@@ -16,17 +15,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// Status options for availability
-const statusOptions = [
-  {
-    value: 'true',
-    label: 'Available',
-  },
-  {
-    value: 'false',
-    label: 'Unavailable',
-  },
-]
+// Status options for availability - commented out as unused
+// const statusOptions = [
+//   {
+//     value: 'true',
+//     label: 'Available',
+//   },
+//   {
+//     value: 'false',
+//     label: 'Unavailable',
+//   },
+// ]
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>

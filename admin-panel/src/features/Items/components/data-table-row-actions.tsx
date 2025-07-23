@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useItems } from '../context/items-context'
-import { CatalogItem } from '../data/schema'
+import type { Item } from '../data/schema'
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -21,7 +21,7 @@ export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
   // Parse the original data with safer approach
-  const original = row.original as unknown as CatalogItem
+  const original = row.original as unknown as Item
   const { setOpen, setCurrentRow } = useItems()
 
   return (

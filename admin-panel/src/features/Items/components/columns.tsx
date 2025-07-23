@@ -77,7 +77,7 @@ export const columns: ColumnDef<Item>[] = [
       
       return <span>{subCategoryName}</span>
     },
-    filterFn: (row, id, value) => {
+    filterFn: (row, _id, value) => {
       return value.includes(row.original.sub_category_id.toString())
     },
   },

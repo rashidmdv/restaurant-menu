@@ -1,12 +1,9 @@
 import { format } from 'date-fns'
 import { 
-  IconCalendar, 
-  IconCar,
   IconCategory,
-  IconPhoto,  
-  IconId,
   IconHierarchy,
   IconFileDescription,
+  IconId,
 } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -22,7 +19,6 @@ import {
 } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { SubCategory } from '../data/schema'
-import { cn } from '@/lib/utils'
 import { useSubCategories } from '../context/sub-categories-context'
 import { useQuery } from '@tanstack/react-query'
 import { SubCategoryService } from '@/services/sub-category-service'
