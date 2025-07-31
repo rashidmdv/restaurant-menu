@@ -24,6 +24,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Category } from '../data/schema'
 import { useCategories } from '../context/categories-context'
+import { handleFormError, showFormSuccess } from '@/utils/form-validation-handler'
 
 interface Props {
   open: boolean
@@ -91,12 +92,12 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
     try {
       setLoading(true)
       
-      console.log('Payload to API:', data)
-      
       if (isUpdate && currentRow) {
         await updateCategory(currentRow.id, data)
+        showFormSuccess('updated', 'category')
       } else {
         await createCategory(data)
+        showFormSuccess('created', 'category')
       }
       
       // Close dialog first
@@ -107,7 +108,11 @@ export function CategoriesMutateDialog({ open, onOpenChange, currentRow }: Props
         form.reset()
       }, 100)
     } catch (error) {
-      console.error('Error submitting form:', error)
+      handleFormError(
+        error,
+        form,
+        isUpdate ? 'updating category' : 'creating category'
+      )
     } finally {
       setLoading(false)
     }

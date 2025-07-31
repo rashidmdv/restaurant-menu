@@ -46,11 +46,17 @@ interface Props {
 const formSchema = z.object({
   name: z.string().min(1, "Name is required").max(150, "Name too long"),
   description: z.string().optional(),
-  price: z.number().min(0, "Price must be positive"),
+  price: z.number({
+    required_error: "Price is required",
+    invalid_type_error: "Price must be a valid number",
+  }).min(0.01, "Price must be greater than 0").max(9999.99, "Price cannot exceed 9999.99"),
   currency: z.string().default("AED"),
   dietary_info: z.record(z.any()).default({}),
   image_url: z.string().optional(),
-  sub_category_id: z.number({ required_error: "Sub-category is required" }),
+  sub_category_id: z.number({
+    required_error: "Sub-category is required",
+    invalid_type_error: "Please select a valid sub-category",
+  }).positive("Please select a valid sub-category"),
   available: z.boolean().default(true),
   display_order: z.number().default(0),
 })
@@ -323,7 +329,7 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Item Name</FormLabel>
+                    <FormLabel>Item Name *</FormLabel>
                     <FormControl>
                       <Input {...field} placeholder="e.g. Spaghetti Carbonara" />
                     </FormControl>
@@ -356,15 +362,15 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
+                      <FormLabel>Price *</FormLabel>
                       <FormControl>
                         <Input 
                           type="number"
                           step="0.01"
                           {...field}
-                          value={field.value || 0}
+                          value={field.value || ''}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                          placeholder="0.00"
+                          placeholder="Enter price (required)"
                         />
                       </FormControl>
                       <FormMessage />
@@ -387,6 +393,9 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                             <SelectItem value="AED">AED</SelectItem>
                             <SelectItem value="USD">USD</SelectItem>
                             <SelectItem value="EUR">EUR</SelectItem>
+                            <SelectItem value="GBP">GBP</SelectItem>
+                            <SelectItem value="SAR">SAR</SelectItem>
+                            <SelectItem value="QAR">QAR</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -401,15 +410,15 @@ export function ItemsMutateDialog({ open, onOpenChange, currentRow }: Props) {
                 name="sub_category_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sub-Category</FormLabel>
+                    <FormLabel>Sub-Category *</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value?.toString() || ''}
-                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        onValueChange={(value) => field.onChange(parseInt(value) || 0)}
                         disabled={subcategoriesLoading}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder={subcategoriesLoading ? "Loading..." : "Select sub-category"} />
+                          <SelectValue placeholder={subcategoriesLoading ? "Loading..." : "Select sub-category (required)"} />
                         </SelectTrigger>
                         <SelectContent>
                           {subcategories.map(subcategory => (

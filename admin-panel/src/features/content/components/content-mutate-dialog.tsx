@@ -37,6 +37,7 @@ import {
   createContentSchema
 } from '../data/schema'
 import { CONTENT_SECTION_TYPES } from '../data/schema'
+import { handleFormError, showFormSuccess } from '@/utils/form-validation-handler'
 
 export function ContentMutateDialog() {
   const { 
@@ -93,11 +94,17 @@ export function ContentMutateDialog() {
       
       if (isEditing && selectedContent) {
         await updateContent(selectedContent.id, data as UpdateContentRequest)
+        showFormSuccess('updated', 'content section')
       } else {
         await createContent(data as CreateContentRequest)
+        showFormSuccess('created', 'content section')
       }
-    } catch (_error) {
-      // Error is handled in context
+    } catch (error) {
+      handleFormError(
+        error,
+        form,
+        isEditing ? 'updating content section' : 'creating content section'
+      )
     } finally {
       setIsSubmitting(false)
     }
