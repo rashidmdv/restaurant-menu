@@ -53,10 +53,24 @@ export default function ItemsProvider({ children }: Props) {
   const [filters, setFilters] = useState<ItemFilters>({
     limit: 10,
     offset: 0,
+    page: 1, // Add page to sync with pagination
   })
 
   const queryClient = useQueryClient()
   const didMountRef = useRef(false)
+
+  // Sync filters offset when page or limit changes
+  useEffect(() => {
+    const page = filters.page || 1
+    const limit = filters.limit || 10
+    const newOffset = (page - 1) * limit
+    if (filters.offset !== newOffset) {
+      setFilters(prev => ({
+        ...prev,
+        offset: newOffset,
+      }))
+    }
+  }, [filters.page, filters.limit, filters.offset])
 
   // Fetch items (paginated)
   const {

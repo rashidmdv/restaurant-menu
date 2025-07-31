@@ -73,9 +73,10 @@ export function DataTable<TData, TValue>({
     filterTimeoutRef.current = setTimeout(() => {
       // Process column filters to API filters
       const apiFilters: Record<string, any> = {
-        // Keep pagination
+        // Keep pagination - use current pagination values
         limit: filters.limit,
-        offset: ((filters.page || 1) - 1) * (filters.limit || 10)
+        offset: filters.offset,
+        page: filters.page
       }
 
       // Map column filters to API filters
@@ -114,7 +115,7 @@ export function DataTable<TData, TValue>({
         clearTimeout(filterTimeoutRef.current)
       }
     }
-  }, [columnFilters, filters.page, filters.limit, setFilters])
+  }, [columnFilters, filters.offset, filters.limit, filters.page, setFilters])
 
   // Update pagination state
   const onPaginationChange = React.useCallback((page: number, limit: number) => {
