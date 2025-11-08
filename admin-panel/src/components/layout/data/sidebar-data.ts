@@ -9,8 +9,8 @@ import {
   IconFileText,
   IconCalendarEvent,
 } from '@tabler/icons-react'
-import SpareitLogo from '@/components/icons/spareit-logo'
 import { type SidebarData } from '../types'
+import LomaLogo from '@/components/icons/loma-logo'
 
 export const sidebarData: SidebarData = {
   user: {
@@ -21,7 +21,7 @@ export const sidebarData: SidebarData = {
   teams: [
     {
       name: 'Loma',
-      logo: SpareitLogo,
+      logo: LomaLogo,
       plan: 'Admin Panel',
     },
   ],
