@@ -26,6 +26,7 @@ import { Route as authForgotPasswordImport } from './routes/(auth)/forgot-passwo
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings/route'
 import { Route as AuthenticatedSubCategoryIndexImport } from './routes/_authenticated/sub-category/index'
 import { Route as AuthenticatedSettingsIndexImport } from './routes/_authenticated/settings/index'
+import { Route as AuthenticatedReservationsIndexImport } from './routes/_authenticated/reservations/index'
 import { Route as AuthenticatedItemsIndexImport } from './routes/_authenticated/items/index'
 import { Route as AuthenticatedContentIndexImport } from './routes/_authenticated/content/index'
 import { Route as AuthenticatedCategoryIndexImport } from './routes/_authenticated/category/index'
@@ -126,6 +127,13 @@ const AuthenticatedSettingsIndexRoute = AuthenticatedSettingsIndexImport.update(
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any,
 )
+
+const AuthenticatedReservationsIndexRoute =
+  AuthenticatedReservationsIndexImport.update({
+    id: '/reservations/',
+    path: '/reservations/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 const AuthenticatedItemsIndexRoute = AuthenticatedItemsIndexImport.update({
   id: '/items/',
@@ -277,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedItemsIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/reservations/': {
+      id: '/_authenticated/reservations/'
+      path: '/reservations'
+      fullPath: '/reservations'
+      preLoaderRoute: typeof AuthenticatedReservationsIndexImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/': {
       id: '/_authenticated/settings/'
       path: '/'
@@ -318,6 +333,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCategoryIndexRoute: typeof AuthenticatedCategoryIndexRoute
   AuthenticatedContentIndexRoute: typeof AuthenticatedContentIndexRoute
   AuthenticatedItemsIndexRoute: typeof AuthenticatedItemsIndexRoute
+  AuthenticatedReservationsIndexRoute: typeof AuthenticatedReservationsIndexRoute
   AuthenticatedSubCategoryIndexRoute: typeof AuthenticatedSubCategoryIndexRoute
 }
 
@@ -327,6 +343,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCategoryIndexRoute: AuthenticatedCategoryIndexRoute,
   AuthenticatedContentIndexRoute: AuthenticatedContentIndexRoute,
   AuthenticatedItemsIndexRoute: AuthenticatedItemsIndexRoute,
+  AuthenticatedReservationsIndexRoute: AuthenticatedReservationsIndexRoute,
   AuthenticatedSubCategoryIndexRoute: AuthenticatedSubCategoryIndexRoute,
 }
 
@@ -351,6 +368,7 @@ export interface FileRoutesByFullPath {
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/content': typeof AuthenticatedContentIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
+  '/reservations': typeof AuthenticatedReservationsIndexRoute
   '/settings/': typeof AuthenticatedSettingsIndexRoute
   '/sub-category': typeof AuthenticatedSubCategoryIndexRoute
 }
@@ -371,6 +389,7 @@ export interface FileRoutesByTo {
   '/category': typeof AuthenticatedCategoryIndexRoute
   '/content': typeof AuthenticatedContentIndexRoute
   '/items': typeof AuthenticatedItemsIndexRoute
+  '/reservations': typeof AuthenticatedReservationsIndexRoute
   '/settings': typeof AuthenticatedSettingsIndexRoute
   '/sub-category': typeof AuthenticatedSubCategoryIndexRoute
 }
@@ -394,6 +413,7 @@ export interface FileRoutesById {
   '/_authenticated/category/': typeof AuthenticatedCategoryIndexRoute
   '/_authenticated/content/': typeof AuthenticatedContentIndexRoute
   '/_authenticated/items/': typeof AuthenticatedItemsIndexRoute
+  '/_authenticated/reservations/': typeof AuthenticatedReservationsIndexRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexRoute
   '/_authenticated/sub-category/': typeof AuthenticatedSubCategoryIndexRoute
 }
@@ -418,6 +438,7 @@ export interface FileRouteTypes {
     | '/category'
     | '/content'
     | '/items'
+    | '/reservations'
     | '/settings/'
     | '/sub-category'
   fileRoutesByTo: FileRoutesByTo
@@ -437,6 +458,7 @@ export interface FileRouteTypes {
     | '/category'
     | '/content'
     | '/items'
+    | '/reservations'
     | '/settings'
     | '/sub-category'
   id:
@@ -458,6 +480,7 @@ export interface FileRouteTypes {
     | '/_authenticated/category/'
     | '/_authenticated/content/'
     | '/_authenticated/items/'
+    | '/_authenticated/reservations/'
     | '/_authenticated/settings/'
     | '/_authenticated/sub-category/'
   fileRoutesById: FileRoutesById
@@ -522,6 +545,7 @@ export const routeTree = rootRoute
         "/_authenticated/category/",
         "/_authenticated/content/",
         "/_authenticated/items/",
+        "/_authenticated/reservations/",
         "/_authenticated/sub-category/"
       ]
     },
@@ -581,6 +605,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/items/": {
       "filePath": "_authenticated/items/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/reservations/": {
+      "filePath": "_authenticated/reservations/index.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/settings/": {

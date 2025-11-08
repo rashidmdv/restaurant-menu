@@ -7,6 +7,7 @@ import {
   IconHierarchy,
   IconChefHat,
   IconFileText,
+  IconCalendarEvent,
 } from '@tabler/icons-react'
 import SpareitLogo from '@/components/icons/spareit-logo'
 import { type SidebarData } from '../types'
@@ -62,6 +63,16 @@ export const sidebarData: SidebarData = {
           title: 'Menu Items',
           icon: IconChefHat,
           url: '/items',
+        },
+      ],
+    },
+    {
+      title: 'Reservations',
+      items: [
+        {
+          title: 'Table Reservations',
+          icon: IconCalendarEvent,
+          url: '/reservations',
         },
       ],
     },

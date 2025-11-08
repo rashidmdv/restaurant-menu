@@ -16,7 +16,7 @@ type Reservation struct {
 	FullName        string            `json:"full_name" gorm:"size:200;not null" validate:"required,min=2,max=200"`
 	Email           string            `json:"email" gorm:"size:255;not null" validate:"required,email"`
 	Phone           string            `json:"phone" gorm:"size:20;not null" validate:"required"`
-	ReservationDate string            `json:"reservation_date" gorm:"type:date;not null" validate:"required"`
+	ReservationDate CustomDate        `json:"reservation_date" gorm:"type:date;not null" validate:"required"`
 	ReservationTime string            `json:"reservation_time" gorm:"type:time;not null" validate:"required"`
 	NumberOfGuests  int               `json:"number_of_guests" gorm:"not null" validate:"required,min=1,max=20"`
 	SpecialRequests string            `json:"special_requests" gorm:"type:text"`

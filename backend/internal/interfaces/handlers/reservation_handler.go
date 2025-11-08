@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -45,11 +46,18 @@ func (h *ReservationHandler) CreateReservation(c *gin.Context) {
 		return
 	}
 
+	// Parse the date string to datatypes.Date
+	parsedDate, err := time.Parse("2006-01-02", req.ReservationDate)
+	if err != nil {
+		response.Error(c, appErrors.NewBadRequestError("Invalid date format. Use YYYY-MM-DD", err.Error()))
+		return
+	}
+
 	reservation := &entities.Reservation{
 		FullName:        req.FullName,
 		Email:           req.Email,
 		Phone:           req.Phone,
-		ReservationDate: req.ReservationDate,
+		ReservationDate: entities.CustomDate{Time: parsedDate},
 		ReservationTime: req.ReservationTime,
 		NumberOfGuests:  req.NumberOfGuests,
 		SpecialRequests: req.SpecialRequests,
@@ -224,7 +232,12 @@ func (h *ReservationHandler) UpdateReservation(c *gin.Context) {
 		reservation.Phone = *req.Phone
 	}
 	if req.ReservationDate != nil {
-		reservation.ReservationDate = *req.ReservationDate
+		parsedDate, err := time.Parse("2006-01-02", *req.ReservationDate)
+		if err != nil {
+			response.Error(c, appErrors.NewBadRequestError("Invalid date format. Use YYYY-MM-DD", err.Error()))
+			return
+		}
+		reservation.ReservationDate = entities.CustomDate{Time: parsedDate}
 	}
 	if req.ReservationTime != nil {
 		reservation.ReservationTime = *req.ReservationTime
