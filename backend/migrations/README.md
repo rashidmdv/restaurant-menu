@@ -10,15 +10,17 @@ The migration system uses [golang-migrate](https://github.com/golang-migrate/mig
 
 Migration files follow the format: `{version}_{name}.{direction}.sql`
 
-- `version`: 6-digit timestamp or sequential number (e.g., `000001`)
+- `version`: 14-digit DateTime timestamp in format YYYYMMDDHHMMSS (e.g., `20250108120000`)
 - `name`: Descriptive name of the migration (e.g., `initial_schema`)
 - `direction`: Either `up` (apply migration) or `down` (rollback migration)
 
 Examples:
-- `000001_initial_schema.up.sql`
-- `000001_initial_schema.down.sql`
-- `000002_add_user_table.up.sql`
-- `000002_add_user_table.down.sql`
+- `20250108100000_initial_schema.up.sql`
+- `20250108100000_initial_schema.down.sql`
+- `20250108110000_add_user_table.up.sql`
+- `20250108110000_add_user_table.down.sql`
+
+**Note**: Timestamps use local system time. The YYYYMMDDHHMMSS format ensures chronological ordering and human-readable version numbers.
 
 ## Usage
 
@@ -49,8 +51,8 @@ make db-migrate-steps STEPS=-1   # Backward
 make db-migrate-create NAME=add_user_table
 
 # This creates:
-# - migrations/000002_add_user_table.up.sql
-# - migrations/000002_add_user_table.down.sql
+# - migrations/20250108120000_add_user_table.up.sql
+# - migrations/20250108120000_add_user_table.down.sql
 ```
 
 ### Emergency Operations
@@ -92,10 +94,20 @@ make db-reset
 
 ## Migration Files
 
-### 000001_initial_schema
+### 20250108100000_initial_schema
 - **Purpose**: Creates the initial database schema for the restaurant menu system
 - **Tables**: restaurant_infos, operating_hours, content_sections, categories, sub_categories, items
 - **Features**: Includes indexes, triggers for updated_at timestamps, and proper foreign key constraints
+
+### 20250108105000_add_users_table
+- **Purpose**: Creates users table for authentication and user management
+- **Tables**: users
+- **Features**: Email-based authentication, role-based access control, last login tracking
+
+### 20250108110000_create_reservations_table
+- **Purpose**: Creates reservations table for restaurant booking system
+- **Tables**: reservations
+- **Features**: Guest information, date/time tracking, party size validation, status workflow
 
 ## Production Deployment
 

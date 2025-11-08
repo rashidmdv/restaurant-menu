@@ -119,6 +119,7 @@ func (s *Server) setupRoutes() {
 	contentRepo := databaseRepo.NewContentRepository(s.db.DB)
 	dashboardRepo := databaseRepo.NewDashboardRepository(s.db.DB, s.logger)
 	userRepo := databaseRepo.NewUserRepository(s.db.DB)
+	reservationRepo := databaseRepo.NewReservationRepository(s.db.DB)
 
 	// Initialize JWT service
 	jwtService := utils.NewJWTService(
@@ -151,6 +152,7 @@ func (s *Server) setupRoutes() {
 	dashboardHandler := handlers.NewDashboardHandler(dashboardService, s.logger)
 	userHandler := handlers.NewUserHandler(userService, s.logger)
 	authHandler := handlers.NewAuthHandler(authService, jwtService, s.logger)
+	reservationHandler := handlers.NewReservationHandler(reservationRepo, s.logger)
 
 	// Health check routes (ROOT level - industry standard)
 	s.router.GET("/health", healthHandler.Health)
@@ -297,6 +299,23 @@ func (s *Server) setupRoutes() {
 				contentAdmin.POST("", contentHandler.Create)
 				contentAdmin.PUT("/:id", contentHandler.Update)
 				contentAdmin.DELETE("/:id", contentHandler.Delete)
+			}
+		}
+
+		// Reservation endpoints
+		reservations := v1.Group("/reservations")
+		{
+			// Public endpoint (for customer website - anyone can create a reservation)
+			reservations.POST("", reservationHandler.CreateReservation)
+
+			// Admin endpoints (require authentication and admin/moderator role)
+			reservationsAdmin := reservations.Group("", jwtMiddleware, middleware.RequireAdminOrModerator())
+			{
+				reservationsAdmin.GET("", reservationHandler.ListReservations)
+				reservationsAdmin.GET("/:id", reservationHandler.GetReservation)
+				reservationsAdmin.PUT("/:id", reservationHandler.UpdateReservation)
+				reservationsAdmin.DELETE("/:id", reservationHandler.DeleteReservation)
+				reservationsAdmin.PATCH("/:id/status", reservationHandler.UpdateReservationStatus)
 			}
 		}
 

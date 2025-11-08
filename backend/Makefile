@@ -214,10 +214,9 @@ db-migrate-drop: ## Drop all database tables (DANGEROUS)
 db-migrate-create: ## Create a new migration file (requires NAME=migration_name)
 	@echo "$(GREEN)Creating new migration: $(NAME)...$(NC)"
 	@if [ -z "$(NAME)" ]; then echo "$(RED)NAME must be specified: make db-migrate-create NAME=add_user_table$(NC)"; exit 1; fi
-	@TIMESTAMP=$$(date +%s); \
-	PADDED_TIMESTAMP=$$(printf "%06d" $$TIMESTAMP); \
-	UP_FILE="migrations/$${PADDED_TIMESTAMP}_$(NAME).up.sql"; \
-	DOWN_FILE="migrations/$${PADDED_TIMESTAMP}_$(NAME).down.sql"; \
+	@DATETIME_TIMESTAMP=$$(date +%Y%m%d%H%M%S); \
+	UP_FILE="migrations/$${DATETIME_TIMESTAMP}_$(NAME).up.sql"; \
+	DOWN_FILE="migrations/$${DATETIME_TIMESTAMP}_$(NAME).down.sql"; \
 	echo "-- Migration: $(NAME)" > $$UP_FILE; \
 	echo "-- Add your migration SQL here" >> $$UP_FILE; \
 	echo "" >> $$UP_FILE; \

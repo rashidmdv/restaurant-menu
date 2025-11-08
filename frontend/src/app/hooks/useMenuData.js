@@ -14,14 +14,42 @@ export function useMenuData() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await menuService.getCompleteMenu();
-      
+
       if (response.success) {
+        // The API returns nested structure: data.menu.categories
+        const menuData = response.data.menu || response.data;
+        const categories = menuData.categories || [];
+
+        // Flatten subcategories and items from the nested structure
+        const subcategories = [];
+        const items = [];
+
+        categories.forEach(category => {
+          if (category.sub_categories) {
+            category.sub_categories.forEach(subcat => {
+              subcategories.push({
+                ...subcat,
+                category_id: category.id
+              });
+
+              if (subcat.items) {
+                subcat.items.forEach(item => {
+                  items.push({
+                    ...item,
+                    sub_category_id: subcat.id
+                  });
+                });
+              }
+            });
+          }
+        });
+
         setData({
-          categories: response.data.categories || [],
-          subcategories: response.data.subcategories || [],
-          items: response.data.items || []
+          categories: categories,
+          subcategories: subcategories,
+          items: items
         });
       }
     } catch (err) {
