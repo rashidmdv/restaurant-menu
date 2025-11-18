@@ -1,4 +1,4 @@
-import { ColumnDef } from '@tantml:react-table'
+import { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Reservation, statusColors } from '../data/schema'
