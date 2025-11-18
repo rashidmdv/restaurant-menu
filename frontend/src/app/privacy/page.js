@@ -214,7 +214,7 @@ export default function PrivacyPolicyPage() {
           {/* Section 7 */}
           <section className="py-12 lg:py-16 border-b border-[#5c4a2b]/10">
             <h2 className="text-[#C67D30] font-bold text-[24px] lg:text-[28px] mb-6">
-              7. Children's Privacy
+              7. Children&apos;s Privacy
             </h2>
             <p className="text-[#5c4a2b] text-[15px] lg:text-[17px] leading-loose">
               Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris

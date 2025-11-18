@@ -36,7 +36,7 @@ export default function VisionPage() {
             </Link>
             , our cuisine engages in dialogue with Arab heritage, renewing the ancient bond between the
             Mediterranean and the Middle East. We reinterpret tradition through contemporary research, natural
-            fermentation, and innovations such as our fermented date fiber and energized water, "Aqua Vitera".
+            fermentation, and innovations such as our fermented date fiber and energized water, &ldquo;Aqua Vitera&rdquo;.
             These elements embody our commitment to a cuisine that is both authentic and forward-looking, where
             flavor and wellbeing are inseparable.
           </>
