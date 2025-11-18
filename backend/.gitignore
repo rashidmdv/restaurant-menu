@@ -23,6 +23,11 @@ go.work.sum
 .env
 .env.local
 .env.*.local
+.env.prod
+.env.production
+.env.staging
+.env.dev
+.env.development
 
 # Service account keys and secrets
 keys/

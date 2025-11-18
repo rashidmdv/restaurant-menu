@@ -27,13 +27,18 @@ node_modules/
 .next/
 npm-debug.log*
 
-# Security - Service Account Keys and Secrets  
+# Security - Service Account Keys and Secrets
 *.key
 *.pem
 *.p12
 .env
 .env.local
 .env.*.local
+.env.prod
+.env.production
+.env.staging
+.env.dev
+.env.development
 
 # Go specific
 *.exe
