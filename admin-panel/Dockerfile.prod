@@ -1,6 +1,9 @@
 # Production Dockerfile for Admin Panel (Vite/React)
 FROM node:20-alpine AS builder
 
+# Accept build argument for API URL
+ARG VITE_API_URL=http://localhost:8000/v1
+
 WORKDIR /app
 
 # Install pnpm
@@ -14,6 +17,9 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
+
+# Set environment variable for Vite build
+ENV VITE_API_URL=${VITE_API_URL}
 
 # Build the application (skip TypeScript type checking for production build)
 RUN pnpm run build:prod
