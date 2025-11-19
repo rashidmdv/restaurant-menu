@@ -22,8 +22,8 @@ const montserrat = Montserrat({
 
 
 export const metadata = {
-  title: "Olive Grove Mediterranean Restaurant - Dubai Marina",
-  description: "Experience authentic Mediterranean cuisine in the heart of Dubai Marina. Traditional recipes, fresh ingredients, and warm hospitality await you at Olive Grove.",
+  title: "Olive Grove Mediterranean Restaurant - Oud Metha, Dubai",
+  description: "Experience authentic Mediterranean cuisine in Oud Metha, Dubai. Traditional recipes, fresh ingredients, and warm hospitality await you at Olive Grove.",
 };
 
 export default function RootLayout({ children }) {

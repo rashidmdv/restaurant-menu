@@ -3,8 +3,8 @@
 import LoadingSpinner from './LoadingSpinner';
 
 export default function OurLocationSection({ restaurantData, hoursData, loading, error }) {
-  const defaultAddress = "248 oud metha rd\noud metha\ndubai";
-  const defaultPhone = "800-lebeirut";
+  const defaultAddress = "Jordanian Social Club\nOud Metha\nDubai";
+  const defaultPhone = "+971 04 236 4555";
   const defaultEmail = "hello@lebeirut.me";
   const defaultHours = [
     { day_of_week: 1, open_time: "08:00", close_time: "23:00", is_closed: false },

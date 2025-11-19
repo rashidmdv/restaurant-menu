@@ -108,9 +108,7 @@ export default function BookTablePage() {
                   <div>
                     <h4 className="font-semibold text-[#5c4a2b] text-[18px] mb-2 tracking-wide">Address</h4>
                     <p className="text-[#5c4a2b]/80 text-[15px] lg:text-[16px] leading-relaxed">
-                      Marina Walk, Building 23
-                      <br />
-                      Dubai, United Arab Emirates
+                      Jordanian Social Club - Oud Metha - Dubai
                     </p>
                   </div>
                 </div>
@@ -120,10 +118,10 @@ export default function BookTablePage() {
                   <div>
                     <h4 className="font-semibold text-[#5c4a2b] text-[18px] mb-2 tracking-wide">Phone</h4>
                     <a
-                      href="tel:+97141234567"
+                      href="tel:+97142364555"
                       className="text-[#C67D30] hover:underline text-[15px] lg:text-[16px]"
                     >
-                      +971-4-123-4567
+                      +971 04 236 4555
                     </a>
                   </div>
                 </div>
@@ -164,7 +162,7 @@ export default function BookTablePage() {
             <div className="flex-1 w-full">
               <div className="w-full h-[400px] lg:h-[500px] rounded-lg overflow-hidden shadow-xl">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3613.0847682088386!2d55.13943931501344!3d25.076663783955796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f6ca7b1d5f3c9%3A0x7e8e8c8c8c8c8c8c!2sMarina%20Walk%2C%20Dubai!5e0!3m2!1sen!2sae!4v1234567890"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115391.71813849845!2d55.270782!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f4338f1dbfd31%3A0x8a4f30d4e2f7598f!2sOud%20Metha%2C%20Dubai!5e0!3m2!1sen!2sae!4v1686838198316!5m2!1sen!2sae"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

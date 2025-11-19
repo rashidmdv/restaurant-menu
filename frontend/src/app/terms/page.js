@@ -299,15 +299,14 @@ export default function TermsConditionsPage() {
               <p className="text-[#5c4a2b] leading-loose">
                 <span className="font-semibold">Phone:</span>{" "}
                 <a
-                  href="tel:+97141234567"
+                  href="tel:+97142364555"
                   className="text-[#C67D30] hover:underline transition-colors"
                 >
-                  +971-4-123-4567
+                  +971 04 236 4555
                 </a>
               </p>
               <p className="text-[#5c4a2b] leading-loose">
-                <span className="font-semibold">Address:</span> Marina Walk,
-                Building 23, Dubai, United Arab Emirates
+                <span className="font-semibold">Address:</span> Jordanian Social Club - Oud Metha - Dubai
               </p>
             </div>
           </section>
