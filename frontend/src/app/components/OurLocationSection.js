@@ -99,7 +99,7 @@ export default function OurLocationSection({ restaurantData, hoursData, loading,
           loading="lazy"
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115391.71813849845!2d55.270782!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f4338f1dbfd31%3A0x8a4f30d4e2f7598f!2sOud%20Metha%2C%20Dubai!5e0!3m2!1sen!2sae!4v1686838198316!5m2!1sen!2sae"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7075.339653176596!2d55.31458380243888!3d25.232569196378325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5d4769108943%3A0xc2cd98c5d4c32992!2sLoma%20Restaurant%20and%20Bakery!5e1!3m2!1sen!2sin!4v1763516536736!5m2!1sen!2sin"
         ></iframe>
       </div>
 
