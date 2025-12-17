@@ -139,27 +139,6 @@ services:
       - backend
     restart: unless-stopped
 
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: restaurant-menu-nginx
-    ports:
-      - "80:80"  # Expose to external traffic
-    volumes:
-      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
-    networks:
-      - restaurant-network
-    depends_on:
-      - frontend
-      - backend
-      - admin
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
 secrets:
   db_password:
     file: ./secrets/db_password.txt
