@@ -70,7 +70,7 @@ services:
       REDIS_PORT: 6379
       LOG_LEVEL: info
       STORAGE_PROVIDER: gcp
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost,http://127.0.0.1:3000}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost,http://127.0.0.1:3000,http://35.244.24.80}
       RUN_SEED: "false"
     secrets:
       - db_password
@@ -101,13 +101,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=http://34.180.51.37/api
+        - NEXT_PUBLIC_API_URL=http://35.244.24.80/api
     container_name: restaurant-menu-frontend
     ports:
       - "127.0.0.1:3000:3000"  # Bind to localhost only
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://34.180.51.37/api
+      - NEXT_PUBLIC_API_URL=http://35.244.24.80/api
     networks:
       - restaurant-network
     depends_on:
@@ -126,18 +126,39 @@ services:
       context: ./admin-panel
       dockerfile: Dockerfile.prod
       args:
-        - VITE_API_URL=http://34.180.51.37/api
+        - VITE_API_URL=http://35.244.24.80/api
     container_name: restaurant-menu-admin
     ports:
       - "127.0.0.1:4000:4000"  # Bind to localhost only
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://34.180.51.37/api
+      - VITE_API_URL=http://35.244.24.80/api
     networks:
       - restaurant-network
     depends_on:
       - backend
     restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: restaurant-menu-nginx
+    ports:
+      - "80:80"  # Expose to external traffic
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - restaurant-network
+    depends_on:
+      - frontend
+      - backend
+      - admin
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 secrets:
   db_password:
